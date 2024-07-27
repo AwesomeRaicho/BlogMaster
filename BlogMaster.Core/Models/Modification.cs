@@ -9,6 +9,7 @@ namespace BlogMaster.Core.Models
     public class Modification
     {
         public Guid ModificationId { get; set; }
+        public Guid BlogId { get; set; }
         public string? UserName { get; set; }
         public string? Description { get; set; }
         public DateTime ModificationDate { get; set; }

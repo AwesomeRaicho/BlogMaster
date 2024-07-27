@@ -10,6 +10,8 @@ namespace BlogMaster.Core.Models
     {
         public Guid CommentId { get; set; }
         public Guid UsedId { get; set; }
+        public Guid BlogId { get; set; }
+
         public string? UserName { get; set; }
         public string? Message { get; set; }
 

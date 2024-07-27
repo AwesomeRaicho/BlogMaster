@@ -12,7 +12,7 @@ namespace BlogMaster.Core.Models
     {
         public Guid BlogId { get; set; }
 
-        //<IMAGES PROP HERE>
+        //<IMAGES PROPs HERE>
 
         // Language-specific fields
         public string? ArticleEn { get; set; }  // English article
@@ -26,9 +26,9 @@ namespace BlogMaster.Core.Models
 
         public string? Author { get; set; }
 
-        public bool? IsFeatured { get; set; }
+        public bool? IsFeatured { get; set; } = true;
 
-        public bool? IsPublished { get; set; }
+        public bool? IsPublished { get; set; } = false;
         public DateTime CreatedDate { get; set; }
         public DateTime DatePublished { get; set; }
 
@@ -46,6 +46,7 @@ namespace BlogMaster.Core.Models
         public List<Blog_Category>? BlogCategories { get; set; }
 
         //  One-to-Many
+        public List<BlogImage>? BlogImages { get; set; }
         public List<Comment>? Comments { get; set; }
         public List<Rating>? Ratings { get; set; }
         public List<Modification>? Modifications { get; set; }
