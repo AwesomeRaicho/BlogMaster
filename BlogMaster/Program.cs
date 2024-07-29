@@ -1,19 +1,22 @@
+using BlogMaster.Core.Models.Identity;
 using BlogMaster.Infrastructure.DataAccess;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-
+// DB ENTITY AND IDENTITY SERVICES ~ START
 builder.Services.AddDbContext<EntityDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]);
 });
 
-
-
-
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
+    .AddEntityFrameworkStores<EntityDbContext>()
+    .AddDefaultTokenProviders();
+// DB ENTITY AND IDENTITY SERVICES ~ END
 
 
 

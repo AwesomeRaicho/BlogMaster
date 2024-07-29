@@ -15,3 +15,4 @@ C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaste
 C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Infrastructure\obj\Debug\net8.0\BlogMaster.Infrastructure.pdb
 C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Infrastructure\obj\Debug\net8.0\BlogMaster.Infrastructure.genruntimeconfig.cache
 C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Infrastructure\obj\Debug\net8.0\ref\BlogMaster.Infrastructure.dll
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Infrastructure\obj\Debug\net8.0\BlogMaster.Infrastructure.sourcelink.json

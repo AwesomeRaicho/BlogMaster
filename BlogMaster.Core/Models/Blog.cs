@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BlogMaster.Core.Models.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -37,9 +38,13 @@ namespace BlogMaster.Core.Models
         public int? ViewCount { get; set; }
         public decimal? AverageRating { get; set; }
         public int? RatingCount { get; set; }
+        public bool IsSubscriptionRequired { get; set; }
 
+        public Guid UserId { get; set; }
 
         //Navigation Properties
+        public ApplicationUser? User { get; set; }
+        
         //  Many-to-Many
         public List<Blog_Keyword>? BlogKeywords { get; set; }
         public List<Blog_Tag>? BlogTags { get; set; }

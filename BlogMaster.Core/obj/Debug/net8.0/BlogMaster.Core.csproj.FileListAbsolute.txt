@@ -9,3 +9,5 @@ C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaste
 C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\obj\Debug\net8.0\refint\BlogMaster.Core.dll
 C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\obj\Debug\net8.0\BlogMaster.Core.pdb
 C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\obj\Debug\net8.0\ref\BlogMaster.Core.dll
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\obj\Debug\net8.0\BlogMaster.Core.csproj.AssemblyReference.cache
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\obj\Debug\net8.0\BlogMaster.Core.sourcelink.json

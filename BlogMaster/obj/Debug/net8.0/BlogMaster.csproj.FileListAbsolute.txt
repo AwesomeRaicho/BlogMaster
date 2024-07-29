@@ -134,3 +134,10 @@ C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaste
 C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster\obj\Debug\net8.0\BlogMaster.pdb
 C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster\obj\Debug\net8.0\BlogMaster.genruntimeconfig.cache
 C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster\obj\Debug\net8.0\ref\BlogMaster.dll
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster\bin\Debug\net8.0\Microsoft.AspNetCore.Cryptography.Internal.dll
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster\bin\Debug\net8.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster\bin\Debug\net8.0\Microsoft.Extensions.Identity.Core.dll
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster\bin\Debug\net8.0\Microsoft.Extensions.Identity.Stores.dll
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster\obj\Debug\net8.0\BlogMaster.sourcelink.json

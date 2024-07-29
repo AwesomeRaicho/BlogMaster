@@ -5,18 +5,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BlogMaster.Core.Models;
+using Microsoft.AspNetCore.Identity;
+using BlogMaster.Core.Models.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace BlogMaster.Infrastructure.DataAccess
 {
-    public class EntityDbContext : DbContext
+    public class EntityDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
-        //public DbSet<Item>? Items { get; set; }
-        //public DbSet<ItemOption>? ItemOptions { get; set; }
 
         public DbSet<Blog>? Blogs { get; set; }
         public DbSet<Blog_Category>? BlogCategories { get; set; }
         public DbSet<Blog_Keyword>? BlogKeywords { get; set; }
         public DbSet<Blog_Tag>? BlogTags { get; set; }
+        public DbSet<BlogImage> BlogImages { get; set; }
         public DbSet<Category>? Categories { get; set; }
         public DbSet<Comment>? Comments { get; set; }
         public DbSet<Keyword>? Keywords { get; set; }
@@ -24,7 +26,7 @@ namespace BlogMaster.Infrastructure.DataAccess
         public DbSet<Rating>? Ratings { get; set; }
         public DbSet<Tag>? Tags { get; set; }
 
-
+        public EntityDbContext(DbContextOptions<EntityDbContext> options) : base(options) { }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,24 +39,24 @@ namespace BlogMaster.Infrastructure.DataAccess
             modelBuilder.Entity<Blog_Category>()
                 .HasOne(e => e.Blog)
                 .WithMany(e => e.BlogCategories)
-                .HasForeignKey(e => e.BlogId);
+                .HasForeignKey(e => e.BlogId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Blog_Category>()
                 .HasOne(e => e.Category)
                 .WithMany(e => e.BlogCategories)
-                .HasForeignKey(e => e.CategoryId);
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Blog>()
                 .HasMany(e => e.BlogCategories)
                 .WithOne(e => e.Blog)
-                .HasForeignKey(e => e.BlogId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(e => e.BlogId);
 
             modelBuilder.Entity<Category>()
                 .HasMany(e => e.BlogCategories)
                 .WithOne(e => e.Category)
-                .HasForeignKey(e => e.CategoryId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(e => e.CategoryId);
 
             //Blog & Keyword = Blog_Keyword
             modelBuilder.Entity<Blog_Keyword>()
@@ -63,24 +65,24 @@ namespace BlogMaster.Infrastructure.DataAccess
             modelBuilder.Entity<Blog_Keyword>().
                 HasOne(e => e.Blog)
                 .WithMany(e => e.BlogKeywords)
-                .HasForeignKey(e => e.BlogId);
+                .HasForeignKey(e => e.BlogId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Blog_Keyword>()
                 .HasOne(e => e.Keyword)
                 .WithMany(e => e.BlogKeywords)
-                .HasForeignKey(e => e.KeywordId);
+                .HasForeignKey(e => e.KeywordId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Blog>()
                 .HasMany(e => e.BlogKeywords)
                 .WithOne(e => e.Blog)
-                .HasForeignKey(e => e.BlogId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(e => e.BlogId);
 
             modelBuilder.Entity<Keyword>()
                 .HasMany(e => e.BlogKeywords)
                 .WithOne(e => e.Keyword)
-                .HasForeignKey(e => e.KeywordId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(e => e.KeywordId);
 
             //Blog & Tag = Blog_Tag
             modelBuilder.Entity<Blog_Tag>()
@@ -89,32 +91,77 @@ namespace BlogMaster.Infrastructure.DataAccess
             modelBuilder.Entity<Blog_Tag>()
                 .HasOne(e => e.Blog)
                 .WithMany(e => e.BlogTags)
-                .HasForeignKey(e => e.BlogId);
+                .HasForeignKey(e => e.BlogId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Blog_Tag>()
                 .HasOne(e => e.Tag)
                 .WithMany(e => e.BlogTags)
-                .HasForeignKey(e => e.TagId);
+                .HasForeignKey(e => e.TagId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Blog>()
                 .HasMany(e => e.BlogTags)
                 .WithOne(e => e.Blog)
-                .HasForeignKey(e => e.BlogId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(e => e.BlogId);
 
             modelBuilder.Entity<Tag>()
                 .HasMany(e => e.BlogTags)
                 .WithOne(e => e.Tag)
-                .HasForeignKey(e => e.TagId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(e => e.TagId);
 
 
 
             //END OF RELATIONSHIPS MANY-TO-MANY
 
+            //<APPLICATIONUSER> model
+
+            modelBuilder.Entity<ApplicationUser>()
+                .HasKey(e => e.Id);
+
+            modelBuilder.Entity<ApplicationUser>()
+                .Property(e => e.FirstName)
+                .HasMaxLength(15);
+
+            modelBuilder.Entity<ApplicationUser>()
+                .Property(e => e.LastName)
+                .HasMaxLength(15);
+
+            //<APPLICATIONUSER> relation
 
 
-            // <BLOG> 
+            modelBuilder.Entity<ApplicationUser>()
+                .HasMany(e => e.Blogs)
+                .WithOne(e => e.User)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ApplicationUser>()
+                .HasMany(e => e.Comments) 
+                .WithOne(e => e.User)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ApplicationUser>()
+                .HasMany(e => e.Modifications)
+                .WithOne(e => e.User)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ApplicationUser>()
+                .HasMany(e => e.Ratings)
+                .WithOne(e => e.User)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //<APPLICATIONUSER> end
+
+
+
+
+
+            // <BLOG> model
+
             modelBuilder.Entity<Blog>()
                 .HasIndex(e => e.SlugEn)
                 .HasDatabaseName("IX_Blog_SlugEn");
@@ -124,8 +171,8 @@ namespace BlogMaster.Infrastructure.DataAccess
                 .HasDatabaseName("IX_Blog_SlugEs");
 
             modelBuilder.Entity<Blog>()
-            .Property(b => b.SlugEn)
-            .HasMaxLength(255);
+                .Property(b => b.SlugEn)
+                .HasMaxLength(255);
 
             modelBuilder.Entity<Blog>()
                 .Property(b => b.SlugEs)
@@ -159,36 +206,42 @@ namespace BlogMaster.Infrastructure.DataAccess
             // <BLOG> Relation
 
             modelBuilder.Entity<Blog>()
-            .HasMany(e => e.BlogImages)
-            .WithOne(e => e.Blog)
-            .HasForeignKey(e => e.ImageId)
-            .OnDelete(DeleteBehavior.Cascade);
+                .HasOne(e => e.User)
+                .WithMany(e => e.Blogs)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Blog>()
+                .HasMany(e => e.BlogImages)
+                .WithOne(e => e.Blog)
+                .HasForeignKey(e => e.ImageId)
+                .OnDelete(DeleteBehavior.Restrict);
 
 
             modelBuilder.Entity<Blog>()
-            .HasMany(e => e.Comments)
-            .WithOne(e => e.Blog)
-            .HasForeignKey(e => e.CommentId)
-            .OnDelete(DeleteBehavior.Cascade);
+                .HasMany(e => e.Comments)
+                .WithOne(e => e.Blog)
+                .HasForeignKey(e => e.CommentId)
+                .OnDelete(DeleteBehavior.Restrict);
 
 
             modelBuilder.Entity<Blog>()
-            .HasMany(e => e.Ratings)
-            .WithOne(e => e.Blog)
-            .HasForeignKey(e => e.RatingId)
-            .OnDelete(DeleteBehavior.Cascade);
+                .HasMany(e => e.Ratings)
+                .WithOne(e => e.Blog)
+                .HasForeignKey(e => e.RatingId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Blog>()
-            .HasMany(e => e.Modifications)
-            .WithOne(e => e.Blog)
-            .HasForeignKey(e => e.ModificationId)
-            .OnDelete(DeleteBehavior.Cascade);
+                .HasMany(e => e.Modifications)
+                .WithOne(e => e.Blog)
+                .HasForeignKey(e => e.ModificationId)
+                .OnDelete(DeleteBehavior.Restrict);
 
 
             // <BLOG> end
 
 
-            // <BLOGIMAGE>
+            // <BLOGIMAGE> model
             modelBuilder.Entity<BlogImage>()
             .HasKey(e => e.ImageId);
 
@@ -208,13 +261,14 @@ namespace BlogMaster.Infrastructure.DataAccess
             modelBuilder.Entity<BlogImage>()
                 .HasOne(e => e.Blog)
                 .WithMany(e => e.BlogImages)
-                .HasForeignKey(e => e.BlogId);
+                .HasForeignKey(e => e.BlogId)
+                .OnDelete(DeleteBehavior.Cascade);
 
 
             // <BLOGIMAGE> end
 
 
-            //<CATEGORY>
+            //<CATEGORY> model
 
             modelBuilder.Entity<Category>()
                 .HasKey(e => e.CategoryId);
@@ -229,27 +283,31 @@ namespace BlogMaster.Infrastructure.DataAccess
 
             //<CATEGORY> end
 
-            //<COMMENT>
+            //<COMMENT> model
             modelBuilder.Entity<Comment>()
                 .HasKey(e => e.CommentId);
-
-            modelBuilder.Entity<Comment>()
-                .Property(e => e.UserName)
-                .HasMaxLength(20);
 
             modelBuilder.Entity<Comment>()
                 .Property(e => e.Message)
                 .HasMaxLength(500);
 
             //<COMMENT> Relation
+
+            modelBuilder.Entity<Comment>()
+                .HasOne(e => e.User)
+                .WithMany(e => e.Comments)
+                .HasForeignKey(e => e.UserId);
+
+
             modelBuilder.Entity<Comment>()
                 .HasOne(e => e.Blog)
                 .WithMany(e => e.Comments)
-                .HasForeignKey(e => e.BlogId);
+                .HasForeignKey(e => e.BlogId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             //<CATEGORY> end
 
-            //<KEYWORD>
+            //<KEYWORD> model
 
             modelBuilder.Entity<Keyword>()
                 .HasKey(e => e.KeywordId);
@@ -262,16 +320,14 @@ namespace BlogMaster.Infrastructure.DataAccess
                 .Property(e => e.KeywordNameEs)
                 .HasMaxLength(15);
 
+
             //<KEYWORD> end
 
-            //<MODIFICATION> 
+            //<MODIFICATION> model
 
             modelBuilder.Entity<Modification>()
                 .HasKey (e => e.ModificationId);
 
-            modelBuilder.Entity<Modification>()
-                .Property(e => e.UserName)
-                .HasMaxLength(20);
 
             modelBuilder.Entity<Modification>()
                 .Property(e => e.Description)
@@ -281,36 +337,43 @@ namespace BlogMaster.Infrastructure.DataAccess
             //<MODIFICATION> relation
 
             modelBuilder.Entity<Modification>()
+                .HasOne(e => e.User)
+                .WithMany(e => e.Modifications)
+                .HasForeignKey(e => e.UserId);
+
+            modelBuilder.Entity<Modification>()
                 .HasOne(e => e.Blog)
                 .WithMany(e => e.Modifications)
-                .HasForeignKey(e => e.BlogId);
+                .HasForeignKey(e => e.BlogId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             //<MODIFICATION> end
 
-            //<RATING> end
-
+            //<RATING> model
 
             modelBuilder.Entity<Rating>()
                 .HasKey(e => e.RatingId);
 
-            modelBuilder.Entity<Rating>()
-                .Property(e => e.UserName)
-                .HasMaxLength(20);
 
             modelBuilder.Entity<Rating>()
                 .Property(e => e.RatingScore)
                 .HasPrecision(2, 1);
 
             //<RATING> relation
+            modelBuilder.Entity<Rating>()
+                .HasOne(e => e.User)
+                .WithMany(e => e.Ratings)
+                .HasForeignKey(e => e.UserId);
 
             modelBuilder.Entity<Rating>()
                 .HasOne(e => e.Blog)
                 .WithMany(e => e.Ratings)
-                .HasForeignKey (e => e.BlogId);
+                .HasForeignKey (e => e.BlogId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             //<RATING> end
 
-            //<TAG>
+            //<TAG> model
 
             modelBuilder.Entity<Tag>()
                 .HasKey(e => e.TagId);
@@ -327,6 +390,22 @@ namespace BlogMaster.Infrastructure.DataAccess
             //<TAG> end
 
 
+            //<SUBSCRIPTION>
+            //<SUBSCRIPTION> relation
+            //<SUBSCRIPTION> end
+
+            //<SUBSCRIPTIONHISTORY>
+            //<SUBSCRIPTIONHISTORY> relation
+            //<SUBSCRIPTIONHISTORY> end
+
+
+            //<PAYMENT>
+            //<PAYMENT> relation
+            //<PAYMENT> end
+
+            //<PAYMENTHISTORY>
+            //<PAYMENTHISTORY> relation
+            //<PAYMENTHISTORY> end
 
             base.OnModelCreating(modelBuilder);
 
