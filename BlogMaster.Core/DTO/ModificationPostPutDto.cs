@@ -6,13 +6,10 @@ using System.Threading.Tasks;
 
 namespace BlogMaster.Core.DTO
 {
-    public class CommentPostPutDto
+    public class ModificationPostPutDto
     {
-        public Guid CommentId { get; set; }
         public Guid BlogId { get; set; }
-
-
-        public string? Message { get; set; }
+        public string? Description { get; set; }
 
     }
 }
