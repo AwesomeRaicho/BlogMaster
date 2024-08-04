@@ -15,7 +15,7 @@ namespace BlogMaster.Core.Contracts
         public Task<Blog> GetBlogBySlug(string slug);
         public Task<IEnumerable<Blog>> GetAllBlogsAsync();
         public Task<IEnumerable<Blog>> GetAllBlogsNextPage(int pageIndex);
-        public Task CreateBlogAsync(Blog blog);
+        public Task CreateBlogAsync(BlogPostPutDto blog);
         public Task UpdateBlogAsync(Blog blog);
         public Task DeleteBlogAsync(Guid id);
 
@@ -56,7 +56,7 @@ namespace BlogMaster.Core.Contracts
         // Category Management
         public Task<Category> GetCategoryAsync(Guid categoryId);
         public Task<List<Category>> GetAllCategories();
-        public Task CreateCategory(Category category);
+        public Task CreateCategory(CategoryPostPutDto category);
         public Task DeleteCategory(Category category);
         public Task UpdateCategory(Category category);
 

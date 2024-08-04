@@ -31,7 +31,7 @@ namespace BlogMaster.Core.Models
 
         public bool? IsPublished { get; set; } = false;
         public DateTime CreatedDate { get; set; }
-        public DateTime DatePublished { get; set; }
+        public DateTime? DatePublished { get; set; }
 
 
 

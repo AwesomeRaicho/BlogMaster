@@ -1,6 +1,7 @@
 ﻿using BlogMaster.Core.Contracts;
 using BlogMaster.Core.DTO;
 using BlogMaster.Core.Models;
+using BlogMaster.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,9 @@ namespace BlogMaster.Core.Services
         private readonly IRepository<Blog_Category> _blogCategoryRepository;
         private readonly IRepository<Blog_Keyword> _blogKeywordRepository;
         private readonly IRepository<Blog_Tag> _blogTagRepository;
+
+
+        
 
 
         public BlogService(IRepository<Blog> blogRepository, IRepository<Category> categoryRepository, IRepository<Comment> commentRepository, IRepository<Keyword> keywordRepository, IRepository<Modification> modificationRepository, IRepository<Rating> ratingRepository, IRepository<Tag> tagRepository, IRepository<Blog_Category> blogCategoryRepository, IRepository<Blog_Keyword> blogKeywordRepository, IRepository<Blog_Tag> blogTagRepository)
@@ -167,30 +171,123 @@ namespace BlogMaster.Core.Services
             await _blogTagRepository.Create(entity);
         }
 
-        public Task CreateBlogAsync(BlogPostPutDto blog)
+        public async Task CreateBlogAsync(BlogPostPutDto blog)
         {
-            //if(blog == null)
-            //{
-            //    throw new ArgumentNullException("Blog Cannot be null");
-            //}
+            if (blog == null)
+            {
+                throw new ArgumentNullException("Blog Cannot be null");
+            }
 
-            throw new NotImplementedException();
+            if(string.IsNullOrEmpty(blog.ArticleEn) && string.IsNullOrEmpty(blog.ArticleEs))
+            {
+                throw new ArgumentNullException("Article must be added in at least one lenguage");
+            }
+            if (string.IsNullOrEmpty(blog.TitleEn) && string.IsNullOrEmpty(blog.TitleEs))
+            {
+                throw new ArgumentNullException("Title must be added in at least one lenguage");
+            }
+            if (string.IsNullOrEmpty(blog.DescriptionEn) && string.IsNullOrEmpty(blog.DescriptionEs))
+            {
+                throw new ArgumentNullException("Description must be added in at least one lenguage");
+            }
+
+            if(string.IsNullOrEmpty(blog.Author))
+            {
+                throw new ArgumentNullException("Author cannot be null");
+            }
+
+            Blog entity = new Blog()
+            {
+                BlogId = Guid.NewGuid(),
+                ArticleEn = blog.ArticleEn,
+                ArticleEs = blog.ArticleEs,
+                TitleEn = blog.TitleEn,
+                TitleEs = blog.TitleEs,
+                DescriptionEs = blog.DescriptionEs,
+                DescriptionEn = blog.DescriptionEn,
+                SlugEn = !string.IsNullOrEmpty(blog.TitleEn) ? SlugGenerator.GenerateSlug(blog.TitleEn) : null,
+                SlugEs = !string.IsNullOrEmpty(blog.TitleEs) ? SlugGenerator.GenerateSlug(blog.TitleEs) : null,
+                Author = blog.Author,
+                IsSubscriptionRequired = blog.IsSubscriptionRequired,
+                
+                
+                
+                IsFeatured = true,
+                IsPublished = false,
+
+                CreatedDate = DateTime.UtcNow,
+                DatePublished = null,
+
+                ViewCount = 0,
+                AverageRating = null,
+                RatingCount = 0,
+
+
+            };
+
+            await _blogRepository.Create(entity);
 
         }
 
-        public Task CreateCategory(Category category)
+        public async Task CreateCategory(CategoryPostPutDto category)
         {
-            throw new NotImplementedException();
+            if(category == null) { throw new ArgumentNullException("Categoty submitted cannot be mull"); }
+
+            if(string.IsNullOrEmpty(category.CatergoryNameEn) && string.IsNullOrEmpty(category.CatergoryNameEs))
+            {
+                throw new ArgumentNullException("Category name must be provided at least in one lenguage.");
+            }
+
+            Category entity = new Category()
+            {
+                CategoryId = Guid.NewGuid(),
+                CatergoryNameEn = category.CatergoryNameEn,
+                CatergoryNameEs = category.CatergoryNameEs,
+            };
+
+            await _categoryRepository.Create(entity);
+
         }
 
-        public Task CreateCommentAsync(Comment comment)
+        public async Task CreateCommentAsync(CommentPostPutDto comment)
         {
-            throw new NotImplementedException();
+            if(comment == null || string.IsNullOrEmpty(comment.Message))
+            {
+                throw new ArgumentNullException("Comment cannot be null");
+            }
+
+            Comment entity = new Comment()
+            {
+                CommentId = Guid.NewGuid(),
+                BlogId = comment.BlogId,
+                UserId = comment.UserId,
+                Message = comment.Message,
+            };
+
+            await _commentRepository.Create(entity);
         }
 
-        public Task CreateKeywordAsync(Keyword keyword)
+        public async Task CreateKeywordAsync(KeywordPostPut keyword)
         {
-            throw new NotImplementedException();
+            if(keyword == null)
+            {
+                throw new ArgumentNullException("Keyword cannot be null");
+            }
+
+            if(string.IsNullOrEmpty(keyword.KeywordNameEn) && string.IsNullOrEmpty(keyword.KeywordNameEs))
+            {
+                throw new ArgumentNullException("Keyword must be provided in at least one lenguage.");
+            }
+
+            Keyword entity = new Keyword()
+            {
+                KeywordId = Guid.NewGuid(),
+                KeywordNameEn = keyword.KeywordNameEn,
+                KeywordNameEs = keyword.KeywordNameEs,
+            };
+
+            await _keywordRepository.Create(entity);
+
         }
 
         public Task CreateTagAsync(Tag tag)

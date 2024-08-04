@@ -23,21 +23,12 @@ namespace BlogMaster.Core.DTO
         public string? DescriptionEs { get; set; }  // Spanish description
 
 
-
+        public bool IsSubscriptionRequired { get; set; }
 
         [Required(ErrorMessage = "Blog author is required")]
         [StringLength(50, MinimumLength = 6, ErrorMessage = "min 6 charactes and max 50 characters for the Author")]
         public string? Author { get; set; }
 
-
-        // DTOs:
-
-
-        public List<CategoryPostPutDto>? Category { get; set; }
-
-        public List<TagPostPutDto>? Tags { get; set; }
-
-        public List<KeywordPostPut>? Keywords { get; set; }
 
         
     }
