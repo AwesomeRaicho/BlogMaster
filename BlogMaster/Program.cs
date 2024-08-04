@@ -1,3 +1,4 @@
+using BlogMaster.Core.Contracts;
 using BlogMaster.Core.Models.Identity;
 using BlogMaster.Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +17,11 @@ builder.Services.AddDbContext<EntityDbContext>(options =>
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<EntityDbContext>()
     .AddDefaultTokenProviders();
+
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(GeneralRepository<>));
+
+
 // DB ENTITY AND IDENTITY SERVICES ~ END
 
 
