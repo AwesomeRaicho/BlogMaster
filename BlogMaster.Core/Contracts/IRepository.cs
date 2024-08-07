@@ -14,8 +14,7 @@ namespace BlogMaster.Core.Contracts
         public Task Delete(Guid id);
 
 
-        public Task<IEnumerable<T>> GetAll();
-        public Task<IEnumerable<T>> GetAllNextPage(int page, int pageSize);
+        public Task<IEnumerable<T>> GetAll(int page, int pageSize);
 
     }
 }

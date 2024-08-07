@@ -11,7 +11,7 @@ namespace BlogMaster.Infrastructure.DataAccess
 {
     public class GeneralRepository<T> : IRepository<T> where T : class
     {
-        private readonly EntityDbContext _context;
+        protected readonly EntityDbContext _context;
 
         public GeneralRepository(EntityDbContext entityDbContext)
         {
@@ -46,14 +46,9 @@ namespace BlogMaster.Infrastructure.DataAccess
         }
 
 
-        public async Task<IEnumerable<T>> GetAll()
+        public async Task<IEnumerable<T>> GetAll(int page, int pageSize)
         {
-            return await _context.Set<T>().Skip(0).Take(20).ToListAsync();
-        }
-
-        public async Task<IEnumerable<T>> GetAllNextPage(int page, int pageSize)
-        {
-            return await _context.Set<T>().Skip(page * pageSize).Take(pageSize).ToListAsync();
+            return await _context.Set<T>().Skip((page -1) * pageSize).Take(pageSize).ToListAsync();
         }
     }
 }

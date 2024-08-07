@@ -2,9 +2,11 @@
 using BlogMaster.Core.DTO;
 using BlogMaster.Core.Models;
 using BlogMaster.Core.Utilities;
+using Microsoft.Win32.SafeHandles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,6 +23,7 @@ namespace BlogMaster.Core.Services
         private readonly IRepository<Modification> _modificationRepository;
         private readonly IRepository<Rating> _ratingRepository;
         private readonly IRepository<Tag> _tagRepository;
+        private readonly IBlogRepository _blogUniqueRepository;
 
 
 
@@ -29,10 +32,11 @@ namespace BlogMaster.Core.Services
         private readonly IRepository<Blog_Tag> _blogTagRepository;
 
 
+        // add a way to calculate the avergae rating of a blog
         
 
 
-        public BlogService(IRepository<Blog> blogRepository, IRepository<Category> categoryRepository, IRepository<Comment> commentRepository, IRepository<Keyword> keywordRepository, IRepository<Modification> modificationRepository, IRepository<Rating> ratingRepository, IRepository<Tag> tagRepository, IRepository<Blog_Category> blogCategoryRepository, IRepository<Blog_Keyword> blogKeywordRepository, IRepository<Blog_Tag> blogTagRepository)
+        public BlogService(IRepository<Blog> blogRepository, IRepository<Category> categoryRepository, IRepository<Comment> commentRepository, IRepository<Keyword> keywordRepository, IRepository<Modification> modificationRepository, IRepository<Rating> ratingRepository, IRepository<Tag> tagRepository, IRepository<Blog_Category> blogCategoryRepository, IRepository<Blog_Keyword> blogKeywordRepository, IRepository<Blog_Tag> blogTagRepository, IBlogRepository blogUniqueRepository)
         {
             _blogRepository = blogRepository;
             _categoryRepository = categoryRepository;
@@ -44,6 +48,7 @@ namespace BlogMaster.Core.Services
             _blogCategoryRepository = blogCategoryRepository;
             _blogKeywordRepository = blogKeywordRepository;
             _blogTagRepository = blogTagRepository;
+            _blogUniqueRepository = blogUniqueRepository;
         }
 
         public async Task AddCategoryToBlogAsync(Guid blogId, Guid categoryId)
@@ -229,7 +234,7 @@ namespace BlogMaster.Core.Services
 
         }
 
-        public async Task CreateCategory(CategoryPostPutDto category)
+        public async Task CreateCategoryAsync(CategoryPostPutDto category)
         {
             if(category == null) { throw new ArgumentNullException("Categoty submitted cannot be mull"); }
 
@@ -290,114 +295,140 @@ namespace BlogMaster.Core.Services
 
         }
 
-        public Task CreateTagAsync(Tag tag)
+        public async Task CreateTagAsync(TagPostPutDto tag)
         {
-            throw new NotImplementedException();
+            if(tag == null)
+            {
+                throw new ArgumentNullException("tag cannot be null");
+            }
+
+            if(string.IsNullOrEmpty(tag.TagNameEn) && string.IsNullOrEmpty(tag.TagNameEs))
+            {
+                throw new ArgumentNullException("tag cannot be null");
+            }
+
+            Tag entity = new Tag()
+            {
+                TagId = Guid.NewGuid(),
+                TagNameEn = tag.TagNameEn,
+                TagNameEs = tag.TagNameEs,
+            };
+
+            await _tagRepository.Create(entity);
         }
 
-        public Task DeleteBlogAsync(Guid id)
+        public async Task DeleteBlogAsync(Guid id)
         {
-            throw new NotImplementedException();
+            await _blogRepository.Delete(id);
         }
 
-        public Task DeleteBlogModificationsAsync(Modification modification)
+        public async Task DeleteBlogModificationsAsync(Guid id)
         {
-            throw new NotImplementedException();
+            await _modificationRepository.Delete(id);
         }
 
-        public Task DeleteBlogRatingsAsync(Guid ratingId)
+        public async Task DeleteBlogRatingsAsync(Guid id)
         {
-            throw new NotImplementedException();
+            await _ratingRepository.Delete(id);
         }
 
-        public Task DeleteCategory(Category category)
+        public async Task DeleteCategoryAsync(Guid id)
         {
-            throw new NotImplementedException();
+            await _categoryRepository.Delete(id);
         }
 
-        public Task DeleteCommentAsync(Guid blogId, Guid commentId)
+        public async Task DeleteCommentAsync(Guid id)
         {
-            throw new NotImplementedException();
+            await _commentRepository.Delete(id);
         }
 
-        public Task DeleteCommentAsync(Comment comment)
+
+        public async Task DeleteKeywordAsync(Guid id)
         {
-            throw new NotImplementedException();
+            await _keywordRepository.Delete(id);
         }
 
-        public Task DeleteKeywordAsync(Keyword keyword)
+        public async Task DeleteRatingAsync(Guid id)
         {
-            throw new NotImplementedException();
+            await _ratingRepository.Delete(id);
         }
 
-        public Task DeleteRatingAsync(Guid blogId, Guid ratingId)
+        public async Task DeleteTagAsync(Guid id)
         {
-            throw new NotImplementedException();
+            await _tagRepository.Delete(id);
         }
 
-        public Task DeleteTagAsync(Tag tag)
+        public async Task FeatureBlogAsync(Guid id)
         {
-            throw new NotImplementedException();
+            Blog? blog = await _blogRepository.Get(id);
+            if(blog == null)
+            {
+                throw new Exception("Blog Id does not exist");
+            }
+            blog.IsFeatured = true;
+            await _blogRepository.Update(blog);
         }
 
-        public Task FeatureBlogAsync(Guid id)
+        public async Task<IEnumerable<Blog>> GetAllBlogsAsync(int pageIndex)
         {
-            throw new NotImplementedException();
+            return await _blogRepository.GetAll(pageIndex, 20);
+
         }
 
-        public Task<IEnumerable<Blog>> GetAllBlogsAsync()
+
+        public async Task<IEnumerable<Category>> GetAllCategories()
         {
-            throw new NotImplementedException();
+            return await _categoryRepository.GetAll(1, 100);
         }
 
-        public Task<IEnumerable<Blog>> GetAllBlogsNextPage(int pageIndex)
+
+
+        public async Task<IEnumerable<Comment>> GetAllCommentsAsync()
         {
-            throw new NotImplementedException();
+
+            return await _commentRepository.GetAll(1, 100);
+
         }
 
-        public Task<List<Category>> GetAllCategories()
+        public async Task<IEnumerable<Keyword>> GetAllKeywordsAsync()
         {
-            throw new NotImplementedException();
+            return await _keywordRepository.GetAll(1, 100);
+
         }
 
-        public Task<IEnumerable<Category>> GetAllCategoriesAsync()
+        public async Task<IEnumerable<Tag>> GetAllTagsAsync()
         {
-            throw new NotImplementedException();
+            return await _tagRepository.GetAll(1, 100);
+
         }
 
-        public Task<List<Comment>> GetAllCOmments()
+        public async Task<Blog> GetBlogByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            Blog? blog =  await _blogRepository.Get(id);
+
+            if( blog == null )
+            {
+                throw new Exception("Blog does not exist");
+            }
+
+            return blog;
         }
 
-        public Task<List<Keyword>> GetAllKeywordsAsync()
+        public async Task<Blog> GetBlogBySlug(string slug)
         {
-            throw new NotImplementedException();
+            Blog? blog = await _blogUniqueRepository.GetBlogBySlug(slug);
+
+            if( blog == null )
+            {
+                throw new Exception("Blog was not found.");
+            }
+
+            return blog;
         }
 
-        public Task<List<Tag>> GetAllTagsAsync()
+        public async Task<IEnumerable<Modification>> GetBlogModificationsAsync(Guid blogId)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<decimal> GetBlogAverageRatingAsync(Guid blogId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Blog> GetBlogByIdAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Blog> GetBlogBySlug(string slug)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Modification>> GetBlogModificationsAsync(Guid blogId)
-        {
-            throw new NotImplementedException();
+            return await _blogUniqueRepository.GetAllBlogModifications(blogId);
         }
 
         public Task<List<Rating>> GetBlogRatingsAsync(Guid blogId)
@@ -475,9 +506,15 @@ namespace BlogMaster.Core.Services
             throw new NotImplementedException();
         }
 
-        public Task UnfeatureBlogAsync(Guid id)
+        public async Task UnfeatureBlogAsync(Guid id)
         {
-            throw new NotImplementedException();
+            Blog? blog = await _blogRepository.Get(id);
+            if (blog == null)
+            {
+                throw new Exception("Blog Id does not exist");
+            }
+            blog.IsFeatured = false;
+            await _blogRepository.Update(blog);
         }
 
         public Task UnpublishBlogAsync(Guid id)
@@ -515,7 +552,7 @@ namespace BlogMaster.Core.Services
             throw new NotImplementedException();
         }
 
-        public Task UpdateRatingAsync(Guid blogId, Rating rating)
+        public Task UpdateRatingAsync(Rating rating)
         {
             throw new NotImplementedException();
         }

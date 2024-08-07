@@ -13,8 +13,7 @@ namespace BlogMaster.Core.Contracts
         // Blog CRUD Operations
         public Task<Blog> GetBlogByIdAsync(Guid id);
         public Task<Blog> GetBlogBySlug(string slug);
-        public Task<IEnumerable<Blog>> GetAllBlogsAsync();
-        public Task<IEnumerable<Blog>> GetAllBlogsNextPage(int pageIndex);
+        public Task<IEnumerable<Blog>> GetAllBlogsAsync(int pageIndex);
         public Task CreateBlogAsync(BlogPostPutDto blog);
         public Task UpdateBlogAsync(Blog blog);
         public Task DeleteBlogAsync(Guid id);
@@ -43,7 +42,6 @@ namespace BlogMaster.Core.Contracts
 
 
         public Task AddCommentToBlogAsync(CommentPostPutDto commentPostPutDto);
-        public Task DeleteCommentAsync(Guid blogId, Guid commentId);
 
         
         // BlogImage
@@ -55,57 +53,54 @@ namespace BlogMaster.Core.Contracts
 
         // Category Management
         public Task<Category> GetCategoryAsync(Guid categoryId);
-        public Task<List<Category>> GetAllCategories();
-        public Task CreateCategory(CategoryPostPutDto category);
-        public Task DeleteCategory(Category category);
+        public Task<IEnumerable<Category>> GetAllCategories();
+        public Task CreateCategoryAsync(CategoryPostPutDto category);
+        public Task DeleteCategoryAsync(Guid id);
         public Task UpdateCategory(Category category);
 
         // Comment Management
 
         public Task<Comment> GetCommentAsync(Guid id);
-        public Task<List<Comment>> GetAllCOmments();
-        public Task CreateCommentAsync(Comment comment);
-        public Task DeleteCommentAsync(Comment comment);
+        public Task<IEnumerable<Comment>> GetAllCommentsAsync();
+        public Task CreateCommentAsync(CommentPostPutDto comment);
+        public Task DeleteCommentAsync(Guid id);
         public Task UpdateCommentAsync(Comment comment);
 
-        // Keyword Management
+        // Keyword ManagementCreateTagAsync
         public Task<Keyword> GetKeywordAsync(Guid keywordId);
-        public Task<List<Keyword>> GetAllKeywordsAsync();
-        public Task CreateKeywordAsync(Keyword keyword);
-        public Task DeleteKeywordAsync(Keyword keyword);
+        public Task<IEnumerable<Keyword>> GetAllKeywordsAsync();
+        public Task CreateKeywordAsync(KeywordPostPut keyword);
+        public Task DeleteKeywordAsync(Guid id);
         public Task UpdateKeywordAsync(Keyword keyword);
 
         // Modifications Management
         public Task<Modification> GetModificationAsync(Guid id);
         public Task AddModificationToBlogAsync(ModificationPostPutDto modification);
         public Task<IEnumerable<Modification>> GetBlogModificationsAsync(Guid blogId);
-        public Task DeleteBlogModificationsAsync(Modification modification);
+        public Task DeleteBlogModificationsAsync(Guid id);
         public Task UpdateBlogModigicationAsync(Guid blogId, Modification modification);
 
         // Rating Management
 
         public Task<Rating> GetRatingAsync(Guid blogId);
         public Task AddRatingToBlogAsync(RatingPostPutDto rating);
-        public Task<List<Rating>> GetBlogRatingsAsync(Guid blogId);
-        public Task DeleteBlogRatingsAsync(Guid ratingId);
-        public Task UpdateBlogRatingsAsync(Rating rating);
+        public Task DeleteRatingAsync(Guid id);
+        public Task UpdateRatingAsync(Rating id);
         
         // Tag MAnagement
         public Task GetTagAsync(Guid tagId);
-        public Task CreateTagAsync(Tag tag);
-        public Task DeleteTagAsync(Tag tag);
+        public Task CreateTagAsync(TagPostPutDto tag);
+        public Task DeleteTagAsync(Guid id);
         public Task UpdateTagAsync(Tag tag);
-        public Task<List<Tag>> GetAllTagsAsync();
+        public Task<IEnumerable<Tag>> GetAllTagsAsync();
 
 
 
         // Other Utility Methods
         public Task<IEnumerable<Blog>> SearchBlogsAsync(string keyword);
         public Task<int> GetBlogViewCountAsync(Guid blogId);
-        public Task<decimal> GetBlogAverageRatingAsync(Guid blogId);
         public Task<bool> IsSubscriptionRequiredAsync(Guid blogId);
 
-        // Metadata or Information Methods
-        public Task<IEnumerable<Category>> GetAllCategoriesAsync();
+
     }
 }
