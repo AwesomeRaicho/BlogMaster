@@ -16,5 +16,8 @@ namespace BlogMaster.Core.Contracts
 
         public Task<IEnumerable<T>> GetAll(int page, int pageSize);
 
+
+
+
     }
 }

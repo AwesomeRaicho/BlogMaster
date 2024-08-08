@@ -14,7 +14,7 @@ namespace BlogMaster.Core.Models
 
         public string? Message { get; set; }
 
-        public Guid? UserId { get; set; }
+        public Guid UserId { get; set; }
 
         //Navigation prop
         public ApplicationUser? User { get; set; }

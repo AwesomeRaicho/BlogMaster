@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace BlogMaster.Infrastructure.DataAccess
 {
@@ -84,6 +85,29 @@ namespace BlogMaster.Infrastructure.DataAccess
 
             return await _context.Ratings.Where(r => r.BlogId == id).ToListAsync();
 
+        }
+
+        public async Task<IEnumerable<Comment>> GetAllBlogComments(Guid blogId, int pageIndex, int pageSize)
+        {
+            if (_context.Comments == null) 
+            {
+                throw new InvalidOperationException("Comment table does not exist");
+            }
+
+            return await _context.Comments.Where(b => b.BlogId == blogId)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<Rating?> GetUserRatingforBlog(Guid blogId, Guid userId)
+        {
+            if(_context.Ratings == null)
+            {
+                throw new InvalidOperationException("Rating table does not exist");
+
+            }
+            return await _context.Ratings.FirstOrDefaultAsync(r => r.UserId == userId && r.BlogId == blogId);
         }
 
     }

@@ -17,5 +17,8 @@ namespace BlogMaster.Core.Contracts
 
         public Task<IEnumerable<Rating>> GetAllBlogRatings(Guid id);
 
+        public Task<IEnumerable<Comment>> GetAllBlogComments(Guid id)
+
+
     }
 }

@@ -17,6 +17,7 @@ namespace BlogMaster.Core.Contracts
         public Task CreateBlogAsync(BlogPostPutDto blog);
         public Task UpdateBlogAsync(Blog blog);
         public Task DeleteBlogAsync(Guid id);
+        public Task<IEnumerable<Comment>> GetAllBlogComments(Guid blogId, int pageIndex, int pageSize);
 
         // Blog Publication Management
         public Task PublishBlogAsync(Guid id);

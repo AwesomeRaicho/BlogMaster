@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -402,6 +403,12 @@ namespace BlogMaster.Core.Services
 
         }
 
+        public async Task<IEnumerable<Comment>> GetAllBlogComments(Guid blogId, int pageIndex, int pageSize)
+        {
+            return await _blogUniqueRepository.GetAllBlogComments(blogId, pageIndex, pageSize);
+        }
+
+
         public async Task<Blog> GetBlogByIdAsync(Guid id)
         {
             Blog? blog =  await _blogRepository.Get(id);
@@ -410,6 +417,40 @@ namespace BlogMaster.Core.Services
             {
                 throw new Exception("Blog does not exist");
             }
+
+            blog.ViewCount += 1;
+            await _blogRepository.Update(blog);
+
+
+            // change these to the unique repo request
+            //var categories = await _blogCategoryRepository.GetAll(1, 20);
+            //var keywords = await _blogKeywordRepository.GetAll(1, 20);
+            //var comments = await _commentRepository.GetAll(1, 20);
+            //var ratings = await _ratingRepository.GetAll(1, 20);
+            //var blogImages = await _blogImageRepository.GetAll(1, 20);
+
+            IEnumerable<Comment> comments = await this.GetAllBlogComments(blog.BlogId, 1, 20);
+
+
+
+            BlogResponseDto blogResponseDto = new BlogResponseDto()
+            {
+                BlogId = blog.BlogId,
+                ArticleEn = blog.ArticleEn,
+                ArticleEs = blog.ArticleEs,
+                TitleEn = blog.TitleEn,
+                TitleEs = blog.TitleEs,
+                DescriptionEn = blog.DescriptionEn,
+                DescriptionEs = blog.DescriptionEs,
+                SlugEn = blog.SlugEn,
+                SlugEs = blog.SlugEs,
+                Author = blog.Author,
+                DatePublished = blog.DatePublished,
+                ViewCount = blog.ViewCount,
+                AverageRating = blog.AverageRating,
+                RatingCount = blog.RatingCount,
+            };
+
 
             return blog;
         }
@@ -431,9 +472,9 @@ namespace BlogMaster.Core.Services
             return await _blogUniqueRepository.GetAllBlogModifications(blogId);
         }
 
-        public Task<List<Rating>> GetBlogRatingsAsync(Guid blogId)
+        public async Task<IEnumerable<Rating>> GetBlogRatingsAsync(Guid blogId)
         {
-            throw new NotImplementedException();
+            return await _blogUniqueRepository.GetAllBlogRatings(blogId);
         }
 
         public Task<int> GetBlogViewCountAsync(Guid blogId)
