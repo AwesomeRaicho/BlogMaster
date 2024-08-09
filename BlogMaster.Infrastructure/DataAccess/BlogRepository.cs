@@ -110,5 +110,46 @@ namespace BlogMaster.Infrastructure.DataAccess
             return await _context.Ratings.FirstOrDefaultAsync(r => r.UserId == userId && r.BlogId == blogId);
         }
 
+        public async Task<IEnumerable<Category?>> GetAllBlogCategories(Guid blogId)
+        {
+            if(_context.BlogCategories == null)
+            {
+                throw new InvalidOperationException("BlogCategories table does not exist");
+            }
+
+            var categories = await _context.BlogCategories.Where(b => b.BlogId == blogId).Select(b => b.Category).ToListAsync();
+
+            return categories;
+        }
+
+        //keywords
+        public async Task<IEnumerable<Keyword?>> GetAllBlogKeywords(Guid blogId)
+        {
+            if (_context.BlogKeywords == null)
+            {
+                throw new InvalidOperationException("BlogKeywords table does not exist");
+            }
+
+            var keywords = await _context.BlogKeywords.Where(i => i.BlogId == blogId).Select(i => i.Keyword).ToListAsync();
+
+            return keywords;
+
+
+        }
+
+        //images
+        public async Task<IEnumerable<BlogImage?>> GetAllBlogImages(Guid blogId)
+        {
+            if(_context.BlogImages == null)
+            {
+                throw new InvalidOperationException("BlogImages table does not exist");
+            }
+
+            var blogImages = await _context.BlogImages.Where(i => i.BlogId == blogId).ToListAsync();
+
+            return blogImages;  
+
+
+        }
     }
 }

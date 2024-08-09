@@ -11,7 +11,6 @@ namespace BlogMaster.Core.DTO
     public class CommentRatingResponseDto
     {
         public Guid CommentId { get; set; }
-        public Guid RatingId { get; set; }
         public Guid? UserId { get; set; }
 
 

@@ -15,9 +15,19 @@ namespace BlogMaster.Core.Contracts
 
         public Task<IEnumerable<Modification>> GetAllBlogModifications(Guid id);
 
-        public Task<IEnumerable<Rating>> GetAllBlogRatings(Guid id);
+        public Task<IEnumerable<Rating>> GetAllBlogRatings(Guid blogId);
 
-        public Task<IEnumerable<Comment>> GetAllBlogComments(Guid id)
+        public Task<IEnumerable<Comment>> GetAllBlogComments(Guid id, int pageIndex, int pageSize);
+
+        public Task<Rating?> GetUserRatingforBlog(Guid blogId, Guid userId);
+
+        public Task<IEnumerable<Category?>> GetAllBlogCategories(Guid blogId);
+
+        //keywords
+        public Task<IEnumerable<Keyword?>> GetAllBlogKeywords(Guid blogId);
+
+        //images
+        public Task<IEnumerable<BlogImage?>> GetAllBlogImages(Guid blogId);
 
 
     }

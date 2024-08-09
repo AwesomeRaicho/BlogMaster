@@ -52,6 +52,175 @@ namespace BlogMaster.Core.Services
             _blogUniqueRepository = blogUniqueRepository;
         }
 
+
+
+        //PRIVATE METHODS
+
+        /// <summary>
+        /// Provides a way for methods to create a blog response dto with all other related tables included
+        /// </summary>
+        /// <param name="blog">Blog entity from DB </param>
+        /// <returns>BlogResponseDto</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        private async Task<BlogResponseDto> CreateBlogResponseDto(Blog blog)
+        {
+            //create BlogResponseDto ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            BlogResponseDto blogResponseDto = new BlogResponseDto()
+            {
+                BlogId = blog.BlogId,
+                ArticleEn = blog.ArticleEn,
+                ArticleEs = blog.ArticleEs,
+                TitleEn = blog.TitleEn,
+                TitleEs = blog.TitleEs,
+                DescriptionEn = blog.DescriptionEn,
+                DescriptionEs = blog.DescriptionEs,
+                SlugEn = blog.SlugEn,
+                SlugEs = blog.SlugEs,
+                Author = blog.Author,
+                DatePublished = blog.DatePublished,
+                ViewCount = blog.ViewCount,
+                AverageRating = blog.AverageRating,
+                RatingCount = blog.RatingCount,
+            };
+
+
+            //GET COMMENTS WITH USER RATING FOR THE BLOG
+            //get the first visible comments
+            List<Comment> comments = (await _blogUniqueRepository.GetAllBlogComments(blog.BlogId, 1, 20)).ToList();
+            //if comments != null get rating from the users if any.
+            if (comments.Count > 0 && comments != null)
+            {
+                //create cache for user ratings
+                Dictionary<string, Rating> ratingCache = new Dictionary<string, Rating>();
+
+                //create list that will go in BlogResponseDTO
+                List<CommentRatingResponseDto> commentRatings = new List<CommentRatingResponseDto>();
+
+
+                foreach (Comment comment in comments)
+                {
+
+                    string userIdString = comment.UserId.ToString();
+
+                    // Check cache for rating
+                    if (!ratingCache.TryGetValue(userIdString, out Rating? rating))
+                    {
+                        // If not found in cache, fetch from repository
+                        rating = await _blogUniqueRepository.GetUserRatingforBlog(comment.BlogId, comment.UserId);
+
+                        // Add fetched rating to cache
+                        if (rating != null)
+                        {
+                            ratingCache[userIdString] = rating;
+                        }
+                    }
+
+                    CommentRatingResponseDto commentrating = new CommentRatingResponseDto()
+                    {
+                        CommentId = comment.CommentId,
+                        Message = comment.Message,
+                        RatingScore = rating != null ? rating.RatingScore : 0,
+                        UserId = comment.UserId,
+                        UserName = comment.UserName
+
+                    };
+
+
+                    commentRatings.Add(commentrating);
+
+                }
+                // add 1st page of comments + rating to the BlogResponseDto ~~~~~~~~~~~~~~~~~~~~~~~~~~
+                blogResponseDto.CommentsRatings = commentRatings;
+            }
+
+
+
+            //GET CATEGORIES
+            List<CategoryResponseDto> categories = new List<CategoryResponseDto>();
+
+            IEnumerable<Category?> allBlogCategories = await _blogUniqueRepository.GetAllBlogCategories(blogResponseDto.BlogId);
+
+            foreach (Category? category in allBlogCategories)
+            {
+                if (category == null) continue;
+                CategoryResponseDto categoryResponse = new CategoryResponseDto()
+                {
+                    CategoryId = category.CategoryId,
+                    CatergoryNameEn = category.CatergoryNameEn,
+                    CatergoryNameEs = category.CatergoryNameEs,
+                };
+
+                categories.Add(categoryResponse);
+
+            }
+
+            //add categories to the BlogResponseDto ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            blogResponseDto.Categories = categories;
+
+
+
+            //GET KEYWORDS
+            List<KeywordResponseDto> keywordResponseDtos = new List<KeywordResponseDto>();
+
+            IEnumerable<Keyword?> keywords = await _blogUniqueRepository.GetAllBlogKeywords(blogResponseDto.BlogId);
+
+            foreach (Keyword? keyword in keywords)
+            {
+                if (keyword == null) continue;
+
+                KeywordResponseDto keywordResponse = new KeywordResponseDto()
+                {
+                    KeywordId = keyword.KeywordId,
+                    KeywordNameEn = keyword.KeywordNameEn,
+                    KeywordNameEs = keyword.KeywordNameEs,
+                };
+
+                keywordResponseDtos.Add(keywordResponse);
+            }
+
+            //add Keywords to the BlogResponseDto ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            blogResponseDto.Keywords = keywordResponseDtos;
+
+
+            //GET BLOGIMAGES
+            List<BlogImagesResponseDto> imageresponses = new List<BlogImagesResponseDto>();
+
+            IEnumerable<BlogImage?> images = await _blogUniqueRepository.GetAllBlogImages(blogResponseDto.BlogId);
+
+            foreach (BlogImage? image in images)
+            {
+                if (image == null) continue;
+
+                BlogImagesResponseDto imageResponse = new BlogImagesResponseDto()
+                {
+                    BlogImageId = image.ImageId,
+                    ImageData = image.ImageData,
+                    ImageName = image.ImageName,
+                    MimeType = image.MimeType,
+                    Url = image.Url,
+                };
+
+                imageresponses.Add(imageResponse);
+            }
+
+            //add BlogImages to the BlogResponseDto ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            blogResponseDto.BlogImages = imageresponses;
+
+            return blogResponseDto;
+
+        }
+
+
+
+
+
+
+
+
+
+        /////////////////////////////////////////////////////////////////////////////////
+        //INTERFACE METHODS
+
         public async Task AddCategoryToBlogAsync(Guid blogId, Guid categoryId)
         {
             Blog_Category entity = new Blog_Category()
@@ -370,30 +539,97 @@ namespace BlogMaster.Core.Services
             await _blogRepository.Update(blog);
         }
 
-        public async Task<IEnumerable<Blog>> GetAllBlogsAsync(int pageIndex)
+        public async Task<IEnumerable<BlogPreviewDto>> GetAllBlogPreviews(int pageIndex, int pageSize, string category, List<string> tags)
         {
-            return await _blogRepository.GetAll(pageIndex, 20);
+            IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviews(pageIndex, pageSize, category, tags);
+
+            List<BlogPreviewDto> result = new List<BlogPreviewDto>();
+
+            foreach(Blog preview in blogs)
+            {
+                BlogPreviewDto blogPreviewDto = new BlogPreviewDto()
+                {
+                    BlogId = preview.BlogId,
+                    Author = preview.Author,
+                    AverageRating = preview.AverageRating,
+                    DatePublished = preview.DatePublished,
+                    DescriptionEn = preview.DescriptionEn,
+                    DescriptionEs = preview.DescriptionEs,
+                    SlugEn = preview.SlugEn,
+                    SlugEs = preview.SlugEs,
+                    TitleEn = preview.TitleEn,
+                    TitleEs = preview.TitleEs,
+                };
+
+                result.Add(blogPreviewDto);
+            }
+
+            return result;
 
         }
 
 
-        public async Task<IEnumerable<Category>> GetAllCategories()
+        public async Task<IEnumerable<CategoryResponseDto>> GetAllCategories()
         {
-            return await _categoryRepository.GetAll(1, 100);
+            var categories =  await _categoryRepository.GetAll(1, 100);
+
+            List<CategoryResponseDto> categoryResponseDtos = new List<CategoryResponseDto>();
+
+            foreach (var category in categories)
+            {
+                CategoryResponseDto categoryResponseDto = new CategoryResponseDto()
+                {
+                    CategoryId = category.CategoryId,
+                    CatergoryNameEn = category.CatergoryNameEn,
+                    CatergoryNameEs = category.CatergoryNameEs,
+                };
+            }
+
+            return categoryResponseDtos;
         }
 
 
 
-        public async Task<IEnumerable<Comment>> GetAllCommentsAsync()
+        public async Task<IEnumerable<CommentResponseDto>> GetAllCommentsAsync()
         {
+            IEnumerable<Comment> comments = await _commentRepository.GetAll(1, 100);
+            List<CommentResponseDto> commentResponseDtos = new List<CommentResponseDto>();
 
-            return await _commentRepository.GetAll(1, 100);
+            foreach (Comment comment in comments)
+            {
+                CommentResponseDto commentResponseDto = new CommentResponseDto()
+                {
+                    BlogId = comment.BlogId,
+                    CommentId = comment.CommentId,
+                    Message = comment.Message,
+                    UserId = comment.UserId,
+                    UserName = comment.UserName
+                };
 
+                commentResponseDtos.Add(commentResponseDto);
+            }
+
+            return commentResponseDtos;
         }
 
-        public async Task<IEnumerable<Keyword>> GetAllKeywordsAsync()
+        public async Task<IEnumerable<KeywordResponseDto>> GetAllKeywordsAsync()
         {
-            return await _keywordRepository.GetAll(1, 100);
+
+            var Keywords =  await _keywordRepository.GetAll(1, 100);
+            List<KeywordResponseDto> keywords = new List<KeywordResponseDto>();
+
+            foreach(Keyword keyword in Keywords)
+            {
+                KeywordResponseDto keywordResponseDto = new KeywordResponseDto()
+                {
+                    KeywordId = keyword.KeywordId,
+                    KeywordNameEn = keyword.KeywordNameEn,
+                    KeywordNameEs = keyword.KeywordNameEs,
+                };
+
+                keywords.Add(keywordResponseDto);
+            }
+            return keywords;
 
         }
 
@@ -403,17 +639,53 @@ namespace BlogMaster.Core.Services
 
         }
 
-        public async Task<IEnumerable<Comment>> GetAllBlogComments(Guid blogId, int pageIndex, int pageSize)
+        public async Task<IEnumerable<CommentResponseDto>> GetAllBlogComments(Guid blogId, int pageIndex, int pageSize)
         {
-            return await _blogUniqueRepository.GetAllBlogComments(blogId, pageIndex, pageSize);
+            IEnumerable<Comment> comments =  await _blogUniqueRepository.GetAllBlogComments(blogId, pageIndex, pageSize);
+            List<CommentResponseDto> commentResponseDtos = new List<CommentResponseDto>();
+
+            foreach(Comment comment in comments)
+            {
+                CommentResponseDto commentResponseDto = new CommentResponseDto()
+                {
+                    BlogId = comment.BlogId,
+                    CommentId = comment.CommentId,
+                    Message = comment.Message,
+                    UserId = comment.UserId,
+                    UserName = comment.UserName
+                };
+
+                commentResponseDtos.Add(commentResponseDto);
+            }
+
+            return commentResponseDtos;
         }
 
 
-        public async Task<Blog> GetBlogByIdAsync(Guid id)
-        {
-            Blog? blog =  await _blogRepository.Get(id);
 
-            if( blog == null )
+
+
+
+        public async Task<BlogResponseDto> GetBlogByIdAsync(Guid blogId)
+        {
+            Blog? blog = await _blogRepository.Get(blogId);
+
+            if (blog == null)
+            {
+                throw new Exception("Blog does not exist");
+            }
+
+            BlogResponseDto response = await this.CreateBlogResponseDto(blog);
+
+
+            return response;
+        }
+
+        public async Task<BlogResponseDto> GetBlogBySlug(string slug)
+        {
+            Blog? blog = await _blogUniqueRepository.GetBlogBySlug(slug);
+
+            if (blog == null)
             {
                 throw new Exception("Blog does not exist");
             }
@@ -421,50 +693,10 @@ namespace BlogMaster.Core.Services
             blog.ViewCount += 1;
             await _blogRepository.Update(blog);
 
-
-            // change these to the unique repo request
-            //var categories = await _blogCategoryRepository.GetAll(1, 20);
-            //var keywords = await _blogKeywordRepository.GetAll(1, 20);
-            //var comments = await _commentRepository.GetAll(1, 20);
-            //var ratings = await _ratingRepository.GetAll(1, 20);
-            //var blogImages = await _blogImageRepository.GetAll(1, 20);
-
-            IEnumerable<Comment> comments = await this.GetAllBlogComments(blog.BlogId, 1, 20);
+            BlogResponseDto response = await this.CreateBlogResponseDto(blog);
 
 
-
-            BlogResponseDto blogResponseDto = new BlogResponseDto()
-            {
-                BlogId = blog.BlogId,
-                ArticleEn = blog.ArticleEn,
-                ArticleEs = blog.ArticleEs,
-                TitleEn = blog.TitleEn,
-                TitleEs = blog.TitleEs,
-                DescriptionEn = blog.DescriptionEn,
-                DescriptionEs = blog.DescriptionEs,
-                SlugEn = blog.SlugEn,
-                SlugEs = blog.SlugEs,
-                Author = blog.Author,
-                DatePublished = blog.DatePublished,
-                ViewCount = blog.ViewCount,
-                AverageRating = blog.AverageRating,
-                RatingCount = blog.RatingCount,
-            };
-
-
-            return blog;
-        }
-
-        public async Task<Blog> GetBlogBySlug(string slug)
-        {
-            Blog? blog = await _blogUniqueRepository.GetBlogBySlug(slug);
-
-            if( blog == null )
-            {
-                throw new Exception("Blog was not found.");
-            }
-
-            return blog;
+            return response;
         }
 
         public async Task<IEnumerable<Modification>> GetBlogModificationsAsync(Guid blogId)
@@ -563,7 +795,7 @@ namespace BlogMaster.Core.Services
             throw new NotImplementedException();
         }
 
-        public Task UpdateBlogAsync(Blog blog)
+        public Task UpdateBlogAsync(BlogPostPutDto blog)
         {
             throw new NotImplementedException();
         }

@@ -11,13 +11,13 @@ namespace BlogMaster.Core.Contracts
     public interface IBlogService
     {
         // Blog CRUD Operations
-        public Task<Blog> GetBlogByIdAsync(Guid id);
-        public Task<Blog> GetBlogBySlug(string slug);
-        public Task<IEnumerable<Blog>> GetAllBlogsAsync(int pageIndex);
+        public Task<BlogResponseDto> GetBlogByIdAsync(Guid id);
+        public Task<BlogResponseDto> GetBlogBySlug(string slug);
+        public Task<IEnumerable<BlogPreviewDto>> GetAllBlogPreviews(int pageIndex, int pageSize, string category, List<string> tags);
         public Task CreateBlogAsync(BlogPostPutDto blog);
-        public Task UpdateBlogAsync(Blog blog);
+        public Task UpdateBlogAsync(BlogPostPutDto blog);
         public Task DeleteBlogAsync(Guid id);
-        public Task<IEnumerable<Comment>> GetAllBlogComments(Guid blogId, int pageIndex, int pageSize);
+        public Task<IEnumerable<CommentResponseDto>> GetAllBlogComments(Guid blogId, int pageIndex, int pageSize);
 
         // Blog Publication Management
         public Task PublishBlogAsync(Guid id);
@@ -54,7 +54,7 @@ namespace BlogMaster.Core.Contracts
 
         // Category Management
         public Task<Category> GetCategoryAsync(Guid categoryId);
-        public Task<IEnumerable<Category>> GetAllCategories();
+        public Task<IEnumerable<CategoryResponseDto>> GetAllCategories();
         public Task CreateCategoryAsync(CategoryPostPutDto category);
         public Task DeleteCategoryAsync(Guid id);
         public Task UpdateCategory(Category category);
@@ -62,14 +62,14 @@ namespace BlogMaster.Core.Contracts
         // Comment Management
 
         public Task<Comment> GetCommentAsync(Guid id);
-        public Task<IEnumerable<Comment>> GetAllCommentsAsync();
+        public Task<IEnumerable<CommentResponseDto>> GetAllCommentsAsync();
         public Task CreateCommentAsync(CommentPostPutDto comment);
         public Task DeleteCommentAsync(Guid id);
         public Task UpdateCommentAsync(Comment comment);
 
         // Keyword ManagementCreateTagAsync
         public Task<Keyword> GetKeywordAsync(Guid keywordId);
-        public Task<IEnumerable<Keyword>> GetAllKeywordsAsync();
+        public Task<IEnumerable<KeywordResponseDto>> GetAllKeywordsAsync();
         public Task CreateKeywordAsync(KeywordPostPut keyword);
         public Task DeleteKeywordAsync(Guid id);
         public Task UpdateKeywordAsync(Keyword keyword);
@@ -93,7 +93,7 @@ namespace BlogMaster.Core.Contracts
         public Task CreateTagAsync(TagPostPutDto tag);
         public Task DeleteTagAsync(Guid id);
         public Task UpdateTagAsync(Tag tag);
-        public Task<IEnumerable<Tag>> GetAllTagsAsync();
+        public Task<IEnumerable<TagResponseDto>> GetAllTagsAsync();
 
 
 

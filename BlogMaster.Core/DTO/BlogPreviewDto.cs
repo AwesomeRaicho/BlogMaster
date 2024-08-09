@@ -16,9 +16,8 @@ namespace BlogMaster.Core.DTO
         public string? SlugEn { get; set; }  // English slug for links
         public string? SlugEs { get; set; }  // Spanish slug for links
         public string? Author { get; set; }
-        public DateTime DatePublished { get; set; }
+        public DateTime? DatePublished { get; set; }
         public decimal? AverageRating { get; set; }
-        public int? RatingCount { get; set; }
 
     }
 }
