@@ -1,0 +1,13 @@
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\obj\Debug\net8.0\BlogMaster.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\obj\Debug\net8.0\BlogMaster.Core.AssemblyInfoInputs.cache
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\obj\Debug\net8.0\BlogMaster.Core.AssemblyInfo.cs
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\obj\Debug\net8.0\BlogMaster.Core.csproj.CoreCompileInputs.cache
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\bin\Debug\net8.0\BlogMaster.Core.deps.json
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\bin\Debug\net8.0\BlogMaster.Core.dll
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\bin\Debug\net8.0\BlogMaster.Core.pdb
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\obj\Debug\net8.0\BlogMaster.Core.dll
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\obj\Debug\net8.0\refint\BlogMaster.Core.dll
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\obj\Debug\net8.0\BlogMaster.Core.pdb
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\obj\Debug\net8.0\ref\BlogMaster.Core.dll
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\obj\Debug\net8.0\BlogMaster.Core.csproj.AssemblyReference.cache
+C:\Users\users\Documents\Programing_Intermidiate\BlogMaster\BlogMaster\BlogMaster.Core\obj\Debug\net8.0\BlogMaster.Core.sourcelink.json
