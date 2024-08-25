@@ -1,5 +1,6 @@
 ﻿using BlogMaster.Core.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using Stripe.Checkout;
 
 namespace BlogMaster.Controllers
 {
@@ -31,18 +32,15 @@ namespace BlogMaster.Controllers
             return View();
         }
 
-        [Route("/successcheckout")]
-        public IActionResult SuccessCheckout()
-        {
 
-            return Content("Payment was successful");
-        }
-                    [Route("/cancelled")]
-        public IActionResult CancelledCheckout()
-        {
+        
 
-            return Content("Cancelled check out!");
-        }
+
+
+
+
+
+
 
     }
 }

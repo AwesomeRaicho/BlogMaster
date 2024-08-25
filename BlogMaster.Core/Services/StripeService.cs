@@ -6,39 +6,66 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BlogMaster.Core.Contracts;
+using Microsoft.Extensions.Options;
 
 namespace BlogMaster.Core.Services
 {
-    public class StripeService
+    public class StripeService : IStripeService
     {
         private readonly StripeSettings _stripeSettings;
 
-        public StripeService(StripeSettings stripeSettings)
+        public StripeService(IOptions<StripeSettings> stripeSettings)
         {
-            _stripeSettings = stripeSettings;
+            _stripeSettings = stripeSettings.Value ;
         }
 
-        public void test1()
+        public Session StartSessionForEmbededForm(GetFormRequestDto getFormRequestDto)
         {
-            StripeConfiguration.ApiKey = _stripeSettings.PrivateKey;
 
-            var options = new SessionCreateOptions()
+            try
             {
-                SuccessUrl = "https://localhost:7218/successcheckout",
-                CancelUrl = "https://localhost:7218/cancelled",
-                LineItems = new List<SessionLineItemOptions>()
+
+                var options = new SessionCreateOptions
                 {
-                    new SessionLineItemOptions()
+                    LineItems = new List<SessionLineItemOptions>
                     {
-                        Price = "price_1MotwRLkdIwHu7ixYcPLm5uZ",
-                        Quantity = 2,
+                      new SessionLineItemOptions
+                      {
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                          UnitAmount = 2000,
+                          Currency = "mxn",
+                          ProductData = new SessionLineItemPriceDataProductDataOptions
+                          {
+                            Name = "Donation",
+                          },
+                        },
+                        Quantity = 1,
+                      },
                     },
-                },
-                Mode = "payment",
-                CustomerEmail = "ricardo.araujo0188@gmail.com",
-            };
-            var service = new SessionService();
-            service.Create(options);
+                    Mode = "payment",
+                    UiMode = "embedded",
+                    ReturnUrl = "https://example.com/return?session_id={CHECKOUT_SESSION_ID}",
+                };
+
+                var service = new SessionService();
+                return service.Create(options);
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                throw new Exception(ex.ToString());
+            }
         }
+
+
+        public string? GetPublishableKey()
+        {
+            string? something = _stripeSettings.PublishableKey;
+
+            return _stripeSettings.PublishableKey;
+        }
+
+
     }
 }
