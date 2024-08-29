@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -26,6 +28,8 @@ namespace BlogMaster.Core.Contracts
 
 
         public Task<IEnumerable<T?>> FindAll( Expression<Func<T, bool>> predicate, int pageIndex, int pageSize);
+
+
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BlogMaster.Core.DTO;
+using BlogMaster.Core.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using System;
@@ -16,7 +17,7 @@ namespace BlogMaster.Core.Contracts
         public Task<IdentityResult> DeleteUserAsync(IdentityRequestDto identityRequestDto);
         public Task<IdentityResponseDto> GetUserByIdAsync(IdentityRequestDto identityRequestDto);
 
-
+        public Task<ApplicationUser?> GetEntityById(Guid userId);
 
         //~ Change password and reser password will be implemented afgter the EmailService gets implemented.
 
@@ -40,7 +41,7 @@ namespace BlogMaster.Core.Contracts
         public Task<IdentityResult> RemoveRoleToUser(IdentityRequestDto identityRequestDto);
 
 
-
+        public Task<bool> Exists(Guid UserId);
         
     }
 }

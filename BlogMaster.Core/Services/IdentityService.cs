@@ -253,9 +253,16 @@ namespace BlogMaster.Core.Services
 
         }
 
+        public async Task<ApplicationUser?> GetEntityById(Guid userId)
+        {
+            return await _userManager.FindByIdAsync(userId.ToString());
+        }
 
-
-
+        public async Task<bool> Exists(Guid userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            return user != null;
+        }
 
     }
 }

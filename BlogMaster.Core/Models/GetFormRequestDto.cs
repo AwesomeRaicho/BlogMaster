@@ -9,8 +9,8 @@ namespace BlogMaster.Core.Models
     public class GetFormRequestDto
     {
         
-        public int amount {  get; set; }
-        public string? currency { get; set; }
-        public string? productName { get; set; }
+        public int Amount {  get; set; }
+        public string? Currency { get; set; }
+        public string? Mode { get; set; }
     }
 }

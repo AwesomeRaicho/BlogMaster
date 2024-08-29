@@ -1,0 +1,55 @@
+﻿
+@model GetFormRequestDto  
+@{
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://js.stripe.com/v3/"></script>
+    <title>Document</title>
+</head>
+<body>
+
+  <div id="checkout">
+    <!-- Checkout will insert the payment form here -->
+  </div>
+</body>
+
+<script>
+
+// Initialize Stripe.js
+const stripe = Stripe("@(ViewBag.PublishableKey)");
+
+initialize();
+
+async function initialize() {
+  const fetchClientSecret = async () => {
+    const response = await fetch("/create-checkout-session-donation?Amount=@(Model.Amount)", {
+      method: "POST",
+    });
+    const { clientSecret } = await response.json();
+    return clientSecret;
+  };
+
+  // Initialize Checkout
+  const checkout = await stripe.initEmbeddedCheckout({
+    fetchClientSecret,
+  });
+
+  // Mount Checkout
+  checkout.mount('#checkout');
+}
+
+</Script>
+</html>
+
+@{
+    int x = 1;
+}
+
+
+
