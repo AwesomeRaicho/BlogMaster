@@ -1,6 +1,17 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model SubscriptionRequestDto;
+
 @{
 }
-<h1>Congratz</h1>
+
+@{
+
+    if (Model == null)
+    {
+        <h1>Thank you for donating</h1>
+    }
+    else
+    {
+        <h1>Thank you for Subscribing</h1>
+
+    }
+}

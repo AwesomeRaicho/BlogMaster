@@ -14,6 +14,5 @@ namespace BlogMaster.Core.DTO
         public DateTime? CancelationDate { get; set; }
         public DateTime NextBillingDate { get; set; }
         public DateTime CreatedDate { get; set; }
-        public bool HasName { get; set; }
     }
 }

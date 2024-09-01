@@ -15,11 +15,11 @@ namespace BlogMaster.Core.Contracts
         public Task<Session> StartSessionForEmbededFormDonation(GetFormRequestDto getFormRequestDto);
 
 
-        public Session StartSessionForEmbededFormSubscription(GetFormRequestDto getFormRequestDto);
+        public Task<Session> StartSessionForEmbededFormSubscription(GetFormRequestDto getFormRequestDto);
 
 
         // Customer methods
-        public Customer CreateStripeCustomer(AppSubscription appSubscription);
+        public Customer CreateStripeCustomer(string userName, string userEmail);
 
 
         public void CancelSubscription(string subId);

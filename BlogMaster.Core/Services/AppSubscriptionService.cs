@@ -30,7 +30,7 @@ namespace BlogMaster.Core.Services
 
         public async Task<SubscriptionResponseDto> CreateSubscription(SubscriptionRequestDto subscriptionRequestDto)
         {
-            var user = await _identityService.GetEntityById(subscriptionRequestDto.UserId);
+            var user = await _identityService.GetEntityById(Guid.Parse(subscriptionRequestDto.UserId ?? ""));
 
             if (user == null)
             {
@@ -45,18 +45,49 @@ namespace BlogMaster.Core.Services
                 appSubscription = new AppSubscription()
                 {
                     UserId = subscriptionRequestDto.UserId,
-                    CreatedDate = DateTime.UtcNow,
-                    Status = "Pending",
+                    Status = "Active",
                     UserName = subscriptionRequestDto.UserName,
                     UserEmail = subscriptionRequestDto.UserEmail,
+                    CreatedDate = DateTime.UtcNow,
+                    CancelationDate = null,
+                    CustomerId = subscriptionRequestDto.CustomerId,
+                    EndDate = subscriptionRequestDto.EndDate,
+                    StartDate = subscriptionRequestDto.StartDate,
+                    NextBillingDate = subscriptionRequestDto.NextBillingDate,
+                    SubscriptionId = subscriptionRequestDto.SubscriptionId,
                 };
             }
+            else
+            {
+                appSubscription.UserId = subscriptionRequestDto.UserId;
+                appSubscription.Status = "Active";
+                appSubscription.UserName = subscriptionRequestDto.UserName;
+                appSubscription.UserEmail = subscriptionRequestDto.UserEmail;
+                appSubscription.CancelationDate = null;
+                appSubscription.CustomerId = subscriptionRequestDto.CustomerId;
+                appSubscription.EndDate = subscriptionRequestDto.EndDate;
+                appSubscription.StartDate = subscriptionRequestDto.StartDate;
+                appSubscription.NextBillingDate = subscriptionRequestDto.NextBillingDate;
+                appSubscription.SubscriptionId = subscriptionRequestDto.SubscriptionId;
 
-            Customer customer = _stripeService.CreateStripeCustomer(appSubscription);
+            }
+
+
+ 
 
 
 
-            SubscriptionResponseDto subscriptionResponseDto = new SubscriptionResponseDto();
+
+            SubscriptionResponseDto subscriptionResponseDto = new SubscriptionResponseDto()
+            {
+                NextBillingDate = appSubscription.NextBillingDate,
+                CancelationDate = appSubscription.CancelationDate,
+                CreatedDate = appSubscription.CreatedDate,
+                EndDate = appSubscription.EndDate,
+                StartDate = appSubscription.StartDate,
+                Status = appSubscription.Status
+                
+            };
 
 
             return subscriptionResponseDto;

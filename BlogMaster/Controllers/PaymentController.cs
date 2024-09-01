@@ -1,4 +1,5 @@
 ﻿using BlogMaster.Core.Contracts;
+using BlogMaster.Core.DTO;
 using BlogMaster.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,13 +31,19 @@ namespace BlogMaster.Controllers
 
 
         //[Authorize]
-        [HttpPost("/create-checkout-session-Subscription")]
+        [HttpPost("/create-checkout-session-subscription")]
         public async Task<IActionResult> CheckoutSessionSubscription(GetFormRequestDto getFormRequestDto)
         {
 
+            getFormRequestDto.Username = User.Identity?.Name;
+            getFormRequestDto.UserEmail = User.FindFirst(ClaimTypes.Email)?.Value;
 
 
-            Session session = await _stripeService.StartSessionForEmbededFormDonation(getFormRequestDto);
+            //these new two lines are replacing the previous 2 for testing purposes (to be eliminated)
+            getFormRequestDto.Username = "new person maybe";
+            getFormRequestDto.UserEmail = "TestExample@testexample.com";
+
+            Session session = await _stripeService.StartSessionForEmbededFormSubscription(getFormRequestDto);
 
             return Json(new { clientSecret = session.ClientSecret });
         }
@@ -64,8 +71,6 @@ namespace BlogMaster.Controllers
         public async Task<IActionResult> CheckoutSessionDonation(GetFormRequestDto getFormRequestDto)
         {
 
-
-
             Session session =  await _stripeService.StartSessionForEmbededFormDonation(getFormRequestDto);
 
             return Json(new { clientSecret = session.ClientSecret });
@@ -79,7 +84,7 @@ namespace BlogMaster.Controllers
         [HttpGet("/payment-return")]
         public IActionResult PaymentReturn([FromQuery] string session_id)
         {
-            //Returned data needs to be saved for billing cycle, payment history, 
+            // Returned data needs to be saved for billing cycle, payment history, 
 
             var sessionService = new SessionService();
             Session session = sessionService.Get(session_id);
@@ -98,13 +103,27 @@ namespace BlogMaster.Controllers
 
             if(session.Mode == "subscription")
             {
-                AppSubscription appSubscription = new AppSubscription()
+                //get subscription
+                SubscriptionRequestDto subscriptionRequestDto = new SubscriptionRequestDto()
                 {
-
+                    UserEmail = session.CustomerEmail,
+                    UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                    UserName = User.Identity?.Name,
+                    SubscriptionId= session.SubscriptionId,
+                    CustomerId = session.CustomerId,
+                    StartDate = session.Subscription.StartDate,
+                    EndDate = session.Subscription.CurrentPeriodEnd,
+                    NextBillingDate = session.Subscription.CurrentPeriodEnd
                 };
+
+                //Return a subscription screen
+                return View(subscriptionRequestDto);
+
             }
 
 
+
+            //return a regular donation
             return View();
         }
 

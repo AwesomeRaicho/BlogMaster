@@ -28,17 +28,41 @@ namespace BlogMaster.Core.Services
         }
 
         //Customer Methods
-        public Customer CreateStripeCustomer(AppSubscription appSubscription)
+        public Customer CreateStripeCustomer(string userName, string userEmail)
         {
             try
             {
-                var options = new CustomerCreateOptions
+                //check if user exists in Stripe
+                var customerSearchOptions = new CustomerSearchOptions
                 {
-                    Name = appSubscription.UserName,
-                    Email = appSubscription.UserEmail,
+                    Query = $"name:'{userName}' AND email:'{userEmail}'",
                 };
-                var service = new CustomerService();
-                return service.Create(options);
+                var CustomerService = new CustomerService();
+                var data = CustomerService.Search(customerSearchOptions);
+
+
+
+                if(data.Data == null)
+                {
+                    var options = new CustomerCreateOptions
+                    {
+                        Name = userName,
+                        Email = userEmail,
+                    };
+                    var service = new CustomerService();
+                    return service.Create(options);
+                }
+                else
+                {
+                    if(data.Data.Count() == 1)
+                    {
+                        return data.Data[0];
+                    }
+
+                    throw new Exception("multiple users with the same name in Stripe");
+                }
+
+
 
             }catch (Exception ex)
             {
@@ -68,7 +92,7 @@ namespace BlogMaster.Core.Services
                       {
                         PriceData = new SessionLineItemPriceDataOptions
                         {
-                          UnitAmount = getFormRequestDto.Amount * 1000,
+                          UnitAmount = getFormRequestDto.Amount * 100,
                           Currency = "mxn",
                           ProductData = new SessionLineItemPriceDataProductDataOptions
                           {
@@ -92,15 +116,27 @@ namespace BlogMaster.Core.Services
             }
         }
 
-        public Session StartSessionForEmbededFormSubscription(GetFormRequestDto getFormRequestDto)
+        public Task<Session> StartSessionForEmbededFormSubscription(GetFormRequestDto getFormRequestDto)
         {
+            if(getFormRequestDto == null || string.IsNullOrEmpty(getFormRequestDto.Username) || string.IsNullOrEmpty(getFormRequestDto.UserEmail))
+            {
+                throw new ArgumentNullException(nameof(getFormRequestDto));
+            }
+
+
+            
+            // Get or create a customer for the subscription session
+            Customer? customer = this.CreateStripeCustomer(getFormRequestDto.Username, getFormRequestDto.UserEmail);
+
+
 
             try
             {
 
-                var options = new SessionCreateOptions
+                var sessionCreatedOptions = new SessionCreateOptions
                 {
-                    Customer = "Something in the way",
+
+                    Customer = $"{customer.Id}", 
                     LineItems = new List<SessionLineItemOptions>
                     {
                       new SessionLineItemOptions
@@ -114,8 +150,8 @@ namespace BlogMaster.Core.Services
                     ReturnUrl = $"{DomainName}/payment-return?session_id={{CHECKOUT_SESSION_ID}}",
                 };
 
-                var service = new SessionService();
-                return service.Create(options);
+                var sessionService = new SessionService();
+                return sessionService.CreateAsync(sessionCreatedOptions);
             }
             catch (Exception ex)
             {
