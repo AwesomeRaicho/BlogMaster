@@ -16,9 +16,9 @@ namespace BlogMaster.Core.Models
         public DateTime CreatedDate { get; set; }
         public DateTime? CancelationDate { get; set; }
         public string? CustomerId { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public DateTime StartDate { get; set; }
-        public DateTime NextBillingDate { get; set; }
+        public DateTime? NextBillingDate { get; set; }
         public string? SubscriptionId { get; set; }
 
 

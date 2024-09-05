@@ -9,10 +9,15 @@ namespace BlogMaster.Core.DTO
     public class SubscriptionResponseDto
     {
         public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public string? Status { get; set; }
         public DateTime? CancelationDate { get; set; }
-        public DateTime NextBillingDate { get; set; }
+        public DateTime? NextBillingDate { get; set; }
         public DateTime CreatedDate { get; set; }
+
+
+        
+        public bool Redirect {  get; set; }
+        public string? RedirectUrl { get; set; }
     }
 }

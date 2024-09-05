@@ -12,9 +12,18 @@ namespace BlogMaster.Core.Contracts
     {
         public Task<SubscriptionResponseDto> CreateSubscription(SubscriptionRequestDto subscriptionRequestDto);
 
-         
+        public Task<SubscriptionResponseDto> CancelAtEndOfCycle(SubscriptionRequestDto subscriptionRequestDto);
 
-        //public 
+        public Task<SubscriptionResponseDto> ResumeSubscription(SubscriptionRequestDto subscriptionRequestDto);
+
+        public Task<SubscriptionResponseDto> AddNewPaymentMethod(NewPaymentMethodDto newPaymentMethodDto);
+        
+        public Task<SubscriptionResponseDto?> GetSubscriptionDetails(SubscriptionRequestDto subscriptionRequestDto);
+
+        public Task<List<PaymentMethodResponseDto>> GetAllPaymentMethods(SubscriptionRequestDto subscriptionRequestDto);
+       
+
+        public Task Webhooks(); 
 
         //public void UnsubscribeUser();
         //public bool IsSubscribed(string subscriptionId);

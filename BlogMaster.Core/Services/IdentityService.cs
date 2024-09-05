@@ -115,12 +115,6 @@ namespace BlogMaster.Core.Services
             return await _userManager.DeleteAsync(user);
         }
 
-
-
-
-
-
-
         public async Task<IdentityResponseDto> GetUserByIdAsync(IdentityRequestDto identityRequestDto)
         {
             if(identityRequestDto == null || identityRequestDto.UserId == null)

@@ -121,11 +121,13 @@ namespace BlogMaster.Controllers
 
             }
 
-
-
             //return a regular donation
             return View();
         }
+
+
+
+
 
     }
 }
