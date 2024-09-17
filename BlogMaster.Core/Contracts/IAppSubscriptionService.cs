@@ -21,11 +21,13 @@ namespace BlogMaster.Core.Contracts
         public Task<SubscriptionResponseDto?> GetSubscriptionDetails(SubscriptionRequestDto subscriptionRequestDto);
 
         public Task<List<PaymentMethodResponseDto>> GetAllPaymentMethods(SubscriptionRequestDto subscriptionRequestDto);
-       
 
-        public Task Webhooks(); 
+        public Task UpdateSuscription(SubscriptionRequestDto subscriptionRequestDto);
 
-        //public void UnsubscribeUser();
+        public Task<bool> IsSubscriptionActive(SubscriptionRequestDto subscriptionRequestDto);
+
+
+        //public Task ChangePaymentMethod(SubscriptionRequestDto subscriptionRequestDto);
         //public bool IsSubscribed(string subscriptionId);
     }
 }

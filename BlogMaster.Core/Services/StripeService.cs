@@ -18,6 +18,7 @@ namespace BlogMaster.Core.Services
 
 
         private readonly string DomainName = "https://localhost:7218";
+        private readonly string PriceId = "price_1Prtw409TbzP0h4ikMqH8DnJ";
         private readonly StripeSettings _stripeSettings;
         private readonly IIdentityService _identityService;
 
@@ -36,13 +37,15 @@ namespace BlogMaster.Core.Services
                 var customerSearchOptions = new CustomerSearchOptions
                 {
                     Query = $"name:'{userName}' AND email:'{userEmail}'",
+                    
                 };
                 var CustomerService = new CustomerService();
                 var data = CustomerService.Search(customerSearchOptions);
 
 
 
-                if(data.Data == null)
+
+                if(data.Data.Count == 0)
                 {
                     var options = new CustomerCreateOptions
                     {
@@ -116,17 +119,22 @@ namespace BlogMaster.Core.Services
             }
         }
 
-        public Task<Session> StartSessionForEmbededFormSubscription(GetFormRequestDto getFormRequestDto)
+        public async Task<SessionReturnDto> StartSessionForEmbededFormSubscription(GetFormRequestDto getFormRequestDto)
         {
             if(getFormRequestDto == null || string.IsNullOrEmpty(getFormRequestDto.Username) || string.IsNullOrEmpty(getFormRequestDto.UserEmail))
             {
                 throw new ArgumentNullException(nameof(getFormRequestDto));
             }
 
+            SessionReturnDto sessionReturnDto = new SessionReturnDto() 
+            {
 
-            
+            };
+
+
+
             // Get or create a customer for the subscription session
-            Customer? customer = this.CreateStripeCustomer(getFormRequestDto.Username, getFormRequestDto.UserEmail);
+            Customer? customer =  this.CreateStripeCustomer(getFormRequestDto.Username, getFormRequestDto.UserEmail);
 
 
 
@@ -137,11 +145,15 @@ namespace BlogMaster.Core.Services
                 {
 
                     Customer = $"{customer.Id}", 
+                    SubscriptionData =
+                    {
+                        
+                    },
                     LineItems = new List<SessionLineItemOptions>
                     {
                       new SessionLineItemOptions
                         {
-                            Price = "price_1Prtw409TbzP0h4ikMqH8DnJ", 
+                            Price = PriceId, 
                             Quantity = 1,
                         },
                     },
@@ -151,7 +163,10 @@ namespace BlogMaster.Core.Services
                 };
 
                 var sessionService = new SessionService();
-                return sessionService.CreateAsync(sessionCreatedOptions);
+
+                sessionReturnDto.StripeSession = sessionService.Create(sessionCreatedOptions);
+
+                return sessionReturnDto;
             }
             catch (Exception ex)
             {
@@ -181,6 +196,34 @@ namespace BlogMaster.Core.Services
             var service = new SubscriptionService();
             service.Update(subId, options);
 
+        }
+
+        public async Task<Subscription?> GetCustomerSubscription(string customerId)
+        {
+            //check if there is a subscription
+
+            var options = new SubscriptionListOptions
+            {
+                Customer = customerId,
+            };
+
+            var service = new SubscriptionService();
+            StripeList<Subscription> subscriptions = await service.ListAsync(options);
+
+            if (subscriptions.Data != null)
+            {
+                if (subscriptions.Data.Count > 1)
+                {
+                    throw new Exception("There are more than 2 subscription for this user");
+                }
+
+                return subscriptions.Data[0] as Subscription;
+
+                
+
+            }
+
+            return null;
         }
     }
 }

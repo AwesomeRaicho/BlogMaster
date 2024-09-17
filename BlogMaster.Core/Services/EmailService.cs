@@ -97,7 +97,6 @@ namespace BlogMaster.Core.Services
             message.Subject = "Email Confirmation";
             message.Body = new TextPart("html") { Text = body };
 
-
             using (var client = new SmtpClient())
             {
                 await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.SmtpPort, _emailSettings.UseSsl);
@@ -108,7 +107,6 @@ namespace BlogMaster.Core.Services
         }
         public async Task SendEmailConfirmation(string toEmail, string userName, string confirmationToken)
         {
-
             string body = GenerateConfirmationBody(userName, confirmationToken);
 
             var message = new MimeMessage();

@@ -258,5 +258,10 @@ namespace BlogMaster.Core.Services
             return user != null;
         }
 
+        public async Task<ApplicationUser?> GetByUserName(string userName)
+        {
+            return await _userManager.FindByNameAsync(userName);
+
+        }
     }
 }

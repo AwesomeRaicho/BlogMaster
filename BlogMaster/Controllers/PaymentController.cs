@@ -3,6 +3,7 @@ using BlogMaster.Core.DTO;
 using BlogMaster.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 using Stripe.Checkout;
 using System.Security.Claims;
 
@@ -12,24 +13,46 @@ namespace BlogMaster.Controllers
     {
 
         private readonly IStripeService _stripeService;
+        private readonly IAppSubscriptionService _appSubscriptionService;
 
-        public PaymentController(IStripeService stripeService)
+        public PaymentController(IStripeService stripeService, IAppSubscriptionService appSubscriptionService)
         {
             _stripeService = stripeService;
+            _appSubscriptionService = appSubscriptionService;
         }
 
 
         //SUBSCRIPTION
         //[Authorize]
         [HttpGet("/checkout-subscription")]
-        public ActionResult PayFormSubscription(GetFormRequestDto getFormRequestDto)
+        public async Task<ActionResult> PayFormSubscription(GetFormRequestDto getFormRequestDto)
         {
+            //check if there is an active subscription
+            SubscriptionRequestDto requestDto = new SubscriptionRequestDto()
+            {
+                UserName = User.Identity?.Name,
+                UserEmail = User.FindFirst(ClaimTypes.Email)?.Value,
+                UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            };
+
+            requestDto.UserName = "Raicho";
+            requestDto.UserEmail = "testing@testing.com";
+
+
 
             ViewBag.PublishableKey = _stripeService.GetPublishableKey();
+
+            bool isSubscripbed = await _appSubscriptionService.IsSubscriptionActive(requestDto);
+
+            if(isSubscripbed)
+            {
+                return RedirectToAction("Subscription", "SubscriptionDetails");
+            }
+
+
             return View();
         }
-
-
+    
         //[Authorize]
         [HttpPost("/create-checkout-session-subscription")]
         public async Task<IActionResult> CheckoutSessionSubscription(GetFormRequestDto getFormRequestDto)
@@ -40,12 +63,14 @@ namespace BlogMaster.Controllers
 
 
             //these new two lines are replacing the previous 2 for testing purposes (to be eliminated)
-            getFormRequestDto.Username = "new person maybe";
-            getFormRequestDto.UserEmail = "TestExample@testexample.com";
+            getFormRequestDto.Username = "Raicho";
+            getFormRequestDto.UserEmail = "testing@testing.com";
 
-            Session session = await _stripeService.StartSessionForEmbededFormSubscription(getFormRequestDto);
+            SessionReturnDto session = await _stripeService.StartSessionForEmbededFormSubscription(getFormRequestDto);
 
-            return Json(new { clientSecret = session.ClientSecret });
+            //check if redirection is null, if not, redirect to url given
+
+            return Json(new { clientSecret = session.StripeSession?.ClientSecret });
         }
 
 
@@ -100,10 +125,14 @@ namespace BlogMaster.Controllers
                 UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null,
                 
             };
-
+            
             if(session.Mode == "subscription")
             {
                 //get subscription
+                var service = new SubscriptionService();
+                Subscription subscriptionResponse = service.Get(session.SubscriptionId);
+
+
                 SubscriptionRequestDto subscriptionRequestDto = new SubscriptionRequestDto()
                 {
                     UserEmail = session.CustomerEmail,
@@ -111,9 +140,9 @@ namespace BlogMaster.Controllers
                     UserName = User.Identity?.Name,
                     SubscriptionId= session.SubscriptionId,
                     CustomerId = session.CustomerId,
-                    StartDate = session.Subscription.StartDate,
-                    EndDate = session.Subscription.CurrentPeriodEnd,
-                    NextBillingDate = session.Subscription.CurrentPeriodEnd
+                    StartDate = subscriptionResponse.StartDate,
+                    EndDate = subscriptionResponse.CurrentPeriodEnd,
+                    NextBillingDate = subscriptionResponse.CurrentPeriodEnd
                 };
 
                 //Return a subscription screen

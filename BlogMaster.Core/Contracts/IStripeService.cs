@@ -15,7 +15,7 @@ namespace BlogMaster.Core.Contracts
         public Task<Session> StartSessionForEmbededFormDonation(GetFormRequestDto getFormRequestDto);
 
 
-        public Task<Session> StartSessionForEmbededFormSubscription(GetFormRequestDto getFormRequestDto);
+        public Task<SessionReturnDto> StartSessionForEmbededFormSubscription(GetFormRequestDto getFormRequestDto);
 
 
         // Customer methods
@@ -25,5 +25,6 @@ namespace BlogMaster.Core.Contracts
         public void CancelSubscription(string subId);
         public string? GetPublishableKey();
 
+        public Task<Subscription> GetCustomerSubscription(string customerId);
     }
 }

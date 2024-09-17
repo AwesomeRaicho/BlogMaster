@@ -29,14 +29,6 @@ namespace BlogMaster.Core.Services
             _subscriptionRepository = subscriptionRepository;
         }
 
-        public Task ChangePaymentMethod(SubscriptionRequestDto subscriptionRequestDto)
-        {
-            
-        }
-
-
-
-
         private SubscriptionResponseDto CreateSubscriptionResponseDto(AppSubscription appSubscription)
         {
             if (appSubscription == null)
@@ -47,20 +39,16 @@ namespace BlogMaster.Core.Services
             return new SubscriptionResponseDto()
             {
                 CancelationDate = appSubscription.CancelationDate,
-                CreatedDate = appSubscription.CreatedDate,
-                EndDate = appSubscription.EndDate,
                 NextBillingDate = appSubscription.NextBillingDate,
-                StartDate = appSubscription.StartDate,
                 Status = appSubscription.Status,
             };
         }
-
 
         public async Task<SubscriptionResponseDto> CancelAtEndOfCycle(SubscriptionRequestDto subscriptionRequestDto)
         {
             if(subscriptionRequestDto == null || string.IsNullOrEmpty(subscriptionRequestDto.CustomerId)) throw new ArgumentNullException(nameof(subscriptionRequestDto));
 
-            AppSubscription? subscription = await _subscriptionRepository.Find(s => s.UserId == subscriptionRequestDto.UserId);
+            AppSubscription? subscription = await _subscriptionRepository.Find(s => s.UserId.ToString() == subscriptionRequestDto.UserId);
 
             if (subscription == null) throw new Exception("Not subscribed!");
 
@@ -79,7 +67,6 @@ namespace BlogMaster.Core.Services
                 throw new Exception(ex.Message, ex);
             };
 
-            subscription.EndDate = stripeSubscription.CancelAt;
             subscription.CancelationDate = stripeSubscription.CanceledAt;
             subscription.NextBillingDate = null;
             subscription.Status = "final month";
@@ -92,7 +79,7 @@ namespace BlogMaster.Core.Services
         {
             if(subscriptionRequestDto == null || string.IsNullOrEmpty(subscriptionRequestDto.CustomerId)) throw new ArgumentNullException(nameof(subscriptionRequestDto));
             
-            AppSubscription? subscription = await _subscriptionRepository.Find(s => s.UserId == subscriptionRequestDto.UserId);
+            AppSubscription? subscription = await _subscriptionRepository.Find(s => s.UserId.ToString() == subscriptionRequestDto.UserId);
 
             if (subscription == null) throw new Exception("Not subscribed!");
 
@@ -116,17 +103,12 @@ namespace BlogMaster.Core.Services
                 }
 
                 subscription.Status  = "active";
-                subscription.StartDate = stripeSubscription.CurrentPeriodStart;
-                subscription.EndDate = null;
                 subscription.NextBillingDate = stripeSubscription.CurrentPeriodEnd;
                 subscription.CancelationDate = null;
 
 
                 return this.CreateSubscriptionResponseDto(subscription);
-
-
             }
-
             if (subscription.Status == "cancelled")
             {
                 return new SubscriptionResponseDto()
@@ -136,23 +118,19 @@ namespace BlogMaster.Core.Services
                     
                 };
             }
-
             throw new Exception("Not Subscribed");
         }
 
         public async Task<SubscriptionResponseDto> AddNewPaymentMethod(NewPaymentMethodDto newPaymentMethodDto)
         {
-
             if(newPaymentMethodDto == null) throw new ArgumentNullException(nameof(newPaymentMethodDto));
 
-            AppSubscription? appSubscription = await _subscriptionRepository.Find(s => s.UserId  == newPaymentMethodDto.UserId);
+            AppSubscription? appSubscription = await _subscriptionRepository.Find(s => s.UserId.ToString() == newPaymentMethodDto.UserId);
 
             if (appSubscription == null) throw new Exception("No active subscription");
 
-
             try
             {
-
                 var options = new PaymentMethodCreateOptions
                 {
                     Customer = appSubscription.CustomerId,
@@ -182,15 +160,11 @@ namespace BlogMaster.Core.Services
                 customerService.Update(appSubscription.CustomerId, updateOptions);
 
                 return this.CreateSubscriptionResponseDto(appSubscription);
-
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-
-
-
         }
 
 
@@ -199,7 +173,7 @@ namespace BlogMaster.Core.Services
             if (subscriptionRequestDto == null)
                 throw new Exception(nameof(subscriptionRequestDto));
 
-            AppSubscription? appSubscription = await _subscriptionRepository.Find(s => s.UserId == subscriptionRequestDto.UserId);
+            AppSubscription? appSubscription = await _subscriptionRepository.Find(s => s.UserId.ToString() == subscriptionRequestDto.UserId);
 
             if (appSubscription == null) return null;
 
@@ -211,7 +185,7 @@ namespace BlogMaster.Core.Services
         {
             if(subscriptionRequestDto == null) throw new Exception(nameof(subscriptionRequestDto));
 
-            AppSubscription? appSubscription = await _subscriptionRepository.Find(s => s.UserId == subscriptionRequestDto.UserId);
+            AppSubscription? appSubscription = await _subscriptionRepository.Find(s => s.UserId.ToString() == subscriptionRequestDto.UserId);
             if(appSubscription == null) return new List<PaymentMethodResponseDto>();
 
 
@@ -241,63 +215,45 @@ namespace BlogMaster.Core.Services
         }
 
 
-
-
-
-
-
-
-
         public async Task<SubscriptionResponseDto> CreateSubscription(SubscriptionRequestDto subscriptionRequestDto)
         {
-            var user = await _identityService.GetEntityById(Guid.Parse(subscriptionRequestDto.UserId ?? ""));
+            ApplicationUser? user = await _identityService.GetByUserName(subscriptionRequestDto.UserName ?? "");
 
             if (user == null)
             {
-                throw new InvalidOperationException("User does not exist, must be signed up to subscribe");
+                throw new Exception("User name not identified");
             }
 
-            AppSubscription? appSubscription = await _subscriptionRepository.Find(s => s.UserId == subscriptionRequestDto.UserId);
 
-            if (appSubscription == null)
+            Subscription subscription = await _stripeService.GetCustomerSubscription(subscriptionRequestDto.CustomerId ?? "");
+
+            if (subscription == null) throw new Exception("subscription cant be found");
+
+
+            AppSubscription appSubscription = new AppSubscription()
             {
-                appSubscription = new AppSubscription()
-                {
-                    UserId = subscriptionRequestDto.UserId,
-                    Status = "Active",
-                    UserName = subscriptionRequestDto.UserName,
-                    UserEmail = subscriptionRequestDto.UserEmail,
-                    CreatedDate = DateTime.UtcNow,
-                    CancelationDate = null,
-                    CustomerId = subscriptionRequestDto.CustomerId,
-                    EndDate = subscriptionRequestDto.EndDate,
-                    StartDate = subscriptionRequestDto.StartDate,
-                    NextBillingDate = subscriptionRequestDto.NextBillingDate,
-                    SubscriptionId = subscriptionRequestDto.SubscriptionId,
-                };
-            }
-            else
-            {
-                appSubscription.UserId = subscriptionRequestDto.UserId;
-                appSubscription.Status = "Active";
-                appSubscription.UserName = subscriptionRequestDto.UserName;
-                appSubscription.UserEmail = subscriptionRequestDto.UserEmail;
-                appSubscription.CancelationDate = null;
-                appSubscription.CustomerId = subscriptionRequestDto.CustomerId;
-                appSubscription.EndDate = subscriptionRequestDto.EndDate;
-                appSubscription.StartDate = subscriptionRequestDto.StartDate;
-                appSubscription.NextBillingDate = subscriptionRequestDto.NextBillingDate;
-                appSubscription.SubscriptionId = subscriptionRequestDto.SubscriptionId;
+                AppSubscriptionId = Guid.NewGuid(),
+                UserId = user.Id,
+                Status = "active",
+                UserName = user.UserName,
+                UserEmail = user.Email,
+                CancelationDate = null,
+                CustomerId = subscriptionRequestDto.CustomerId,
+                NextBillingDate = subscription.CurrentPeriodEnd, 
+                SubscriptionId = subscriptionRequestDto.SubscriptionId,
+            };
 
-            }
+
+
+
+            await _subscriptionRepository.Create(appSubscription);
+
+            
 
             SubscriptionResponseDto subscriptionResponseDto = new SubscriptionResponseDto()
             {
                 NextBillingDate = appSubscription.NextBillingDate,
                 CancelationDate = appSubscription.CancelationDate,
-                CreatedDate = appSubscription.CreatedDate,
-                EndDate = appSubscription.EndDate,
-                StartDate = appSubscription.StartDate,
                 Status = appSubscription.Status
                 
             };
@@ -305,6 +261,63 @@ namespace BlogMaster.Core.Services
             return subscriptionResponseDto;
         }
 
-        
+        public Task UpdateSuscription(SubscriptionRequestDto subscriptionRequestDto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> IsSubscriptionActive(SubscriptionRequestDto subscriptionRequestDto)
+        {
+
+
+            //check local subscription entity
+            AppSubscription? appSubscription = await _subscriptionRepository.Find(sub => sub.User != null && sub.User.Id.ToString() == subscriptionRequestDto.UserId);
+
+            if (appSubscription == null || appSubscription.CustomerId == null)
+            {
+                return false;
+            }
+
+
+            //if we have it as active, we search stripe directly
+            if(appSubscription.Status == "active")
+            {
+                Subscription stripeSub = await _stripeService.GetCustomerSubscription(appSubscription.CustomerId);
+
+                if(stripeSub == null)
+                {
+                    return false;
+                }
+
+                if(stripeSub.Status == "active")
+                {
+                    return true;
+                }
+
+            }
+
+            //for testing because we are not adding to the DB right now
+            Subscription stripeSub2 = await _stripeService.GetCustomerSubscription(appSubscription.CustomerId);
+
+            if (stripeSub2 == null)
+            {
+                return false;
+            }
+
+            if (stripeSub2.Status == "active")
+            {
+                return true;
+            }
+
+
+
+
+
+            return false;
+
+
+
+        }
+
     }
 }

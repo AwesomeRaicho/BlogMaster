@@ -25,13 +25,28 @@ namespace BlogMaster.Infrastructure.DataAccess
         public DbSet<Modification>? Modifications { get; set; }
         public DbSet<Rating>? Ratings { get; set; }
         public DbSet<Tag>? Tags { get; set; }
-        public DbSet<AppSubscription>? Subscriptions { get; set; }
+        public DbSet<AppSubscription>? AppSubscriptions { get; set; }
 
         public EntityDbContext(DbContextOptions<EntityDbContext> options) : base(options) { }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ApplicationUser>().HasData(
+            new ApplicationUser
+            {
+                Id = Guid.Parse("68fc13fb-1abe-4cc8-94d1-89d3fdfa8885"),
+                Email = "testing@testing.com",
+                UserName = "Raicho",
+            
+            }
+
+            );
+
+
+
+
+
             // RELATIONSHIPS MANY-TO-MANY
             // Blog & Categorie = Blog_Category
             modelBuilder.Entity<Blog_Category>()

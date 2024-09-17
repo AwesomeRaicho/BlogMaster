@@ -6,8 +6,25 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using BlogMaster.Core.Models;
 using Stripe;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//builder.Services.AddControllers(options =>
+//{
+//    options.MaxIAsyncEnumerableBufferLimit = int.MaxValue;
+//});
+
+//builder.Services.Configure<KestrelServerOptions>(options =>
+//{
+//    options.Limits.KeepAliveTimeout = TimeSpan.FromSeconds(120);
+//    options.Limits.RequestHeadersTimeout = TimeSpan.FromSeconds(30);
+//});
+
+
+
+
+
 
 builder.Configuration.AddJsonFile("Secret.json", optional: true, reloadOnChange: true);
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
@@ -55,10 +72,13 @@ StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
 var app = builder.Build();
 
+
+
+
+app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 app.UseRouting();
-
-
 
 app.UseAuthentication();
 app.UseAuthorization();

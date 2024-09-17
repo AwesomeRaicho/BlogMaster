@@ -19,17 +19,9 @@ namespace BlogMaster.Core.Contracts
 
         public Task<ApplicationUser?> GetEntityById(Guid userId);
 
-        //~ Change password and reser password will be implemented afgter the EmailService gets implemented.
-
-        //public Task<IdentityResult> ChangePasswordAsync(IdentityRequestDto identityRequestDto);
-
-        //public Task<IdentityResult> ResetPasswordAsync(IdentityRequestDto identityRequestDto);
-
 
         public Task<SignInResponseDto> SignIn(IdentityRequestDto identityRequestDto);
         public Task LogOut();
-
-
 
         public Task<IdentityResult> CreateRole(IdentityRequestDto identityRequestDto);
 
@@ -40,8 +32,16 @@ namespace BlogMaster.Core.Contracts
 
         public Task<IdentityResult> RemoveRoleToUser(IdentityRequestDto identityRequestDto);
 
-
+        public Task<ApplicationUser?> GetByUserName(string userName); 
         public Task<bool> Exists(Guid UserId);
         
+        
+        
+        
+        //Change password and reser password will be implemented after the EmailService gets implemented.
+
+        //public Task<IdentityResult> ChangePasswordAsync(IdentityRequestDto identityRequestDto);
+
+        //public Task<IdentityResult> ResetPasswordAsync(IdentityRequestDto identityRequestDto);
     }
 }

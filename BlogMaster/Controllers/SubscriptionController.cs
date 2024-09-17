@@ -4,7 +4,8 @@ namespace BlogMaster.Controllers
 {
     public class SubscriptionController : Controller
     {
-        public async Task<IActionResult> Subscribe()
+        [Route("/subscription-details")]
+        public IActionResult SubscriptionDetails()
         {
 
 
