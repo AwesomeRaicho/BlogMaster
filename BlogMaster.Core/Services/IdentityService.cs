@@ -1,13 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using BlogMaster.Core.Contracts;
 using BlogMaster.Core.DTO;
 using BlogMaster.Core.Models.Identity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace BlogMaster.Core.Services
 {
@@ -17,13 +25,16 @@ namespace BlogMaster.Core.Services
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IEmailService _emailService;
+        private readonly string _domainName;
 
-        public IdentityService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager, IEmailService emailService)
+
+        public IdentityService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager, IEmailService emailService, IConfiguration configuration )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _emailService = emailService;
+            _domainName = configuration["Domain:DomainName"] ?? "";
         }
 
         public async Task<IdentityResult> AddRoleToUser(IdentityRequestDto identityRequestDto)
@@ -164,14 +175,25 @@ namespace BlogMaster.Core.Services
                 EmailConfirmed = false,
             };
 
-            string confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var result = await _userManager.CreateAsync(user);
 
-            await _emailService.SendEmailConfirmation(user.Email, user.UserName, confirmationToken);
+            if(result.Succeeded)
+            {
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var userId = user.Id;
+
+                var callbackUrl = $"{_domainName}/identity/confirmemail?userId={userId}&token={Uri.EscapeDataString(token)}";
 
 
-            return await _userManager.CreateAsync(user, identityRegistrationDto.Password);
+                if (callbackUrl != null)
+                {
+                    await _emailService.SendEmailConfirmation(user.Email, user.UserName, callbackUrl);
+                }
+            }
 
 
+
+            return result;
         }
 
         public async Task<SignInResponseDto> SignIn(IdentityRequestDto identityRequestDto)
@@ -262,6 +284,17 @@ namespace BlogMaster.Core.Services
         {
             return await _userManager.FindByNameAsync(userName);
 
+        }
+
+        public async Task<IdentityResult> ConfirmEmailAsync(string userId, string token)
+        {
+            ApplicationUser? user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return new IdentityResult() { };
+            }
+            return await _userManager.ConfirmEmailAsync(user, token);
         }
     }
 }

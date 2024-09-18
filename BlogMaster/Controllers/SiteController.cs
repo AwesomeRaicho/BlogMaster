@@ -8,7 +8,24 @@ namespace BlogMaster.Controllers
         [Route("/")]
         public IActionResult Index()
         {
+            ViewBag.Title = "Blog Master";
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+
+
             return View();
         }
+
+        [Route("/blogs")]
+        public IActionResult Blogs()
+        {
+            ViewBag.Title = "Blog Master";
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+
+
+
+            return View();
+        }
+
+
     }
 }

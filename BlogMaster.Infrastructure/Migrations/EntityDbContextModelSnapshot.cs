@@ -292,6 +292,32 @@ namespace BlogMaster.Infrastructure.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("f2b1b83f-d0a8-4916-94ad-fde172bf1923"),
+                            Name = "Administrator",
+                            NormalizedName = "ADMINISTRATOR"
+                        },
+                        new
+                        {
+                            Id = new Guid("8227a36b-1542-4b8e-8020-e199d8c5025e"),
+                            Name = "Editor",
+                            NormalizedName = "EDITOR"
+                        },
+                        new
+                        {
+                            Id = new Guid("96dd4365-6144-4fad-bd98-9dfba1274cd6"),
+                            Name = "Writter",
+                            NormalizedName = "WRITTER"
+                        },
+                        new
+                        {
+                            Id = new Guid("9535c06c-27d7-42b0-8b10-e0202e6bf6b6"),
+                            Name = "Visitor",
+                            NormalizedName = "VISITOR"
+                        });
                 });
 
             modelBuilder.Entity("BlogMaster.Core.Models.Identity.ApplicationUser", b =>
@@ -366,6 +392,23 @@ namespace BlogMaster.Infrastructure.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("31d9ba1b-47f4-4a8a-98de-37ca4a1adec5"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "f0dfa33f-1ef0-4df9-af6e-77c6d8bb6821",
+                            Email = "example@example.com",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "EXAMPLE@EXAMPLE.COM",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAIAAYagAAAAECXmWonoK0n0pVGll++BiiYR6lDNIgCLzUZdcrZYA1UBJyTYIaId3YXHmmXoWckDZw==",
+                            PhoneNumberConfirmed = false,
+                            TwoFactorEnabled = false,
+                            UserName = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("BlogMaster.Core.Models.Keyword", b =>
@@ -541,6 +584,13 @@ namespace BlogMaster.Infrastructure.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("31d9ba1b-47f4-4a8a-98de-37ca4a1adec5"),
+                            RoleId = new Guid("f2b1b83f-d0a8-4916-94ad-fde172bf1923")
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>

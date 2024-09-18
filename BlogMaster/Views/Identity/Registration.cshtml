@@ -1,5 +1,106 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model Dictionary<string, List<string>>;
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" />
+
+    <title>Registration</title>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <form style="max-width: 500px"
+                  class="border p-5 m-5 rounded-4 bg-light m-auto mt-5"
+                  method="post"
+                  action="/registration">
+                <div class="mb-3">
+                    <label for="emailaddress" class="form-label fs-5">Email address</label>
+                    <input type="email"
+                           class="form-control"
+                           id="emailaddress"
+                           aria-describedby="emailHelp"
+                           name="EmailAddress" 
+                           required/>
+                    <div id="emailHelp" class="form-text">
+                        We'll never share your email with anyone else.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="username" class="form-label fs-5">User</label>
+                    <input type="text"
+                           class="form-control"
+                           id="username"
+                           name="Username" 
+                           required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label fs-5">Password</label>
+                    <input type="password"
+                           class="form-control"
+                           id="password"
+                           name="Password" 
+                           required />
+                </div>
+                <div class="mb-3">
+                    <label for="confirmpassword" class="form-label fs-5">Confirm Password</label>
+                    <input type="password"
+                           class="form-control"
+                           id="confirmpassword"
+                           name="ConfirmPassword" 
+                           required />
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+
+                @if(Model != null && Model.Count > 0)
+                {
+                    <ul>
+                        @foreach(var key in Model)
+                        {
+                            @foreach(string message in key.Value)
+                            {
+                                <li>@(message)</li>
+                            }
+                        }
+
+                    </ul>
+                }
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document
+            .querySelector("form")
+            .addEventListener("submit", function (event) {
+                const password = document.getElementById("password").value;
+                const confirmPassword =
+                    document.getElementById("confirmpassword").value;
+                const errorMessage = document.getElementById("error-message");
+
+                if (password !== confirmPassword) {
+                    event.preventDefault();
+                    if (!errorMessage) {
+                        const error = document.createElement("div");
+                        error.id = "error-message";
+                        error.style.color = "red";
+                        error.textContent = "Passwords do not match";
+                        error.classList.add("mt-4");
+                        document.querySelector("form").appendChild(error);
+                    }
+                } else {
+                    const existingError = document.getElementById("error-message");
+                    if (existingError) {
+                        existingError.remove();
+                    }
+                }
+            });
+    </script>
+    <script src="~/js/bootstrap.min.js" asp-append-version="true"></script>
+</body>
+</html>

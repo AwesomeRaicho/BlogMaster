@@ -32,16 +32,9 @@ namespace BlogMaster.Infrastructure.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ApplicationUser>().HasData(
-            new ApplicationUser
-            {
-                Id = Guid.Parse("68fc13fb-1abe-4cc8-94d1-89d3fdfa8885"),
-                Email = "testing@testing.com",
-                UserName = "Raicho",
-            
-            }
 
-            );
+            modelBuilder.Seed();
+            
 
 
 

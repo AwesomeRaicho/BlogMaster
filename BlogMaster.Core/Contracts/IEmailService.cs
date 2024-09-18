@@ -9,6 +9,6 @@ namespace BlogMaster.Core.Contracts
     public interface IEmailService
     {
         public Task TestSendEmail(string to, string subject, string body);
-        public Task SendEmailConfirmation(string toEmail, string userName, string confirmationToken);
+        public Task SendEmailConfirmation(string toEmail, string userName, string callbackUrl);
     }
 }

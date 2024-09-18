@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using BlogMaster.Core.Models;
 using Stripe;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,7 @@ builder.Services.AddDbContext<EntityDbContext>(options =>
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(option =>
 {
     option.User.RequireUniqueEmail = true;
+    option.SignIn.RequireConfirmedEmail = true;
 })
     .AddEntityFrameworkStores<EntityDbContext>()
     .AddDefaultTokenProviders();
@@ -68,7 +70,6 @@ builder.Services.AddScoped<IAppSubscriptionService, AppSubscriptionService>();
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
 // BUSINESS LAYER (SERVICES) ~ END
-
 
 var app = builder.Build();
 

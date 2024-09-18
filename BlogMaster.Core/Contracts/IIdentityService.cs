@@ -34,10 +34,10 @@ namespace BlogMaster.Core.Contracts
 
         public Task<ApplicationUser?> GetByUserName(string userName); 
         public Task<bool> Exists(Guid UserId);
-        
-        
-        
-        
+
+        public Task<IdentityResult> ConfirmEmailAsync(string userId, string token);
+
+
         //Change password and reser password will be implemented after the EmailService gets implemented.
 
         //public Task<IdentityResult> ChangePasswordAsync(IdentityRequestDto identityRequestDto);
