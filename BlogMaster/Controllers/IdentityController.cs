@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using BlogMaster.Controllers.Helpers;
 using BlogMaster.Core.Contracts;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BlogMaster.Controllers
 {
@@ -54,7 +55,20 @@ namespace BlogMaster.Controllers
             if (result.Succeeded)
             {
                 return RedirectToAction("RegistrationConfirmation");
+            }
+            else
+            {
+                
+                List<string> InvalidData = new List<string>();
 
+                foreach(var error in result.Errors)
+                {
+                    InvalidData.Add(error.Description);
+                }
+
+                ViewBag.InvalidData = InvalidData.Count > 0 ? InvalidData : null;
+
+                return View();
             }
             throw new Exception("something went wrong!");
         }
@@ -105,10 +119,45 @@ namespace BlogMaster.Controllers
         }
 
 
+
+        // SIGNING IN
+        [HttpGet]
         [Route("/signin")]
         public IActionResult SignIn() 
         {
+
+
+
             return View();
         }
+
+        [HttpPost]
+        [Route("/signin")]
+        public async Task<IActionResult> SignIn(IdentityRequestDto requestDto)
+        {
+            List<string> errors = new List<string>();
+            
+            if ( requestDto == null ||string.IsNullOrEmpty(requestDto.UserName) || string.IsNullOrEmpty(requestDto.Password))
+            {
+
+                errors.Add("Both user and password need to be provided.");
+                               
+                return View(errors);
+            }
+
+            SignInResponseDto response =  await _identityService.SignIn(requestDto);
+
+            if (response.IsSeccess == false)
+            {
+                errors.Add($"{response.ErrorMessage}");
+                return View(errors);
+
+            }
+
+
+            return RedirectToAction("Index", "Site");
+
+        }
+
     }
 }

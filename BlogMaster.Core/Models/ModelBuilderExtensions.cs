@@ -30,8 +30,9 @@ namespace BlogMaster.Core.Models
                 UserName = "Admin",
                 NormalizedUserName = "ADMIN",
                 Email = "example@example.com",
-                NormalizedEmail = "EXAMPLE@EXAMPLE.COM"
-
+                NormalizedEmail = "EXAMPLE@EXAMPLE.COM",
+                EmailConfirmed = true,
+                
             };
 
             modelBuilder.Entity<ApplicationUser>().HasData(admin);

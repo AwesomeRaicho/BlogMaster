@@ -111,12 +111,12 @@ namespace BlogMaster.Core.Services
 
         public async Task<IdentityResult> DeleteUserAsync(IdentityRequestDto identityRequestDto)
         {
-            if(identityRequestDto == null || string.IsNullOrEmpty(identityRequestDto.Username)) 
+            if(identityRequestDto == null || string.IsNullOrEmpty(identityRequestDto.UserName)) 
             {
                 throw new ArgumentNullException(nameof(identityRequestDto), "User name cannot be empty");
             }
 
-            var user = await _userManager.FindByNameAsync(identityRequestDto.Username);
+            var user = await _userManager.FindByNameAsync(identityRequestDto.UserName);
 
             if(user == null)
             {
@@ -175,7 +175,7 @@ namespace BlogMaster.Core.Services
                 EmailConfirmed = false,
             };
 
-            var result = await _userManager.CreateAsync(user);
+            var result = await _userManager.CreateAsync(user, identityRegistrationDto.Password);
 
             if(result.Succeeded)
             {
@@ -198,12 +198,12 @@ namespace BlogMaster.Core.Services
 
         public async Task<SignInResponseDto> SignIn(IdentityRequestDto identityRequestDto)
         {
-            if (identityRequestDto == null || string.IsNullOrEmpty(identityRequestDto.Username) || string.IsNullOrEmpty(identityRequestDto.Password))
+            if (identityRequestDto == null || string.IsNullOrEmpty(identityRequestDto.UserName) || string.IsNullOrEmpty(identityRequestDto.Password))
             {
                 throw new ArgumentNullException(nameof(identityRequestDto));
             }
 
-            var user = await _userManager.FindByNameAsync(identityRequestDto.Username);
+            var user = await _userManager.FindByNameAsync(identityRequestDto.UserName);
 
             if (user == null)
             {
@@ -212,8 +212,7 @@ namespace BlogMaster.Core.Services
 
             if (!user.EmailConfirmed)
             {
-                // Optionally sign the user out if they are signed in but email is not confirmed
-                await _signInManager.SignOutAsync();
+                //await _signInManager.SignOutAsync();
 
                 return new SignInResponseDto
                 {
