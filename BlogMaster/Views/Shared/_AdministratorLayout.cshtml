@@ -10,13 +10,10 @@
 
 
 <body>
-    @if (ViewBag.SignedIn)
-    {
-        @await Html.PartialAsync("_SignedInNavigation_PartialView")
-    }else{
-        @await Html.PartialAsync("_UnsignedInNavigation_PartialView")
 
-    }
+    @await Html.PartialAsync("_AdministratorNavigation_PartialView")
+    
+
 
     @RenderBody()
 
@@ -27,3 +24,4 @@
     <script src="~/js/bootstrap.min.js" asp-append-version="true"></script>
 </body>
 </html>
+

@@ -1,0 +1,31 @@
+﻿@model List<IdentityResponseDto>;
+@{
+    Layout = "~/Views/Shared/_AdministratorLayout.cshtml";
+}
+
+
+<div class="container">
+
+    <table class="table mt-5">
+        <thead>
+            <tr>
+                <th scope="col" class="text-info">Role</th>
+                <th scope="col" class="text-info">User</th>
+                <th scope="col" class="text-info">Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <th scope="row">@(user.Role)</th>
+                        <td><a href="/writter-editors/view?userId=@(user.UserId)">@(user.UserName)</a></td>
+                        <td>@(user.EmailAddress)</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

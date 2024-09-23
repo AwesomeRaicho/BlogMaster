@@ -37,6 +37,9 @@ namespace BlogMaster.Core.Contracts
 
         public Task<IdentityResult> ConfirmEmailAsync(string userId, string token);
 
+        public Task<IdentityResult> CreateAccount(AccountCreationRequestDto accountCreationRequestDto);
+
+        public Task<List<IdentityResponseDto>> GetWrittersEditors();
 
         //Change password and reser password will be implemented after the EmailService gets implemented.
 

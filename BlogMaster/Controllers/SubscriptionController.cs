@@ -7,8 +7,6 @@ namespace BlogMaster.Controllers
         [Route("/subscription-details")]
         public IActionResult SubscriptionDetails()
         {
-
-
             return View();
         }
     }

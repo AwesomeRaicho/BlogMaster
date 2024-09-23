@@ -159,5 +159,20 @@ namespace BlogMaster.Controllers
 
         }
 
+
+        [HttpGet]
+        [Route("/logout")]
+        public async Task<IActionResult> LogOut()
+        {
+            bool? IsAuthenticated = User.Identity?.IsAuthenticated;
+            if(IsAuthenticated == true) 
+            {
+                await _identityService.LogOut();
+            }
+
+            return RedirectToAction("Index", "Site");
+
+        }
+
     }
 }

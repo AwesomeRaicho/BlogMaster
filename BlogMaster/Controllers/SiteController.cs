@@ -10,7 +10,12 @@ namespace BlogMaster.Controllers
         {
             ViewBag.Title = "Blog Master";
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+            string? user = User.Identity?.Name;
 
+            if (User.IsInRole("Administrator"))
+            {
+                return RedirectToAction("AdministratorIndex", "Administrator");
+            }
 
             return View();
         }

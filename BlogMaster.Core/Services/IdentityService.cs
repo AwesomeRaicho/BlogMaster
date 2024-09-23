@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace BlogMaster.Core.Services
 {
@@ -150,10 +149,9 @@ namespace BlogMaster.Core.Services
 
         public async Task LogOut()
         {
-
+            
             await _signInManager.SignOutAsync();
 
-            throw new NotImplementedException();
         }
 
         public async Task<IdentityResult> RegisterUserAsync(IdentityRegistrationDto identityRegistrationDto)
@@ -287,6 +285,10 @@ namespace BlogMaster.Core.Services
 
         public async Task<IdentityResult> ConfirmEmailAsync(string userId, string token)
         {
+            {
+
+            }
+
             ApplicationUser? user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
@@ -295,5 +297,113 @@ namespace BlogMaster.Core.Services
             }
             return await _userManager.ConfirmEmailAsync(user, token);
         }
+
+        public async Task<IdentityResult> CreateAccount(AccountCreationRequestDto accountCreationRequestDto)
+        {
+            if(accountCreationRequestDto == null || string.IsNullOrEmpty(accountCreationRequestDto.UserName) || string.IsNullOrEmpty(accountCreationRequestDto.RoleName) || string.IsNullOrEmpty(accountCreationRequestDto.EmailAddress))
+            {
+                throw new Exception($"{nameof(accountCreationRequestDto)}: Username and Role must be added.");
+            }
+            bool roleExists = await _roleManager.RoleExistsAsync(accountCreationRequestDto.RoleName);
+            if(!roleExists)
+            {
+                throw new Exception($"{nameof(accountCreationRequestDto)}: Role does not exist");
+            }
+
+            // Create user
+            ApplicationUser user = new ApplicationUser()
+            {
+                Id = Guid.NewGuid(),
+                UserName = accountCreationRequestDto.UserName,
+                NormalizedUserName = accountCreationRequestDto.UserName.ToUpper(),
+                Email = accountCreationRequestDto.EmailAddress,
+                NormalizedEmail = accountCreationRequestDto.EmailAddress.ToUpper(),
+            };
+            var userResult = await _userManager.CreateAsync(user, "TempPassword9#");
+            if(userResult.Succeeded)
+            {
+                IdentityRequestDto identityRequestDto = new IdentityRequestDto()
+                {
+                    EmailAddress = accountCreationRequestDto.EmailAddress,
+                    UserName = accountCreationRequestDto.UserName,
+                    RoleName = accountCreationRequestDto.RoleName,
+                };
+
+                identityRequestDto.UserId = user.Id;
+                var roleResult = await AddRoleToUser(identityRequestDto);
+                if(roleResult.Succeeded)
+                {
+                    //user will need to confirm email registered
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var userId = user.Id;
+
+                    var callbackUrl = $"{_domainName}/identity/confirmemail?userId={userId}&token={Uri.EscapeDataString(token)}";
+
+
+                    if (callbackUrl != null)
+                    {
+                        await _emailService.SendEmailConfirmation(user.Email, user.UserName, callbackUrl);
+                    }
+                    return userResult;
+                }else
+                {
+                    await _userManager.DeleteAsync(user);
+                    return roleResult;
+                }
+            }
+            return userResult;
+            
+        }
+
+        public async Task<List<IdentityResponseDto>> GetWrittersEditors()
+        {
+            List<IdentityResponseDto> users = new List<IdentityResponseDto>();
+
+            
+
+            var editors = await _userManager.GetUsersInRoleAsync("Editor");
+            var writters = await _userManager.GetUsersInRoleAsync("Writter");
+            var administrators = await _userManager.GetUsersInRoleAsync("Administrator");
+
+            foreach (var Admin in administrators)
+            {
+
+                users.Add(new IdentityResponseDto
+                {
+                    EmailAddress = Admin.Email,
+                    Role = "Admin",
+                    UserId = Admin.Id,
+                    UserName = Admin.UserName,
+                });
+            }
+            foreach (var writter in writters)
+            {
+
+                users.Add(new IdentityResponseDto
+                {
+                    EmailAddress = writter.Email,
+                    Role = "Writter",
+                    UserId = writter.Id,
+                    UserName = writter.UserName,
+                });
+            }
+            foreach (var editor in editors)
+            {
+
+                users.Add(new IdentityResponseDto
+                {
+                    EmailAddress = editor.Email,
+                    Role = "Editor",
+                    UserId = editor.Id,
+                    UserName = editor.UserName, 
+                });
+            }
+
+            return users;
+
+        }
+
+        
+
     }
 }
