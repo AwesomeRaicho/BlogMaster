@@ -77,5 +77,18 @@ namespace BlogMaster.Controllers
             return View(users);
         }
 
+        [Route("/writters-editors/view")]
+        public async Task<IActionResult> WrittersEditorsView([FromQuery] string userId)
+        {
+            
+            //through this route we would expect to see their activity blogs, edits, etc...
+
+            ViewBag.Id = userId;
+
+
+
+
+            return View();
+        }
     }
 }

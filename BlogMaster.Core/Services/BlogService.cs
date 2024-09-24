@@ -381,6 +381,7 @@ namespace BlogMaster.Core.Services
             Blog entity = new Blog()
             {
                 BlogId = Guid.NewGuid(),
+                UserId = blog.UserId,
                 ArticleEn = blog.ArticleEn,
                 ArticleEs = blog.ArticleEs,
                 TitleEn = blog.TitleEn,
@@ -390,7 +391,7 @@ namespace BlogMaster.Core.Services
                 SlugEn = !string.IsNullOrEmpty(blog.TitleEn) ? SlugGenerator.GenerateSlug(blog.TitleEn) : null,
                 SlugEs = !string.IsNullOrEmpty(blog.TitleEs) ? SlugGenerator.GenerateSlug(blog.TitleEs) : null,
                 Author = blog.Author,
-                IsSubscriptionRequired = blog.IsSubscriptionRequired,
+                IsSubscriptionRequired = blog.IsSubscriptionRequired == "true" ? true : false,
                 
                 
                 
@@ -407,8 +408,15 @@ namespace BlogMaster.Core.Services
 
             };
 
-            await _blogRepository.Create(entity);
+            try
+            {
+                await _blogRepository.Create(entity);
 
+            }
+            catch(Exception ex)
+            {
+                throw new Exception($"BlogService:Could not createblog >> {ex.Message}");
+            }
         }
 
         public async Task CreateCategoryAsync(CategoryPostPutDto category)
@@ -1045,7 +1053,7 @@ namespace BlogMaster.Core.Services
             entity.Author = blog.Author;
             entity.DescriptionEn = blog.DescriptionEn;
             entity.DescriptionEs = blog.DescriptionEs;
-            entity.IsSubscriptionRequired = blog.IsSubscriptionRequired;
+            entity.IsSubscriptionRequired = blog.IsSubscriptionRequired == "true" ? true : false;
 
             await _blogRepository.Update(entity);
 

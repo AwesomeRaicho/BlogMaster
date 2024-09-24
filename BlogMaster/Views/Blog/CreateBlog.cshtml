@@ -1,0 +1,93 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdministratorLayout.cshtml";
+}
+
+<div class="container mb-5 pb-5">
+    <div class="pt-5">
+        <h1 class="mb-4">New Blog</h1>
+        <!-- Titles -->
+        <h4>Title</h4>
+
+        <form action="/create-blog" method="post">
+            <div class="mb-3" style="max-width: 500px">
+                <label for="TitleEn" class="form-label">Title (English)</label>
+                <input type="text"
+                       class="form-control"
+                       id="TitleEn"
+                       name="TitleEn" />
+            </div>
+            <div class="mb-3" style="max-width: 500px">
+                <label for="TitleEs" class="form-label">Title (Spanish)</label>
+                <input type="text"
+                       class="form-control"
+                       id="TitleEs"
+                       name="TitleEs" />
+            </div>
+
+            <!-- Description -->
+            <h4>Description</h4>
+
+            <div class="mb-3" style="max-width: 500px">
+                <label for="DescriptionEn" class="form-label">Description (English)</label>
+                <textarea type="text"
+                          class="form-control"
+                          id="DescriptionEn"
+                          name="DescriptionEn">
+            </textarea>
+            </div>
+            <div class="mb-3" style="max-width: 500px">
+                <label for="DescriptionEs" class="form-label">Description (Spanish)</label>
+                <textarea type="text"
+                          class="form-control"
+                          id="DescriptionEs"
+                          name="DescriptionEs">
+            </textarea>
+            </div>
+            <!-- Article -->
+            <h4>Article</h4>
+            <p class="ps-2 border rounded-2 text-danger bg-danger-subtle">
+                Images will be embeded through fetch with javascript. Where ever you
+                would like to embed the image, simply add: <br />
+                <span class="text-secondary fw-bold">
+                    &lt;img class="img-fluid d-block m-auto blog-image"
+                    style="max-height: 400px" /&gt;
+                </span><br />
+                Javascript will take care of getting the image and adding them in
+                order.
+            </p>
+            <div class="mb-3">
+                <label for="ArticleEn" class="form-label">Article (English) in HTML</label>
+                <textarea type="text"
+                          class="form-control"
+                          id="ArticleEn"
+                          name="ArticleEn">
+            </textarea>
+            </div>
+            <div class="mb-3">
+                <label for="ArticleEs" class="form-label">Article (Spanish) in HTML</label>
+                <textarea type="text"
+                          class="form-control"
+                          id="ArticleEs"
+                          name="DescriptionEs">
+            </textarea>
+            </div>
+            <h4>Author</h4>
+            <div class="mb-5" style="max-width: 500px">
+                <label for="Author" class="form-label">Author Name</label>
+                <input type="text" class="form-control" id="Author" name="Author" />
+            </div>
+            <!-- Sub Check -->
+            <div class="mb-3 form-check">
+                <input type="checkbox"
+                       class="form-check-input"
+                       id="IsSubscriptionRequired"
+                       name="IsSubscriptionRequired"
+                       value="true" />
+                <label class="form-check-label" for="IsSubscriptionRequired">
+                    Requires Premium Subscription
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary mt-5">Submit</button>
+        </form>
+    </div>
+</div>
