@@ -40,7 +40,6 @@ namespace BlogMaster.Infrastructure.DataAccess
             {
                 query = query
                     .Where(blog => blog.BlogTags != null && blog.BlogTags.Any(bt => bt.Tag != null && (tags.Contains(bt.Tag.TagNameEn ?? "") || tags.Contains(bt.Tag.TagNameEs ?? ""))));
-
             }
 
             // pagination
@@ -50,7 +49,6 @@ namespace BlogMaster.Infrastructure.DataAccess
                 .ToListAsync();
 
             return result;
-
         }
 
         public async Task<Blog?> GetBlogBySlug(string slug)

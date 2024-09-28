@@ -1,10 +1,12 @@
 ﻿using BlogMaster.Core.Contracts;
 using BlogMaster.Core.DTO;
 using BlogMaster.Core.Models;
+using BlogMaster.Core.Models.Identity;
 using BlogMaster.Core.Utilities;
 using Microsoft.Win32.SafeHandles;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Reflection.Metadata;
@@ -15,7 +17,7 @@ namespace BlogMaster.Core.Services
 {
     public class BlogService : IBlogService
     {
-
+        private readonly IRepository<ApplicationUser> _applicationUserRepository;
         private readonly IRepository<Blog> _blogRepository;
         private readonly IRepository<BlogImage> _blogImageRepository;
         private readonly IRepository<Category> _categoryRepository;
@@ -37,8 +39,9 @@ namespace BlogMaster.Core.Services
         
 
 
-        public BlogService(IRepository<Blog> blogRepository, IRepository<Category> categoryRepository, IRepository<Comment> commentRepository, IRepository<Keyword> keywordRepository, IRepository<Modification> modificationRepository, IRepository<Rating> ratingRepository, IRepository<Tag> tagRepository, IRepository<Blog_Category> blogCategoryRepository, IRepository<Blog_Keyword> blogKeywordRepository, IRepository<Blog_Tag> blogTagRepository, IBlogRepository blogUniqueRepository, IRepository<BlogImage> blogImageRepository)
+        public BlogService(IRepository<Blog> blogRepository, IRepository<Category> categoryRepository, IRepository<Comment> commentRepository, IRepository<Keyword> keywordRepository, IRepository<Modification> modificationRepository, IRepository<Rating> ratingRepository, IRepository<Tag> tagRepository, IRepository<Blog_Category> blogCategoryRepository, IRepository<Blog_Keyword> blogKeywordRepository, IRepository<Blog_Tag> blogTagRepository, IBlogRepository blogUniqueRepository, IRepository<BlogImage> blogImageRepository, IRepository<ApplicationUser> applicationUser)
         {
+            _applicationUserRepository = applicationUser;
             _blogRepository = blogRepository;
             _categoryRepository = categoryRepository;
             _commentRepository = commentRepository;
@@ -1149,5 +1152,52 @@ namespace BlogMaster.Core.Services
             await _tagRepository.Update(tag);
 
         }
+
+
+        public async Task<List<AdminBlogListDto>> GetAllAdminBlogPreviews(int pageIndex, string category, List<string> tags)
+        {
+
+            IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviews(pageIndex, 50, category, tags);
+
+            List<AdminBlogListDto> responseList = new List<AdminBlogListDto>();
+
+
+            foreach (Blog blog in blogs)
+            {
+                AdminBlogListDto dto = new AdminBlogListDto()
+                {
+                    BlogId = blog.BlogId,
+                    UserId = blog.UserId,                    
+                    BlogName = blog.TitleEn + "..." + blog.TitleEs,
+                    TagsCount = blog.BlogTags != null ? blog.BlogTags.Count : 0,
+                    Author = blog.Author,
+                    CategoryCount = blog.BlogCategories != null ? blog.BlogCategories.Count : 0,
+                    ViewCount = blog.ViewCount,
+                    AverageRating = blog.AverageRating,
+                    Published = blog.IsPublished,
+                    Featured = blog.IsFeatured,
+                    SubscriptionRerquired = blog.IsSubscriptionRequired,
+                    CommentCount = blog.Comments != null ? blog.Comments.Count : 0,
+                };
+
+
+                ApplicationUser? User = await _applicationUserRepository.Get(blog.UserId);
+
+                if (User == null)
+                {
+                    dto.UserName = "";
+                }
+                else
+                {
+                    dto.UserName = User.UserName;
+                }
+
+                responseList.Add(dto);
+            }
+            return responseList;
+        }
+
+
+
     }
 }
