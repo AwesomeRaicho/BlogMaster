@@ -1,9 +1,100 @@
-﻿@model List<AdminBlogListDto>
-
-
-
-@foreach(var view in Model)
-{
-    <p>@(view.BlogName)</p>
-    <br/>
+﻿@{
+    Layout = "~/Views/Shared/_AdministratorLayout.cshtml";
 }
+@model List<AdminBlogListDto>
+
+
+<div class="container mt-3">
+    <form method="get" class="bg-success-subtle border rounded-top-4 p-3">
+        <div class="row">
+            <div class="col-9">
+                <select class="form-select" aria-label="Default select example">
+                    <option selected disabled>Choose a category</option>
+                    <option value="1">C#</option>
+                    <option value="2">Servers</option>
+                    <option value="3">Tutorial</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <a href="/editblog" class="col">
+                    <button type="submit" class="btn btn-primary">Apply</button>
+                </a>
+            </div>
+        </div>
+        <div class="mt-2">
+            <p class="d-inline-flex gap-1">
+                <button class="btn btn-primary"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapseExample"
+                        aria-expanded="false"
+                        aria-controls="collapseExample">
+                    Filter
+                </button>
+            </p>
+            <div class="collapse" id="collapseExample">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           value=""
+                           id="flexCheckDefault" />
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Default checkbox
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           value=""
+                           id="flexCheckChecked"
+                           checked />
+                    <label class="form-check-label" for="flexCheckChecked">
+                        Checked checkbox
+                    </label>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- TABLE -->
+<div class="">
+    <table class="table">
+        <thead class="sticky-top table-success">
+            <tr>
+                <th scope="col">UserName</th>
+                <th scope="col">Author</th>
+                <th scope="col">BlogName</th>
+                <th scope="col">CategoryCount</th>
+                <th scope="col">TagsCount</th>
+                <th scope="col">Published</th>
+                <th scope="col">Featured</th>
+                <th scope="col">Subscription</th>
+                <th scope="col">ViewCount</th>
+                <th scope="col">AverageRating</th>
+                <th scope="col">CommentCount</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            <tr>
+                <td>Admin</td>
+                <td>Pedro Araujo</td>
+                <td>How to do something with C# in .NET Core</td>
+                <td>3 Categories</td>
+                <td>16 Tags</td>
+                <td>No</td>
+                <td>No</td>
+                <td>Yes</td>
+                <td>156 Views</td>
+                <td>5 Stars</td>
+                <td>2 Comments</td>
+                <td>
+                    <a href="/editblog" class="">
+                        <button type="button" class="btn btn-primary">Edit</button>
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<h1>[Pagination]</h1>
