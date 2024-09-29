@@ -50,6 +50,8 @@ namespace BlogMaster.Controllers
         [Route("/admin-blog-views")]
         public async Task<IActionResult> AdminBlogViews([FromQuery] int pageIndex, string category, List<string> tags)
         {
+
+
             if(pageIndex == 0)
             {
                 pageIndex = 1;
@@ -58,11 +60,14 @@ namespace BlogMaster.Controllers
             {
                 category = "";
             }
+            ViewBag.PageIndex = pageIndex;
+            ViewBag.Category = category;
+            ViewBag.Tags = tags.Count != 0 && tags[0] != null ? tags: null;
 
 
-            List<AdminBlogListDto> blogviews = await _blogService.GetAllAdminBlogPreviews(pageIndex, category, tags);
+            var previews = await _blogService.GetAllAdminBlogPreviews(pageIndex, category, tags.Count != 0 && tags[0] != null ? tags : new List<string>());
 
-            return View(blogviews);
+            return View(previews);
         }
 
 

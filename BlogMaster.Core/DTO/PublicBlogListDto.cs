@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BlogMaster.Core.DTO
 {
-    public class BlogPreviewDto
+    public class PublicBlogListDto
     {
         public Guid BlogId { get; set; }
         public string? TitleEn { get; set; }  // English title

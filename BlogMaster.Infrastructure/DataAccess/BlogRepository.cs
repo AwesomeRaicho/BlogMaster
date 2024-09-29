@@ -13,14 +13,10 @@ namespace BlogMaster.Infrastructure.DataAccess
     public class BlogRepository : GeneralRepository<Blog>, IBlogRepository
     {
 
-
         public BlogRepository(EntityDbContext context) : base(context) { }
-
-
 
         public async Task<IEnumerable<Blog>> GetAllBlogPreviews(int pageIndex, int pageSize, string category, List<string> tags)
         {
-
             IQueryable<Blog>? query = _context.Blogs;
 
             if (query == null)
@@ -191,5 +187,13 @@ namespace BlogMaster.Infrastructure.DataAccess
                 .ToListAsync();
         }
 
+        public async Task<int> GetBlogCountAsync()
+        {
+            if(_context.Blogs != null)
+            {
+                return await _context.Blogs.CountAsync();
+            }
+            throw new Exception("Blogs Table does not exist");
+        }
     }
 }

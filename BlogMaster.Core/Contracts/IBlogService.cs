@@ -13,12 +13,12 @@ namespace BlogMaster.Core.Contracts
         // Blog CRUD Operations
         public Task<BlogResponseDto> GetBlogByIdAsync(Guid id);
         public Task<BlogResponseDto> GetBlogBySlug(string slug);
-        public Task<IEnumerable<BlogPreviewDto>> GetAllBlogPreviews(int pageIndex, int pageSize, string category, List<string> tags);
+        public Task<IEnumerable<PublicBlogListDto>> GetAllBlogPreviews(int pageIndex, int pageSize, string category, List<string> tags);
         public Task CreateBlogAsync(BlogPostPutDto blog);
         public Task UpdateBlogAsync(BlogPostPutDto blog);
         public Task DeleteBlogAsync(Guid id);
         public Task<IEnumerable<CommentResponseDto>> GetAllBlogComments(Guid blogId, int pageIndex, int pageSize);
-        public Task<List<AdminBlogListDto>> GetAllAdminBlogPreviews(int pageIndex, string category, List<string> tags);
+        public Task<BlogPreviewsDto> GetAllAdminBlogPreviews(int pageIndex, string category, List<string> tags);
 
         // Blog Publication Management
         public Task PublishBlogAsync(Guid id);
@@ -103,7 +103,7 @@ namespace BlogMaster.Core.Contracts
 
 
         // Other Utility Methods
-        public Task<IEnumerable<BlogPreviewDto>> SearchBlogsWithKeywordAsync(Guid keywordId, int pageIndex, int pageSize);
+        public Task<IEnumerable<PublicBlogListDto>> SearchBlogsWithKeywordAsync(Guid keywordId, int pageIndex, int pageSize);
         public Task<bool> IsSubscriptionRequiredAsync(Guid blogId);
 
 

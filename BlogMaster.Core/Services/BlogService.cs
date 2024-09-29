@@ -594,15 +594,15 @@ namespace BlogMaster.Core.Services
             await _blogRepository.Update(blog);
         }
 
-        public async Task<IEnumerable<BlogPreviewDto>> GetAllBlogPreviews(int pageIndex, int pageSize, string category, List<string> tags)
+        public async Task<IEnumerable<PublicBlogListDto>> GetAllBlogPreviews(int pageIndex, int pageSize, string category, List<string> tags)
         {
             IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviews(pageIndex, pageSize, category, tags);
 
-            List<BlogPreviewDto> result = new List<BlogPreviewDto>();
+            List<PublicBlogListDto> result = new List<PublicBlogListDto>();
 
             foreach(Blog preview in blogs)
             {
-                BlogPreviewDto blogPreviewDto = new BlogPreviewDto()
+                PublicBlogListDto blogPreviewDto = new PublicBlogListDto()
                 {
                     BlogId = preview.BlogId,
                     Author = preview.Author,
@@ -983,11 +983,11 @@ namespace BlogMaster.Core.Services
         //NEED TO FIGURE OUT THE BEST WAY TO GET ALL THE PREVIEWS THAT HAVE A SPECIFIC  KEYWORD
 
 
-        public async Task<IEnumerable<BlogPreviewDto>> SearchBlogsWithKeywordAsync(Guid keywordId, int pageIndex, int pageSize)
+        public async Task<IEnumerable<PublicBlogListDto>> SearchBlogsWithKeywordAsync(Guid keywordId, int pageIndex, int pageSize)
         {
             IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviewsByKeyword(keywordId, pageIndex, pageSize);
             
-            List<BlogPreviewDto> result = new List<BlogPreviewDto>();
+            List<PublicBlogListDto> result = new List<PublicBlogListDto>();
 
             foreach(Blog blog in blogs)
             {
@@ -996,7 +996,7 @@ namespace BlogMaster.Core.Services
                     continue;
                 }
 
-                BlogPreviewDto blogPreviewDto = new BlogPreviewDto()
+                PublicBlogListDto blogPreviewDto = new PublicBlogListDto()
                 {
                     BlogId = blog.BlogId,
                     AverageRating = blog.AverageRating,
@@ -1154,10 +1154,11 @@ namespace BlogMaster.Core.Services
         }
 
 
-        public async Task<List<AdminBlogListDto>> GetAllAdminBlogPreviews(int pageIndex, string category, List<string> tags)
+        public async Task<BlogPreviewsDto> GetAllAdminBlogPreviews(int pageIndex, string category, List<string> tags)
         {
+            int perPage = 50;
 
-            IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviews(pageIndex, 50, category, tags);
+            IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviews(pageIndex, perPage, category, tags);
 
             List<AdminBlogListDto> responseList = new List<AdminBlogListDto>();
 
@@ -1194,7 +1195,20 @@ namespace BlogMaster.Core.Services
 
                 responseList.Add(dto);
             }
-            return responseList;
+
+            BlogPreviewsDto responseDto = new BlogPreviewsDto();
+            responseDto.AdminBlogList = responseList;
+
+            int blogCount = await _blogUniqueRepository.GetBlogCountAsync();
+
+            responseDto.PageCount =  (int)Math.Ceiling((double)blogCount / perPage);
+
+            responseDto.Categories = (List<Category>)await _categoryRepository.GetAll(1, 1000);
+
+            responseDto.Tags = (List<Tag>)await _tagRepository.GetAll(1, 1000);
+
+
+            return responseDto;
         }
 
 

@@ -22,6 +22,7 @@ namespace BlogMaster.Core.Contracts
         public Task<Rating?> GetUserRatingforBlog(Guid blogId, Guid userId);
 
         public Task<IEnumerable<Category?>> GetAllBlogCategories(Guid blogId);
+        public Task<int> GetBlogCountAsync();
 
         //keywords
         public Task<IEnumerable<Keyword?>> GetAllBlogKeywords(Guid blogId);
