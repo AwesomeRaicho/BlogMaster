@@ -1,0 +1,27 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdministratorLayout.cshtml";
+}
+@model IEnumerable<CategoryResponseDto>;
+
+<div class="container">
+    <table class="table" style="z-index: 1;">
+        <thead class="table-light sticky-top">
+            <tr>
+                <th scope="col">CategoryEn</th>
+                <th scope="col">CategoryEs</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(CategoryResponseDto cat in Model)
+            {
+                <tr>
+                    <td>@(cat.CategoryNameEn)</td>
+                    <td>@(cat.CategoryNameEs)</td>
+                    <td><a href="/create-category?CategoryId=@(cat.CategoryId)&CategoryNameEn=@(cat.CategoryNameEn)&CategoryNameEs=@(cat.CategoryNameEs)" class="btn btn-primary">Edit</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

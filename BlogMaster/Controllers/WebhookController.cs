@@ -95,6 +95,7 @@ public class WebhookController : Controller
         }
         catch (Exception e)
         {
+            Console.WriteLine(e.Message);
             return StatusCode(500);
         }
     }

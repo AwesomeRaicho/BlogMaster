@@ -11,7 +11,7 @@ namespace BlogMaster.Core.DTO
         public Guid CategoryId { get; set; }
 
 
-        public string? CatergoryNameEn { get; set; }
-        public string? CatergoryNameEs { get; set; }
+        public string? CategoryNameEn { get; set; }
+        public string? CategoryNameEs { get; set; }
     }
 }

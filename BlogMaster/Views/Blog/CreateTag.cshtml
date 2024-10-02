@@ -1,0 +1,24 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdministratorLayout.cshtml";
+}
+
+
+<div class="container">
+    <form class="p-4 mt-5 m-auto border rounded-4 bg-light"
+          style="max-width: 500px"
+          method="post">
+        <div class="mb-3">
+            <label for="TagNameEn" class="form-label">Tag Name (English)</label>
+            <input type="text" class="form-control" id="TagNameEn" name="TagNameEn" value="@(ViewBag.TagNameEn == null ? "" : ViewBag.TagNameEn)" />
+        </div>
+        <div class="mb-3">
+            <label for="TagNameEs" class="form-label">Tag Name (Spanish)</label>
+            <input type="text" class="form-control" id="TagNameEs" name="TagNameEs" value="@(ViewBag.TagNameEs == null ? "" : ViewBag.TagNameEs)" />
+        </div>
+        @if (ViewBag.CategoryId != null)
+        {
+            <input type="type" name="TagId" value="@(ViewBag.TagId)" hidden />
+        }
+        <button type="submit" class="btn btn-primary">@(ViewBag.TagId == null ? "Create" : "Update")</button>
+    </form>
+</div>

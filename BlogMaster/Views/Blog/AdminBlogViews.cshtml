@@ -15,7 +15,7 @@
                     {
                         @foreach(Category cat in Model.Categories)
                         {
-                            if (ViewBag.Tags.Contains(cat.CatergoryNameEn))
+                            if (ViewBag.Category == cat.CatergoryNameEn)
                             {
                                 <option selected value="@(cat.CatergoryNameEn)">@(cat.CatergoryNameEn)</option>
                             }else

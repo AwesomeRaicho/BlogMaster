@@ -150,8 +150,8 @@ namespace BlogMaster.Core.Services
                 CategoryResponseDto categoryResponse = new CategoryResponseDto()
                 {
                     CategoryId = category.CategoryId,
-                    CatergoryNameEn = category.CatergoryNameEn,
-                    CatergoryNameEs = category.CatergoryNameEs,
+                    CategoryNameEn = category.CatergoryNameEn,
+                    CategoryNameEs = category.CatergoryNameEs,
                 };
 
                 categories.Add(categoryResponse);
@@ -426,7 +426,7 @@ namespace BlogMaster.Core.Services
         {
             if(category == null) { throw new ArgumentNullException("Categoty submitted cannot be mull"); }
 
-            if(string.IsNullOrEmpty(category.CatergoryNameEn) && string.IsNullOrEmpty(category.CatergoryNameEs))
+            if(string.IsNullOrEmpty(category.CategoryNameEn) && string.IsNullOrEmpty(category.CategoryNameEs))
             {
                 throw new ArgumentNullException("Category name must be provided at least in one lenguage.");
             }
@@ -434,8 +434,8 @@ namespace BlogMaster.Core.Services
             Category entity = new Category()
             {
                 CategoryId = Guid.NewGuid(),
-                CatergoryNameEn = category.CatergoryNameEn,
-                CatergoryNameEs = category.CatergoryNameEs,
+                CatergoryNameEn = category.CategoryNameEn,
+                CatergoryNameEs = category.CategoryNameEs,
             };
 
             await _categoryRepository.Create(entity);
@@ -635,9 +635,10 @@ namespace BlogMaster.Core.Services
                 CategoryResponseDto categoryResponseDto = new CategoryResponseDto()
                 {
                     CategoryId = category.CategoryId,
-                    CatergoryNameEn = category.CatergoryNameEn,
-                    CatergoryNameEs = category.CatergoryNameEs,
+                    CategoryNameEn = category.CatergoryNameEn,
+                    CategoryNameEs = category.CatergoryNameEs,
                 };
+                categoryResponseDtos.Add(categoryResponseDto);
             }
 
             return categoryResponseDtos;
@@ -809,8 +810,8 @@ namespace BlogMaster.Core.Services
             CategoryResponseDto response = new CategoryResponseDto()
             {
                 CategoryId = categoryId,
-                CatergoryNameEn = category.CatergoryNameEn,
-                CatergoryNameEs = category.CatergoryNameEs,
+                CategoryNameEn = category.CatergoryNameEn,
+                CategoryNameEs = category.CatergoryNameEs,
             };
 
             return response;
@@ -1086,8 +1087,8 @@ namespace BlogMaster.Core.Services
                 throw new Exception("category does not exist");
             }
 
-            category.CatergoryNameEn = categoryPostPutDto.CatergoryNameEn;
-            category.CatergoryNameEs = categoryPostPutDto.CatergoryNameEs;
+            category.CatergoryNameEn = categoryPostPutDto.CategoryNameEn;
+            category.CatergoryNameEs = categoryPostPutDto.CategoryNameEs;
             
 
             await _categoryRepository.Update(category);
@@ -1157,6 +1158,7 @@ namespace BlogMaster.Core.Services
         public async Task<BlogPreviewsDto> GetAllAdminBlogPreviews(int pageIndex, string category, List<string> tags)
         {
             int perPage = 50;
+
 
             IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviews(pageIndex, perPage, category, tags);
 
