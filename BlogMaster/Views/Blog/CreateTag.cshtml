@@ -17,7 +17,7 @@
         </div>
         @if (ViewBag.CategoryId != null)
         {
-            <input type="type" name="TagId" value="@(ViewBag.TagId)" hidden />
+            <input name="TagId" value="@(ViewBag.TagId)" hidden />
         }
         <button type="submit" class="btn btn-primary">@(ViewBag.TagId == null ? "Create" : "Update")</button>
     </form>

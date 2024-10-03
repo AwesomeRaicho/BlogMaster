@@ -17,6 +17,7 @@ namespace BlogMaster.Core.DTO
         public string? Author { get; set; }
         public int TagsCount { get; set; }
         public int CategoryCount { get; set; }
+        public int KeywordCount { get; set; }
         public bool? Published {  get; set; } 
         public bool? Featured {  get; set; }
         public int? ViewCount { get; set; }

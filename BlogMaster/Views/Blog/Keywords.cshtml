@@ -1,0 +1,26 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdministratorLayout.cshtml";
+}
+@model IEnumerable<KeywordResponseDto>;
+
+<div class="container">
+    <table class="table" style="z-index: 1;">
+        <thead class="table-light sticky-top">
+            <tr>
+                <th scope="col">KeywordNameEn</th>
+                <th scope="col">KeywordNameEs</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (KeywordResponseDto keyword in Model)
+            {
+                <tr>
+                    <td>@(keyword.KeywordNameEn)</td>
+                    <td>@(keyword.KeywordNameEs)</td>
+                    <td><a href="/create-keyword?KeywordId=@(keyword.KeywordId)&KeywordNameEn=@(keyword.KeywordNameEn)&KeywordNameEs=@(keyword.KeywordNameEs)" class="btn btn-primary">Edit</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BlogMaster.Core.DTO
 {
-    public class KeywordPostPut
+    public class KeywordPostPutDto
     {
         public Guid KeywordId { get; set; }
         public string? KeywordNameEn { get; set; }

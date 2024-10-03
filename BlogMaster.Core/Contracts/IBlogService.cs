@@ -72,9 +72,9 @@ namespace BlogMaster.Core.Contracts
         // Keyword ManagementCreateTagAsync
         public Task<KeywordResponseDto> GetKeywordAsync(Guid keywordId);
         public Task<IEnumerable<KeywordResponseDto>> GetAllKeywordsAsync();
-        public Task CreateKeywordAsync(KeywordPostPut keyword);
+        public Task CreateKeywordAsync(KeywordPostPutDto keyword);
         public Task DeleteKeywordAsync(Guid id);
-        public Task UpdateKeywordAsync(KeywordPostPut keywordPostPut);
+        public Task UpdateKeywordAsync(KeywordPostPutDto keywordPostPut);
 
 
         // Modifications Management

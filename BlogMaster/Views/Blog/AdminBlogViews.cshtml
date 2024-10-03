@@ -4,7 +4,7 @@
 @model BlogPreviewsDto
 
 
-<div class="container mt-3">
+<div class="container mt-3 ">
     <form method="get" class="bg-success-subtle border rounded-top-4 p-3">
         <div class="row">
             <div class="col-9">
@@ -84,13 +84,14 @@
 <!-- TABLE -->
 <div class="">
     <table class="table">
-        <thead class="sticky-top table-success">
+        <thead class="sticky-top table-success" >
             <tr>
                 <th scope="col">UserName</th>
                 <th scope="col">Author</th>
                 <th scope="col">BlogName</th>
                 <th scope="col">CategoryCount</th>
                 <th scope="col">TagsCount</th>
+                <th scope="col">KeywordCount</th>
                 <th scope="col">Published</th>
                 <th scope="col">Featured</th>
                 <th scope="col">Subscription</th>
@@ -111,6 +112,7 @@
                         <td>@(blog.BlogName)</td>
                         <td>@(blog.CategoryCount) Categories</td>
                         <td>@(blog.TagsCount) Tags</td>
+                        <td>@(blog.KeywordCount) Keyword</td>
                         <td>@(blog.Published == true ? "Yes" : "no")</td>
                         <td>@(blog.Featured == true ? "Yes" : "no")</td>
                         <td>@(blog.SubscriptionRerquired == true ? "Yes" : "no")</td>

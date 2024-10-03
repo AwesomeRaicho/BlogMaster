@@ -142,6 +142,7 @@ namespace BlogMaster.Controllers
             else
             {
                 ViewBag.TagId = null;
+
                 ViewBag.TagNameEn = null;
                 ViewBag.TagNameEs = null;
             }
@@ -171,5 +172,57 @@ namespace BlogMaster.Controllers
             return RedirectToAction("Tags");
         }
 
+        //Keywords
+        [Route("/keywords")]
+        public async Task<IActionResult> Keywords()
+        {
+            IEnumerable<KeywordResponseDto> keywords = await _blogService.GetAllKeywordsAsync();
+
+            return View(keywords);
+        }
+
+
+        [HttpGet]
+        [Route("/create-keyword")]
+        public IActionResult CreateKeyword([FromQuery] string KeywordId, string KeywordNameEn, string KeywordNameEs)
+        {
+            if (!string.IsNullOrEmpty(KeywordId))
+            {
+                ViewBag.KeywordId = KeywordId;
+                ViewBag.KeywordNameEn = KeywordNameEn;
+                ViewBag.KeywordNameEs = KeywordNameEs;
+            }
+            else
+            {
+                ViewBag.KeywordId = null;
+
+                ViewBag.KeywordNameEn = null;
+                ViewBag.KeywordNameEs = null;
+            }
+            return View();
+        }
+
+        [HttpPost]
+        [Route("/create-keyword")]
+        public async Task<IActionResult> CreateKeyword(KeywordPostPutDto keywordPostPutDto)
+        {
+            if (keywordPostPutDto == null)
+            {
+                return View();
+            }
+
+
+            if (keywordPostPutDto.KeywordId == Guid.Empty)
+            {
+                await _blogService.CreateKeywordAsync(keywordPostPutDto);
+            }
+            else
+            {
+                await _blogService.UpdateKeywordAsync(keywordPostPutDto);
+            }
+
+
+            return RedirectToAction("Keywords");
+        }
     }
 }

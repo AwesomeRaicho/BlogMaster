@@ -460,7 +460,7 @@ namespace BlogMaster.Core.Services
             await _commentRepository.Create(entity);
         }
 
-        public async Task CreateKeywordAsync(KeywordPostPut keyword)
+        public async Task CreateKeywordAsync(KeywordPostPutDto keyword)
         {
             if(keyword == null)
             {
@@ -1108,7 +1108,7 @@ namespace BlogMaster.Core.Services
             await _commentRepository.Update(comment);
         }
 
-        public async Task UpdateKeywordAsync(KeywordPostPut keywordPostPut)
+        public async Task UpdateKeywordAsync(KeywordPostPutDto keywordPostPut)
         {
             Keyword? keyword = await _keywordRepository.Get(keywordPostPut.KeywordId);
 
@@ -1175,6 +1175,7 @@ namespace BlogMaster.Core.Services
                     TagsCount = blog.BlogTags != null ? blog.BlogTags.Count : 0,
                     Author = blog.Author,
                     CategoryCount = blog.BlogCategories != null ? blog.BlogCategories.Count : 0,
+                    KeywordCount = blog.BlogKeywords != null ? blog.BlogKeywords.Count : 0,
                     ViewCount = blog.ViewCount,
                     AverageRating = blog.AverageRating,
                     Published = blog.IsPublished,
