@@ -185,6 +185,30 @@ namespace BlogMaster.Core.Services
             //add Keywords to the BlogResponseDto ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             blogResponseDto.Keywords = keywordResponseDtos;
 
+            // GET TAGS
+            List<TagResponseDto> tagResponseDtos = new List<TagResponseDto>();
+
+            // Fetch all tags associated with the blog
+            IEnumerable<Tag?> tags = await _blogUniqueRepository.GetAllBlogTags(blogResponseDto.BlogId);
+
+            foreach (Tag? tag in tags)
+            {
+                if (tag == null) continue;
+
+                TagResponseDto tagResponse = new TagResponseDto()
+                {
+                    TagId = tag.TagId,
+                    TagNameEn = tag.TagNameEn,
+                    TagNameEs = tag.TagNameEs,
+                };
+
+                tagResponseDtos.Add(tagResponse);
+            }
+
+            // Add tags to the BlogResponseDto
+            blogResponseDto.Tags = tagResponseDtos;
+
+
 
             //GET BLOGIMAGES
             List<BlogImagesResponseDto> imageresponses = new List<BlogImagesResponseDto>();
@@ -398,11 +422,11 @@ namespace BlogMaster.Core.Services
                 
                 
                 
-                IsFeatured = true,
-                IsPublished = false,
+                IsFeatured = blog.IsFeatured == "true" ? true : false,
+                IsPublished = blog.IsPublished == "true" ? true : false,
 
                 CreatedDate = DateTime.UtcNow,
-                DatePublished = null,
+                DatePublished = blog.IsPublished == "true" ? DateTime.UtcNow : null ,
 
                 ViewCount = 0,
                 AverageRating = null,
@@ -420,6 +444,36 @@ namespace BlogMaster.Core.Services
             {
                 throw new Exception($"BlogService:Could not createblog >> {ex.Message}");
             }
+
+            // add list of categories
+            if(blog.CategoriesIds != null)
+            {
+                foreach(string categoryid in blog.CategoriesIds)
+                {
+                    await AddCategoryToBlogAsync(entity.BlogId, Guid.Parse(categoryid));
+                }
+            }
+            // add list of tags
+            if (blog.TagsIds != null)
+            {
+                foreach (string TagsId in blog.TagsIds)
+                {
+                    await AddTagToBlogAsync(entity.BlogId, Guid.Parse(TagsId));
+                }
+            }
+
+
+            // add list of keywords
+            if (blog.KeywordsIds != null)
+            {
+                foreach (string keywordid in blog.KeywordsIds)
+                {
+                    await AddKeywordToBlogAsync(entity.BlogId, Guid.Parse(keywordid));
+                }
+            }
+
+
+
         }
 
         public async Task CreateCategoryAsync(CategoryPostPutDto category)

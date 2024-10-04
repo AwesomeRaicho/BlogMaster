@@ -195,5 +195,18 @@ namespace BlogMaster.Infrastructure.DataAccess
             }
             throw new Exception("Blogs Table does not exist");
         }
+
+        public async Task<IEnumerable<Tag?>> GetAllBlogTags(Guid blogId)
+        {
+            if (_context.BlogTags == null)
+            {
+                throw new InvalidOperationException("BlogTags table does not exist");
+            }
+
+            return await _context.BlogTags
+                .Where(bt => bt.BlogId == blogId)
+                .Select(bt => bt.Tag)
+                .ToListAsync();
+        }
     }
 }

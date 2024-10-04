@@ -33,5 +33,8 @@ namespace BlogMaster.Core.Contracts
         public Task<bool> IsSubscriptionRequired(Guid blogId);
 
         public Task<IEnumerable<Blog>> GetAllBlogPreviewsByKeyword(Guid keywordId, int pageIndex, int pageSize);
+
+        //Tags
+        public Task<IEnumerable<Tag?>> GetAllBlogTags(Guid blogId);
     }
 }

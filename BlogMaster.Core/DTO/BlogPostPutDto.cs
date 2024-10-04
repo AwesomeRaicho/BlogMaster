@@ -21,9 +21,12 @@ namespace BlogMaster.Core.DTO
         public string? DescriptionEs { get; set; }  // Spanish description
         public string? ArticleEn { get; set; }  // English article
         public string? ArticleEs { get; set; }  // Spanish article
-        
 
 
+
+
+        public string? IsFeatured { get; set; }
+        public string? IsPublished { get; set; }
         public string? IsSubscriptionRequired { get; set; }
 
         [Required(ErrorMessage = "Blog author is required")]
@@ -32,6 +35,13 @@ namespace BlogMaster.Core.DTO
 
         public Guid BlogId { get; set; }
         public Guid UserId { get; set; }
+
+        //categories, tags and keywords
+        public List<string>? CategoriesIds { get; set; }
+        public List<string>? TagsIds { get; set; }
+        public List<string>? KeywordsIds { get; set; }
+
+
         
     }
 }

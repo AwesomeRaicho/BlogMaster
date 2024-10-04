@@ -1,27 +1,22 @@
 ﻿@{
     Layout = "~/Views/Shared/_AdministratorLayout.cshtml";
 }
+@model BlogEditViewDto;
 
-<div class="container mb-5 pb-5">
-    <div class="pt-5">
-        <h1 class="mb-4">New Blog</h1>
+
+<div class="container">
+    <div class="pt-5 mb-5">
         <!-- Titles -->
         <h4>Title</h4>
 
-        <form action="/create-blog" method="post">
+        <form method="post">
             <div class="mb-3" style="max-width: 500px">
                 <label for="TitleEn" class="form-label">Title (English)</label>
                 <input type="text"
                        class="form-control"
                        id="TitleEn"
-                       name="TitleEn" />
-            </div>
-            <div class="mb-3" style="max-width: 500px">
-                <label for="TitleEs" class="form-label">Title (Spanish)</label>
-                <input type="text"
-                       class="form-control"
-                       id="TitleEs"
-                       name="TitleEs" />
+                       name="TitleEn"
+                       value="@(string.IsNullOrEmpty(Model.BlogResponseDto?.TitleEn) ? "" : Model.BlogResponseDto?.TitleEn)" />
             </div>
 
             <!-- Description -->
@@ -33,16 +28,10 @@
                           class="form-control"
                           id="DescriptionEn"
                           name="DescriptionEn">
+                    @(string.IsNullOrEmpty(Model.BlogResponseDto?.DescriptionEn) ? "" : Model.BlogResponseDto?.DescriptionEn)
             </textarea>
             </div>
-            <div class="mb-3" style="max-width: 500px">
-                <label for="DescriptionEs" class="form-label">Description (Spanish)</label>
-                <textarea type="text"
-                          class="form-control"
-                          id="DescriptionEs"
-                          name="DescriptionEs">
-            </textarea>
-            </div>
+
             <!-- Article -->
             <h4>Article</h4>
             <p class="ps-2 border rounded-2 text-danger bg-danger-subtle">
@@ -61,17 +50,169 @@
                           class="form-control"
                           id="ArticleEn"
                           name="ArticleEn">
+                    @(string.IsNullOrEmpty(Model.BlogResponseDto?.ArticleEn) ? "" : Model.BlogResponseDto?.ArticleEn)
             </textarea>
             </div>
+
+            <h1>Español</h1>
+
+            <div class="mb-3" style="max-width: 500px">
+                <label for="TitleEs" class="form-label">Title (Spanish)</label>
+                <input type="text"
+                       class="form-control"
+                       id="TitleEs"
+                       name="TitleEs"
+                       value="@(string.IsNullOrEmpty(Model.BlogResponseDto?.TitleEs) ? "" : Model.BlogResponseDto?.TitleEs)" />
+            </div>
+
+            <!-- Description -->
+            <h4>Description</h4>
+
+            <div class="mb-3" style="max-width: 500px">
+                <label for="DescriptionEs" class="form-label">Description (Spanish)</label>
+                <textarea type="text"
+                          class="form-control"
+                          id="DescriptionEs"
+                          name="DescriptionEs">
+                    @(string.IsNullOrEmpty(Model.BlogResponseDto?.DescriptionEs) ? "" : Model.BlogResponseDto?.DescriptionEs)
+            </textarea>
+            </div>
+            <!-- Article -->
+            <h4>Article</h4>
+            <p class="ps-2 border rounded-2 text-danger bg-danger-subtle">
+                Images will be embeded through fetch with javascript. Where ever you
+                would like to embed the image, simply add: <br />
+                <span class="text-secondary fw-bold">
+                    &lt;img class="img-fluid d-block m-auto blog-image"
+                    style="max-height: 400px" /&gt;
+                </span><br />
+                Javascript will take care of getting the image and adding them in
+                order.
+            </p>
+
             <div class="mb-3">
                 <label for="ArticleEs" class="form-label">Article (Spanish) in HTML</label>
                 <textarea type="text"
                           class="form-control"
                           id="ArticleEs"
                           name="DescriptionEs">
+                    @(string.IsNullOrEmpty(Model.BlogResponseDto?.ArticleEs) ? "" : Model.BlogResponseDto?.ArticleEs)
             </textarea>
             </div>
-            <h4>Author</h4>
+            <hr />
+            <!-- Categories -->
+            <h4>Categories</h4>
+            <div class="mt-2">
+                <p class="d-inline-flex gap-1">
+                    <button class="btn btn-primary"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapsecats"
+                            aria-expanded="false"
+                            aria-controls="collapseExample">
+                        Select
+                    </button>
+                </p>
+                <div class="collapse" id="collapsecats">
+                    <div class="form-check form-check-inline">
+                        @if (Model.AllCategories != null)
+                        {
+                            foreach (CategoryResponseDto category in Model.AllCategories)
+                            {
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           name="CategoriesIds"
+                                           value="@(category.CategoryId)"
+                                           id="@(category.CategoryId)"
+                                    @(Model.BlogResponseDto?.Categories != null && Model.BlogResponseDto.Categories.Any(c => c.CategoryId == category.CategoryId) ? "checked" : "") />
+                                    <label class="form-check-label" for="@(category.CategoryId)">
+                                        @(category.CategoryNameEn) / @(category.CategoryNameEs)
+                                    </label>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <!-- Tag -->
+            <h4>Tags</h4>
+            <div class="mt-2">
+                <p class="d-inline-flex gap-1">
+                    <button class="btn btn-primary"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseTags"
+                            aria-expanded="false"
+                            aria-controls="collapseExample">
+                        Select
+                    </button>
+                </p>
+                @if (Model.AllTags != null)
+                {
+                    <div class="collapse" id="collapseTags">
+                        <div class="form-check form-check-inline">
+                            @foreach (TagResponseDto tag in Model.AllTags)
+                            {
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           name="TagsIds"
+                                           value="@(tag.TagId)"
+                                           id="@(tag.TagId)"
+                                    @(Model.BlogResponseDto?.Tags != null && Model.BlogResponseDto.Tags.Any(c => c.TagId == tag.TagId) ? "checked" : "") />
+                                    <label class="form-check-label" for="@(tag.TagId)">
+                                        @(tag.TagNameEn) / @(tag.TagNameEs)
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+
+                }
+
+            </div>
+            <hr />
+            <!-- Keywords -->
+            <h4>Keywords</h4>
+            <div class="mt-2">
+                <p class="d-inline-flex gap-1">
+                    <button class="btn btn-primary"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseKeywords"
+                            aria-expanded="false"
+                            aria-controls="collapseExample">
+                        Select
+                    </button>
+                </p>
+                <div class="collapse" id="collapseKeywords">
+                    <div class="form-check form-check-inline">
+                        @if (Model.AllKeywords != null)
+                        {
+                            foreach (KeywordResponseDto keyword in Model.AllKeywords)
+                            {
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input d-inline"
+                                           type="checkbox"
+                                           name="KeywordsIds"
+                                           value="@(keyword.KeywordId)"
+                                           id="@(keyword.KeywordId)"
+                                    @(Model.BlogResponseDto?.Keywords != null && Model.BlogResponseDto.Keywords.Any(c => c.KeywordId == keyword.KeywordId) ? "checked" : "") />
+
+                                    <label class="form-check-label" for="@(keyword.KeywordId)">
+                                        @(keyword.KeywordNameEn) / @(keyword.KeywordNameEs)
+                                    </label>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <hr />
             <div class="mb-5" style="max-width: 500px">
                 <label for="Author" class="form-label">Author Name</label>
                 <input type="text" class="form-control" id="Author" name="Author" />
@@ -87,7 +228,36 @@
                     Requires Premium Subscription
                 </label>
             </div>
+
+            <!-- Featured Check -->
+            <div class="mb-3 form-check">
+                <input type="checkbox"
+                       class="form-check-input"
+                       id="IsFeatured"
+                       name="IsFeatured"
+                       value="true" />
+                <label class="form-check-label" for="IsFeatured">
+                    Featured
+                </label>
+            </div>
+            <!-- Published -->
+            <div class="mb-3 form-check">
+                <input type="checkbox"
+                       class="form-check-input"
+                       id="IsPublished"
+                       name="IsPublished"
+                       value="true" />
+                <label class="form-check-label" for="IsPublished">
+                    Published
+                </label>
+            </div>
+
+            @if (Model.BlogResponseDto?.BlogId != Guid.Empty)
+            {
+                <input type="hidden" value="@(Model.BlogResponseDto?.BlogId)" name="BlogId"></input>
+            }
             <button type="submit" class="btn btn-primary mt-5">Submit</button>
         </form>
     </div>
 </div>
+

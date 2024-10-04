@@ -31,7 +31,7 @@ namespace BlogMaster.Core.DTO
         public List<CategoryResponseDto>? Categories { get; set; }
         public List<KeywordResponseDto>? Keywords { get; set; } 
         public List<BlogImagesResponseDto>? BlogImages { get; set; } 
-
+        public List <TagResponseDto>? Tags { get; set; }
 
     }
 }

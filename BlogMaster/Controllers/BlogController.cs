@@ -1,5 +1,6 @@
 ﻿using BlogMaster.Core.Contracts;
 using BlogMaster.Core.DTO;
+using BlogMaster.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -18,30 +19,59 @@ namespace BlogMaster.Controllers
         }
 
 
-
-
-
         [HttpGet]
         [Route("/create-blog")]
-        public IActionResult CreateBlog()
+        public async Task<IActionResult> CreateBlog([FromQuery] string blogId)
         {
+            BlogEditViewDto blogEdit = new BlogEditViewDto();
 
-            return View();
+            if(!string.IsNullOrWhiteSpace(blogId))
+            {
+            
+                blogEdit.BlogResponseDto = await _blogService.GetBlogByIdAsync(Guid.Parse(blogId));
+
+
+            }else
+            {
+                blogEdit.BlogResponseDto = new BlogResponseDto();
+            }
+
+
+            blogEdit.AllCategories = (List<CategoryResponseDto>)await _blogService.GetAllCategories();
+            blogEdit.AllTags = (List<TagResponseDto>)await _blogService.GetAllTagsAsync();
+            blogEdit.AllKeywords = (List<KeywordResponseDto>)await _blogService.GetAllKeywordsAsync();
+
+
+            return View(blogEdit);
         }
 
         [HttpPost]
         [Route("/create-blog")]
         public async Task<IActionResult> CreateBlog(BlogPostPutDto blogPost)
         {
+
+
+
             string? id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id == null)
             {
                 return RedirectToAction("SignIn");
             }
+
             blogPost.UserId = Guid.Parse(id);
 
-            await _blogService.CreateBlogAsync(blogPost);
-            return RedirectToAction("AdministratorIndex", "Administrator");
+            if(blogPost.BlogId == Guid.Empty)
+            {
+                await _blogService.CreateBlogAsync(blogPost);
+            }else
+            {
+                await _blogService.UpdateBlogAsync(blogPost);
+            }
+
+
+
+
+            return RedirectToAction("AdminBlogViews");
         }
 
         [HttpGet]
@@ -68,6 +98,9 @@ namespace BlogMaster.Controllers
             return View(previews);
         }
 
+
+
+        //CATEGORIES
         [Route("/categories")]
         public async Task<IActionResult> Categories()
         {
@@ -118,7 +151,7 @@ namespace BlogMaster.Controllers
         }
 
 
-        // CREATE TAGS
+        // TAGS
 
         [Route("/tags")]
         public async Task<IActionResult> Tags()
@@ -172,7 +205,7 @@ namespace BlogMaster.Controllers
             return RedirectToAction("Tags");
         }
 
-        //Keywords
+        // KEYWORDS
         [Route("/keywords")]
         public async Task<IActionResult> Keywords()
         {

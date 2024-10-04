@@ -27,9 +27,9 @@ namespace BlogMaster.Core.Models
 
         public string? Author { get; set; }
 
-        public bool? IsFeatured { get; set; } = true;
+        public bool? IsFeatured { get; set; }
 
-        public bool? IsPublished { get; set; } = false;
+        public bool? IsPublished { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? DatePublished { get; set; }
 
