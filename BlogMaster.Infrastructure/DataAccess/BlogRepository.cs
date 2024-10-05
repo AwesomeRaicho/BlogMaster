@@ -24,6 +24,8 @@ namespace BlogMaster.Infrastructure.DataAccess
                 throw new Exception("No blogs found.");
             }
 
+
+
             // category
             if (!string.IsNullOrEmpty(category))
             {
@@ -207,6 +209,33 @@ namespace BlogMaster.Infrastructure.DataAccess
                 .Where(bt => bt.BlogId == blogId)
                 .Select(bt => bt.Tag)
                 .ToListAsync();
+        }
+
+        public async Task<int> GetBlogCategoryCountAsync(Guid blogId)
+        {
+            if (_context.BlogCategories == null)
+            {
+                throw new Exception("BlogCategories table does not exist");
+            }
+            return await _context.BlogCategories.CountAsync(i => i.BlogId == blogId);
+        }
+
+        public Task<int> GetBlogKeywordsCountAsync(Guid blogId)
+        {
+            if (_context.BlogKeywords == null)
+            {
+                throw new Exception("BlogKeywords table does not exist");
+            }
+            return _context.BlogKeywords.CountAsync(i => i.BlogId == blogId);
+        }
+
+        public async Task<int> GetBlogTagsCountAsync(Guid blogId)
+        {
+            if( _context.BlogTags == null)
+            {
+                throw new Exception("BlogTags table does not exist");
+            }
+            return await _context.BlogTags.CountAsync(i => i.BlogId == blogId);
         }
     }
 }

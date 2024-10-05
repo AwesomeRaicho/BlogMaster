@@ -90,7 +90,7 @@ namespace BlogMaster.Controllers
             }
             ViewBag.PageIndex = pageIndex;
             ViewBag.Category = category;
-            ViewBag.Tags = tags.Count != 0 && tags[0] != null ? tags: null;
+            ViewBag.Tags = tags.Count != 0 && tags[0] != null ? tags : null;
 
 
             var previews = await _blogService.GetAllAdminBlogPreviews(pageIndex, category, tags.Count != 0 && tags[0] != null ? tags : new List<string>());

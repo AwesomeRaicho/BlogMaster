@@ -22,10 +22,13 @@ namespace BlogMaster.Core.Contracts
         public Task<Rating?> GetUserRatingforBlog(Guid blogId, Guid userId);
 
         public Task<IEnumerable<Category?>> GetAllBlogCategories(Guid blogId);
+        public Task<int> GetBlogCategoryCountAsync(Guid blogId);
+
         public Task<int> GetBlogCountAsync();
 
         //keywords
         public Task<IEnumerable<Keyword?>> GetAllBlogKeywords(Guid blogId);
+        public Task<int> GetBlogKeywordsCountAsync(Guid blogId);
 
         //images
         public Task<IEnumerable<BlogImage?>> GetAllBlogImages(Guid blogId);
@@ -36,5 +39,9 @@ namespace BlogMaster.Core.Contracts
 
         //Tags
         public Task<IEnumerable<Tag?>> GetAllBlogTags(Guid blogId);
+        public Task<int> GetBlogTagsCountAsync(Guid blogId);
+
+
+
     }
 }
