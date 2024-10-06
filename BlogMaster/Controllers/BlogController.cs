@@ -49,8 +49,21 @@ namespace BlogMaster.Controllers
         [Route("/create-blog")]
         public async Task<IActionResult> CreateBlog(BlogPostPutDto blogPost)
         {
-
-
+            if (blogPost.CategoriesIds == null) 
+            {
+                blogPost.CategoriesIds = new List<string>();
+            }
+            if (blogPost.TagsIds == null) 
+            {
+                blogPost.TagsIds = new List<string>();
+            }
+            if (blogPost.KeywordsIds == null) 
+            {
+                blogPost.KeywordsIds = new List<string>();
+            }
+            
+            
+            
 
             string? id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id == null)

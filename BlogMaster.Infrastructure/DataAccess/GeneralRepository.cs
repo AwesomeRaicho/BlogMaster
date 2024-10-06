@@ -58,6 +58,7 @@ namespace BlogMaster.Infrastructure.DataAccess
 
         public async Task<IEnumerable<T?>> FindAll(Expression<Func<T, bool>> predicate, int pageIndex, int pageSize)
         {
+
             return await _context.Set<T>()
                 .Where(predicate)
                 .Skip((pageSize - 1) * pageIndex)
@@ -65,6 +66,32 @@ namespace BlogMaster.Infrastructure.DataAccess
                 .ToListAsync();
         }
 
+        public async Task<bool> AddRangeAsync(List<T> Range)
+        {
+            try
+            {
+                await _context.AddRangeAsync(Range);
+                await _context.SaveChangesAsync();
+                return true;
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
 
+        public async Task<bool> RemoveRangeAsync(List<T> Range)
+        {
+            try
+            {
+                _context.RemoveRange(Range);
+                await _context.SaveChangesAsync();
+                return true;
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
     }
 }

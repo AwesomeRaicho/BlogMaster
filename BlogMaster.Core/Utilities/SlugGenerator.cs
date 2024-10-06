@@ -10,10 +10,7 @@ namespace BlogMaster.Core.Utilities
     {
         public static string GenerateSlug(string blogTitle)
         {
-            if (string.IsNullOrEmpty(blogTitle))
-            {
-                throw new ArgumentNullException("Title cannot be blank/null");
-            }
+
             
 
             blogTitle = blogTitle.Trim().ToLower();
@@ -39,14 +36,10 @@ namespace BlogMaster.Core.Utilities
                 }
             }
             
-            string slug = slugBuilder.ToString().Trim();
+            
+            return slugBuilder.ToString().Trim();
 
-            if (string.IsNullOrEmpty(slug))
-            {
-                throw new InvalidOperationException("Slug generation resulted in an empty string");
-            }
 
-            return slug;
             
 
         }

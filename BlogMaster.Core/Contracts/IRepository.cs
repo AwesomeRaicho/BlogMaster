@@ -16,6 +16,9 @@ namespace BlogMaster.Core.Contracts
         public Task Update(T entity);
         public Task Delete(T entity);
 
+        public Task<bool> AddRangeAsync(List<T> Range);
+        public Task<bool> RemoveRangeAsync(List<T> Range);
+
 
         public Task<IEnumerable<T>> GetAll(int pageIndex, int pageSize);
 

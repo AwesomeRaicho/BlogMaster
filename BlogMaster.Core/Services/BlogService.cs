@@ -12,6 +12,7 @@ using System.Net.WebSockets;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace BlogMaster.Core.Services
 {
@@ -1115,10 +1116,101 @@ namespace BlogMaster.Core.Services
             entity.DescriptionEn = blog.DescriptionEn;
             entity.DescriptionEs = blog.DescriptionEs;
             entity.IsSubscriptionRequired = blog.IsSubscriptionRequired == "true" ? true : false;
+            entity.IsFeatured = blog.IsFeatured == "true" ? true : false;
+            entity.IsPublished = blog.IsPublished == "true" ? true : false;
 
             await _blogRepository.Update(entity);
 
+            // NEED to make sure that all tags, keywords and categories get updates based on which got removed and added
+
+
+            // ADD/REMOVE CATEGORIES
+
+
+            ///////////////////////////////////////////////////
+            ///// Get current categories associated with the blog
+            var currentCatList = await _blogUniqueRepository.GetAllBlogCategories(blog.BlogId);
+
+            var removeList = currentCatList.Where(c => c != null && blog.CategoriesIds != null && !blog.CategoriesIds.Contains(c.CategoryId.ToString())).Select(c => new Blog_Category()
+            {
+                BlogId = blog.BlogId,
+                CategoryId = c != null ? c.CategoryId : Guid.Empty,
+            }).ToList();
+
+            var addList = blog.CategoriesIds != null ?  blog.CategoriesIds.Where(c => !currentCatList.Any(d => d?.CategoryId.ToString() == c)).Select(s => new Blog_Category()
+            {
+                BlogId = blog.BlogId,
+                CategoryId = Guid.Parse(s),
+            }).ToList() : null;
+            if (removeList.Count > 0)
+            {
+                await _blogCategoryRepository.RemoveRangeAsync(removeList);
+            }
+
+            if (addList != null && addList.Count > 0)
+            {
+                await _blogCategoryRepository.AddRangeAsync(addList);
+            }
+
+
+
+            // ADD/REMOVE TAGS 
+
+            var currentTagList = await _blogUniqueRepository.GetAllBlogTags(blog.BlogId);
+
+            var tagsToRemove = currentTagList.Where(tag => tag != null && blog.TagsIds != null && !blog.TagsIds.Contains(tag.TagId.ToString())).Select(k => new Blog_Tag()
+            {
+                BlogId = blog.BlogId,
+                TagId = k != null ? k.TagId : Guid.Empty,
+            }).ToList();
+
+            var addTagList = blog.TagsIds != null ? blog.TagsIds.Where(stringId => !currentTagList.Any(tag => tag != null && tag.TagId.ToString() == stringId)).Select(stringId => new Blog_Tag()
+            {
+                BlogId = blog.BlogId,
+                TagId = Guid.Parse(stringId)
+            }).ToList() : null;
+
+            if (tagsToRemove.Count > 0)
+            {
+                await _blogTagRepository.RemoveRangeAsync(tagsToRemove);
+            }
+            if (addTagList != null && addTagList.Count > 0)
+            {
+                await _blogTagRepository.AddRangeAsync(addTagList);
+            }
+
+
+
+            // ADD/REMOVE KEYWORDS (up next)
+
+            var currentKeywordList = await _blogUniqueRepository.GetAllBlogKeywords(blog.BlogId);
+
+            var keywordsToRemove = currentKeywordList.Where(keyword => keyword != null && blog.KeywordsIds != null && !blog.KeywordsIds.Contains(keyword.KeywordId.ToString())).Select(keyword => new Blog_Keyword()
+            {
+                BlogId = blog.BlogId,
+                KeywordId = keyword != null ?  keyword.KeywordId : Guid.Empty
+            }).ToList();
+
+            var keywordToAdd = blog.KeywordsIds != null ? blog.KeywordsIds.Where(keywordId => !currentKeywordList.Any(keyword => keyword != null && keyword.KeywordId.ToString() == keywordId)).Select(keywordId => new Blog_Keyword()
+            {
+                BlogId = blog.BlogId,
+                KeywordId = Guid.Parse(keywordId)
+            }).ToList() : null;
+
+            if (keywordsToRemove.Count > 0)
+            {
+                await _blogKeywordRepository.RemoveRangeAsync(keywordsToRemove);
+            }
+            if (keywordToAdd != null && keywordToAdd.Count > 0)
+            {
+                await _blogKeywordRepository.AddRangeAsync(keywordToAdd);
+            }
+
+
+
         }
+
+
 
         public async Task UpdateBlogModigicationAsync(ModificationPostPutDto modificationPostPutDto)
         {
