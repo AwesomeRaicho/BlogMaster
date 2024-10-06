@@ -85,6 +85,9 @@ namespace BlogMaster.Core.Services
                 ViewCount = blog.ViewCount,
                 AverageRating = blog.AverageRating,
                 RatingCount = blog.RatingCount,
+                IsFeatured = blog.IsFeatured,
+                IsPublished = blog.IsPublished,
+                IsSubscriptionRequired = blog.IsSubscriptionRequired,
             };
 
 
@@ -802,7 +805,7 @@ namespace BlogMaster.Core.Services
                 throw new Exception("Blog does not exist");
             }
 
-            BlogResponseDto response = await this.CreateBlogResponseDto(blog);
+            BlogResponseDto response = await CreateBlogResponseDto(blog);
 
 
             return response;
@@ -1226,10 +1229,10 @@ namespace BlogMaster.Core.Services
                     BlogId = blog.BlogId,
                     UserId = blog.UserId,                    
                     BlogName = blog.TitleEn + "..." + blog.TitleEs,
-                    TagsCount = await _blogUniqueRepository.GetBlogTagsCountAsync(blog.BlogId), //blog.BlogTags != null ? blog.BlogTags.Count : 0,
+                    TagsCount = await _blogUniqueRepository.GetBlogTagsCountAsync(blog.BlogId), 
                     Author = blog.Author,
-                    CategoryCount = await _blogUniqueRepository.GetBlogCategoryCountAsync(blog.BlogId), //blog.BlogCategories != null ? blog.BlogCategories.Count : 0,
-                    KeywordCount = await _blogUniqueRepository.GetBlogKeywordsCountAsync(blog.BlogId), //blog.BlogKeywords != null ? blog.BlogKeywords.Count : 0,
+                    CategoryCount = await _blogUniqueRepository.GetBlogCategoryCountAsync(blog.BlogId), 
+                    KeywordCount = await _blogUniqueRepository.GetBlogKeywordsCountAsync(blog.BlogId), 
                     ViewCount = blog.ViewCount,
                     AverageRating = blog.AverageRating,
                     Published = blog.IsPublished,

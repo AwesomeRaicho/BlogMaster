@@ -69,8 +69,6 @@ namespace BlogMaster.Controllers
             }
 
 
-
-
             return RedirectToAction("AdminBlogViews");
         }
 

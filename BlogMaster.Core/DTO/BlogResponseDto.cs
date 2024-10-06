@@ -25,7 +25,9 @@ namespace BlogMaster.Core.DTO
         public int? ViewCount { get; set; }
         public decimal? AverageRating { get; set; }
         public int? RatingCount { get; set; }
-
+        public bool? IsPublished { get; set; }
+        public bool? IsFeatured { get; set; }
+        public bool? IsSubscriptionRequired { get; set; }
 
         public List<CommentRatingResponseDto>? CommentsRatings { get; set; } 
         public List<CategoryResponseDto>? Categories { get; set; }

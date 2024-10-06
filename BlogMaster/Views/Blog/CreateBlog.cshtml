@@ -215,15 +215,17 @@
             <hr />
             <div class="mb-5" style="max-width: 500px">
                 <label for="Author" class="form-label">Author Name</label>
-                <input type="text" class="form-control" id="Author" name="Author" />
+                <input type="text" class="form-control" id="Author" name="Author" value="@(Model.BlogResponseDto != null ? Model.BlogResponseDto.Author : "")" />
             </div>
             <!-- Sub Check -->
             <div class="mb-3 form-check">
+
                 <input type="checkbox"
                        class="form-check-input"
                        id="IsSubscriptionRequired"
                        name="IsSubscriptionRequired"
-                       value="true" />
+                       value="true" 
+                @(Model.BlogResponseDto != null && Model.BlogResponseDto.IsSubscriptionRequired == true ? "checked" : "") />
                 <label class="form-check-label" for="IsSubscriptionRequired">
                     Requires Premium Subscription
                 </label>
@@ -235,7 +237,8 @@
                        class="form-check-input"
                        id="IsFeatured"
                        name="IsFeatured"
-                       value="true" />
+                       value="true" 
+                @(Model.BlogResponseDto != null && Model.BlogResponseDto.IsFeatured == true ? "checked" : "") />
                 <label class="form-check-label" for="IsFeatured">
                     Featured
                 </label>
@@ -246,7 +249,8 @@
                        class="form-check-input"
                        id="IsPublished"
                        name="IsPublished"
-                       value="true" />
+                       value="true" 
+                @(Model.BlogResponseDto != null && Model.BlogResponseDto.IsPublished == true ? "checked" : "") />
                 <label class="form-check-label" for="IsPublished">
                     Published
                 </label>
