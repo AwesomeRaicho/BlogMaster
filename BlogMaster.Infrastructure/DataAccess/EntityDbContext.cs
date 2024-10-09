@@ -396,7 +396,30 @@ namespace BlogMaster.Infrastructure.DataAccess
                 .HasMaxLength(15);
 
 
+
+
+
             //<TAG> end
+
+            modelBuilder.Entity<Comment>()
+                .HasOne(e => e.Blog)
+                .WithMany(e => e.Comments)
+                .HasForeignKey(e => e.BlogId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Rating>()
+                .HasOne(e => e.Blog)
+                .WithMany(e => e.Ratings)
+                .HasForeignKey(e => e.BlogId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Modification>()
+                .HasOne(e => e.Blog)
+                .WithMany(e => e.Modifications)
+                .HasForeignKey(e => e.BlogId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
 
 
             //<SUBSCRIPTION>

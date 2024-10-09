@@ -18,6 +18,40 @@ namespace BlogMaster.Controllers
             _blogService = blogService;
         }
 
+        [HttpGet]
+        [Route("/delete-tag")]
+        public async Task<IActionResult> DeleteTag([FromQuery] string tagId)
+        {
+            if(string.IsNullOrEmpty(tagId))
+            {
+                return RedirectToAction("Tags");
+            }
+
+
+
+            await _blogService.DeleteTagAsync(Guid.Parse(tagId));
+            return RedirectToAction("Tags");
+
+
+        }
+
+        [HttpGet]
+        [Route("/delete-blog")]
+        public async Task<IActionResult> DeleteBlog([FromQuery] string blogId)
+        {
+            if(string.IsNullOrEmpty(blogId))
+            {
+                return RedirectToAction("AdminBlogViews");
+            }
+
+            await _blogService.DeleteBlogAsync(Guid.Parse(blogId));
+            //await _blogService.delete
+
+
+
+            return RedirectToAction("AdminBlogViews");
+        }
+
 
         [HttpGet]
         [Route("/create-blog")]
@@ -49,6 +83,7 @@ namespace BlogMaster.Controllers
         [Route("/create-blog")]
         public async Task<IActionResult> CreateBlog(BlogPostPutDto blogPost)
         {
+            //
             if (blogPost.CategoriesIds == null) 
             {
                 blogPost.CategoriesIds = new List<string>();
@@ -118,7 +153,23 @@ namespace BlogMaster.Controllers
             IEnumerable<CategoryResponseDto> categories = await _blogService.GetAllCategories();
             return View(categories);
         }
-             
+
+        [HttpGet]
+        [Route("/delete-category")]
+        public async Task<IActionResult> DeleteCategory([FromQuery] string categoryId)
+        {
+            if(string.IsNullOrEmpty(categoryId))
+            {
+                return RedirectToAction("Categories");
+            }
+            await _blogService.DeleteCategoryAsync(Guid.Parse(categoryId));
+
+
+            return RedirectToAction("Categories");
+
+
+        }
+
         [HttpGet]
         [Route("/create-category")]
         public IActionResult CreateCategory([FromQuery] string CategoryId, string CategoryNameEn, string CategoryNameEs)
@@ -223,6 +274,22 @@ namespace BlogMaster.Controllers
             IEnumerable<KeywordResponseDto> keywords = await _blogService.GetAllKeywordsAsync();
 
             return View(keywords);
+        }
+
+        [HttpGet]
+        [Route("/delete-keyword")]
+        public async Task<IActionResult> DeleteKeyword([FromQuery] string keywordId)
+        {
+            if(string.IsNullOrEmpty(keywordId))
+            {
+                return RedirectToAction("Keywords");
+            }
+
+            await _blogService.DeleteKeywordAsync(Guid.Parse(keywordId));
+
+            return RedirectToAction("Keywords");
+
+
         }
 
 

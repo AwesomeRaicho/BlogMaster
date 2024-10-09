@@ -567,10 +567,12 @@ namespace BlogMaster.Core.Services
         {
 
             var entity = await _blogRepository.Get(id);
+
             if(entity == null)
             {
                 throw new Exception("Blog does not exist"); 
             }
+
             await _blogRepository.Delete(entity);
         }
 
