@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
+
+
 namespace BlogMaster.Controllers
 {
     [Authorize(Roles = "Administrator,Writter")]
@@ -81,9 +83,9 @@ namespace BlogMaster.Controllers
 
         [HttpPost]
         [Route("/create-blog")]
-        public async Task<IActionResult> CreateBlog(BlogPostPutDto blogPost)
+        public async Task<IActionResult> CreateBlog(BlogPostPutDto blogPost, List<IFormFile> blogImage)
         {
-            //
+            
             if (blogPost.CategoriesIds == null) 
             {
                 blogPost.CategoriesIds = new List<string>();
@@ -335,5 +337,9 @@ namespace BlogMaster.Controllers
 
             return RedirectToAction("Keywords");
         }
+
+
+
+
     }
 }
