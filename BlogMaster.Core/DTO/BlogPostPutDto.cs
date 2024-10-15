@@ -41,7 +41,8 @@ namespace BlogMaster.Core.DTO
         public List<string>? TagsIds { get; set; }
         public List<string>? KeywordsIds { get; set; }
 
-
+        //images in add/remove 
+        public List<string>? ImageSrcs { get; set; }
         
     }
 }

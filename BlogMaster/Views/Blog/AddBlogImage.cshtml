@@ -1,7 +1,12 @@
-﻿@{
+﻿@model BlogPostPutDto;
+@{
     Layout = "~/Views/Shared/_AdministratorLayout.cshtml";
+
+    int? imageCount = Model.ImageSrcs?.Count();
+    Console.WriteLine("Stop...Hammer time");
 }
-@model BlogPostPutDto;
+
+
 
 <div class="container">
 
@@ -10,8 +15,15 @@
 
 
     <form method="post" enctype="multipart/form-data">
-
-
+        @if (Model.ImageSrcs != null)
+        {
+            @foreach(string imgSrc in Model.ImageSrcs)
+            {
+                <div>
+                    <img src="@(imgSrc)" alt="image" style="margin: 5px; width: 100px"/>
+                </div>
+            }
+        }
 
         <div class="mb-3" id="imageUploadContainer">
             <label for="formFile" class="form-label">Add Blog Images</label>

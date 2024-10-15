@@ -343,8 +343,19 @@ namespace BlogMaster.Controllers
         public async Task<IActionResult> AddBlogImage([FromQuery] BlogPostPutDto blogDto)
         {
             List<BlogImagesResponseDto> images = await _blogService.GetAllBlogImages(blogDto.BlogId.ToString());
-            
-            ViewBag.Images = images;
+            List<string> srcs = new List<string>();
+
+            foreach(BlogImagesResponseDto img in images)
+            {
+                if(img.ImageData != null)
+                {
+                    string base64String = Convert.ToBase64String(img.ImageData);
+                    string imgSrc = $"data:{img.MimeType};base64,{base64String}";
+                    srcs.Add(imgSrc);
+                }
+            }
+
+            blogDto.ImageSrcs = srcs;
 
 
 
@@ -368,7 +379,7 @@ namespace BlogMaster.Controllers
                         {
                             await image.CopyToAsync(str);
                             newImageDto.ImageData = str.ToArray();
-                            newImageDto.ImageName = image.Name;
+                            newImageDto.ImageName = image.FileName;
                             newImageDto.MimeType = image.ContentType;
                             newImageDto.BlogId = blogDto.BlogId;
                         }
