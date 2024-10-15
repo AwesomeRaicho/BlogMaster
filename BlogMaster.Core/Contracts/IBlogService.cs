@@ -50,7 +50,7 @@ namespace BlogMaster.Core.Contracts
 
         public Task AddImageToBlogAsync(BlogImagePostPutDto image);
         public Task RemoveImageAsync(Guid imageId);
-
+        public Task<List<BlogImagesResponseDto>> GetAllBlogImages(string blogId);
 
 
         // Category Management

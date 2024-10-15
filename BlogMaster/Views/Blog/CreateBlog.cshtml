@@ -209,18 +209,14 @@
 
             <hr />
 
-            <!-- Images -->
-            <div class="mb-3" id="imageUploadContainer">
-                <label for="formFile" class="form-label">Add Blog Images</label>
-                <input class="form-control mb-2" name="blogImage" type="file" id="formFile" accept="image/*" >
-            </div>
-            <button type="button" class="btn btn-success mb-3" id="addMoreImages">Add More Images</button>
-            <button type="button" class="btn btn-danger mb-3" id="removeLastImage">Remove Last Image</button>
+
+
             <!-- Author Name -->
             <div class="mb-5" style="max-width: 500px">
                 <label for="Author" class="form-label">Author Name</label>
-                <input type="text" class="form-control" id="Author" name="Author" value="@(Model.BlogResponseDto != null ? Model.BlogResponseDto.Author : "")" />
+                /<input type="text" class="form-control" id="Author" name="Author" value="@(Model.BlogResponseDto != null ? Model.BlogResponseDto.Author : "")" />
             </div>
+
 
             <!-- Sub Check -->
             <div class="mb-3 form-check">
@@ -263,9 +259,17 @@
 
             @if (Model.BlogResponseDto?.BlogId != Guid.Empty)
             {
-                <input type="hidden" value="@(Model.BlogResponseDto?.BlogId)" name="BlogId"></input>
+                <input type="hidden" value="@(Model.BlogResponseDto?.BlogId)" name="BlogId" />
             }
 
+            @if(Model.BlogResponseDto?.BlogId != Guid.Empty)
+            {
+                <div>
+                    <a href="/add-blog-image?BlogId=@(Model.BlogResponseDto?.BlogId)" class="btn btn-info mb-3">Add/Remove Images</a>
+                </div>
+
+            }
+            
             <button type="submit" class="btn btn-primary mt-5">@(Model.BlogResponseDto?.BlogId != Guid.Empty ? "Edit" : "Create")</button>
 
             @if (Model.BlogResponseDto?.BlogId != Guid.Empty)
@@ -303,78 +307,4 @@
         }
 
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const container = document.getElementById('imageUploadContainer');
-            const addMoreButton = document.getElementById('addMoreImages');
-            const removeLastButton = document.getElementById('removeLastImage');
-
-            // Store the file input elements for tracking
-            const fileInputs = [];
-
-            // Function to handle file input change
-            const handleFileInputChange = (input) => {
-                const files = input.files;
-                const previewContainer = document.createElement('div');
-
-                Array.from(files).forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.classList.add('image-preview');
-                        img.style.width = '100px'; // Set a fixed width for the preview
-                        img.style.margin = '5px';  // Add some spacing
-                        previewContainer.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                });
-
-                // Append the preview container to the form
-                container.appendChild(previewContainer);
-            };
-
-            // Initial file input change event
-            const initialInput = container.querySelector('input[type="file"]');
-            initialInput.addEventListener('change', function () {
-                handleFileInputChange(initialInput);
-            });
-
-            // Add more file inputs
-            addMoreButton.addEventListener('click', function () {
-                const newInput = document.createElement('input');
-                newInput.type = 'file';
-                newInput.name = 'blogImage'; 
-                newInput.accept = 'image/*';
-                newInput.classList.add('form-control'); 
-                newInput.classList.add('mb-2'); 
-
-                
-                newInput.addEventListener('change', function () {
-                    handleFileInputChange(newInput);
-                });
-
-                
-                container.appendChild(newInput);
-                fileInputs.push(newInput); 
-            });
-
-            // Remove the last file input
-            removeLastButton.addEventListener('click', function () {
-                if (fileInputs.length > 0) {
-                    const lastInput = fileInputs.pop(); 
-                    lastInput.remove(); 
-
-                    // Also remove the corresponding previews (if any)
-                    const previews = container.querySelectorAll('.image-preview');
-                    if (previews.length > 0) {
-                        const lastPreview = previews[previews.length - 1];
-                        lastPreview.parentElement.remove(); // Remove the last preview
-                    }
-                }
-            });
-        });
-    </script>
-
 </div>

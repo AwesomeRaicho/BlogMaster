@@ -99,7 +99,7 @@ namespace BlogMaster.Controllers
                 blogPost.KeywordsIds = new List<string>();
             }
             
-            
+
             
 
             string? id = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -338,8 +338,50 @@ namespace BlogMaster.Controllers
             return RedirectToAction("Keywords");
         }
 
+        [HttpGet]
+        [Route("/add-blog-image")]
+        public async Task<IActionResult> AddBlogImage([FromQuery] BlogPostPutDto blogDto)
+        {
+            List<BlogImagesResponseDto> images = await _blogService.GetAllBlogImages(blogDto.BlogId.ToString());
+            
+            ViewBag.Images = images;
 
 
+
+            return View(blogDto);
+        }
+
+
+        [HttpPost]
+        [Route("/add-blog-image")]
+        public async Task<IActionResult> AddBlogImage(BlogPostPutDto blogDto, List<IFormFile> newImages, List<string> deletedImages)
+        {
+
+            if (newImages.Count != 0)
+            {
+                foreach (IFormFile image in newImages)
+                {
+                    if (image != null && image.Length > 0)
+                    {
+                        BlogImagePostPutDto newImageDto = new BlogImagePostPutDto();
+                        using (MemoryStream str = new MemoryStream())
+                        {
+                            await image.CopyToAsync(str);
+                            newImageDto.ImageData = str.ToArray();
+                            newImageDto.ImageName = image.Name;
+                            newImageDto.MimeType = image.ContentType;
+                            newImageDto.BlogId = blogDto.BlogId;
+                        }
+
+                        await _blogService.AddImageToBlogAsync(newImageDto);
+                    }
+                }
+            }
+
+
+
+            return RedirectToAction("CreateBlog", new { blogId = blogDto.BlogId });
+        }
 
     }
 }

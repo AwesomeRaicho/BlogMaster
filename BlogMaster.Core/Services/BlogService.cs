@@ -1365,7 +1365,29 @@ namespace BlogMaster.Core.Services
             return responseDto;
         }
 
+        public async Task<List<BlogImagesResponseDto>> GetAllBlogImages(string blogId)
+        {
+            List<BlogImagesResponseDto> imageresponses = new List<BlogImagesResponseDto>();
 
+            IEnumerable<BlogImage?> images = await _blogUniqueRepository.GetAllBlogImages(Guid.Parse(blogId));
 
+            foreach (BlogImage? image in images)
+            {
+                if (image == null) continue;
+
+                BlogImagesResponseDto imageResponse = new BlogImagesResponseDto()
+                {
+                    BlogImageId = image.ImageId,
+                    ImageData = image.ImageData,
+                    ImageName = image.ImageName,
+                    MimeType = image.MimeType,
+                    Url = image.Url,
+                };
+
+                imageresponses.Add(imageResponse);
+            }
+
+            return imageresponses;
+        }
     }
 }
