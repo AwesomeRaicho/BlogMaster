@@ -42,7 +42,7 @@ namespace BlogMaster.Core.DTO
         public List<string>? KeywordsIds { get; set; }
 
         //images in add/remove 
-        public List<string>? ImageSrcs { get; set; }
+        public List<ImageViewDto>? ImageViews{ get; set; }
         
     }
 }

@@ -343,19 +343,28 @@ namespace BlogMaster.Controllers
         public async Task<IActionResult> AddBlogImage([FromQuery] BlogPostPutDto blogDto)
         {
             List<BlogImagesResponseDto> images = await _blogService.GetAllBlogImages(blogDto.BlogId.ToString());
-            List<string> srcs = new List<string>();
+            List<ImageViewDto> imageViewList = new List<ImageViewDto>();
 
             foreach(BlogImagesResponseDto img in images)
             {
+
                 if(img.ImageData != null)
                 {
+                    ImageViewDto imageView = new ImageViewDto();
                     string base64String = Convert.ToBase64String(img.ImageData);
-                    string imgSrc = $"data:{img.MimeType};base64,{base64String}";
-                    srcs.Add(imgSrc);
+
+                    imageView.src = $"data:{img.MimeType};base64,{base64String}";
+                    imageView.MimeType = img.MimeType;
+                    imageView.ImageId = img.BlogImageId;
+                    imageView.Filename = img.ImageName;
+
+                    imageViewList.Add(imageView);
+
                 }
+
             }
 
-            blogDto.ImageSrcs = srcs;
+            blogDto.ImageViews = imageViewList;
 
 
 
@@ -367,6 +376,13 @@ namespace BlogMaster.Controllers
         [Route("/add-blog-image")]
         public async Task<IActionResult> AddBlogImage(BlogPostPutDto blogDto, List<IFormFile> newImages, List<string> deletedImages)
         {
+            if(deletedImages.Count > 0) 
+            {
+                foreach(string id in deletedImages)
+                {
+                    await _blogService.RemoveImageAsync(Guid.Parse(id));
+                }
+            }
 
             if (newImages.Count != 0)
             {

@@ -2,7 +2,7 @@
 @{
     Layout = "~/Views/Shared/_AdministratorLayout.cshtml";
 
-    int? imageCount = Model.ImageSrcs?.Count();
+    int? imageCount = Model.ImageViews?.Count();
     Console.WriteLine("Stop...Hammer time");
 }
 
@@ -10,21 +10,31 @@
 
 <div class="container">
 
-    <h1>Images Add/Remove</h1>
-
-
+    <h2>Remove existing images</h2>
+    <p class="fs-5 fw-lighter">Check mark any existing images to delete them when submiting</p>
 
     <form method="post" enctype="multipart/form-data">
-        @if (Model.ImageSrcs != null)
+        @if (Model.ImageViews != null)
         {
-            @foreach(string imgSrc in Model.ImageSrcs)
+            @foreach (var imageView in Model.ImageViews)
             {
                 <div>
-                    <img src="@(imgSrc)" alt="image" style="margin: 5px; width: 100px"/>
+                    <img src="@(imageView.src)" alt="image" style="margin: 5px; width: 100px" />
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input d-inline"
+                               type="checkbox"
+                               name="deletedImages"
+                               value="@(imageView.ImageId)"
+                               id="@(imageView.ImageId)" />
+                        <label class="form-check-label" for="@(imageView.ImageId)">
+                            @(imageView.Filename)
+                        </label>
+                    </div>
                 </div>
             }
         }
-
+        <hr/>
+        <h2>Add new images</h2>
         <div class="mb-3" id="imageUploadContainer">
             <label for="formFile" class="form-label">Add Blog Images</label>
             <input class="form-control mb-2" name="newImages" type="file" id="formFile" accept="image/*">
@@ -33,7 +43,7 @@
         <button type="button" class="btn btn-danger mb-3" id="removeLastImage">Remove Last Image</button>
 
         <div>
-            <button type="submit">Add Images</button>
+            <button type="submit" class="btn btn-primary mb-5">Submit</button>
         </div>
 
         </form>
