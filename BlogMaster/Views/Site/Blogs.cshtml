@@ -1,6 +1,220 @@
-﻿
-@{
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@model BlogPreviewsDto
 
 
-<h1>Here you will see all blogs!</h1>
+<!-- Filter Section -->
+    <a
+      class="btn btn-info m-3 text-white fw-bolder fs-5"
+      data-bs-toggle="offcanvas"
+      href="#offcanvas"
+      role="button"
+      aria-controls="offcanvas"
+    >
+      Filters
+    </a>
+
+    <div
+      class="offcanvas offcanvas-start"
+      tabindex="-1"
+      id="offcanvas"
+      aria-labelledby="offcanvasLabel"
+    >
+      <div class="offcanvas-header">
+        <h3 class="offcanvas-title" id="offcanvasLabel">Filters</h3>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+        ></button>
+      </div>
+      <button type="submit" class="btn btn-danger m-3 fw-bold">Apply</button>
+
+      <div class="offcanvas-body">
+        <form method="get" class="p-3">
+          <div class="row">
+            <div class="pb-3">
+              <select
+                name="category"
+                class="form-select"
+                aria-label="Default select"
+              >
+                <option selected disabled>Choose a category</option>
+                <option value="">All</option>
+                @if(Model.Categories != null) { @foreach(Category cat in
+                Model.Categories) { if (ViewBag.Category == cat.CatergoryNameEn)
+                {
+                <option selected value="@(cat.CatergoryNameEn)">
+                  @(cat.CatergoryNameEn)
+                </option>
+                }else {
+                <option value="@(cat.CatergoryNameEn)">
+                  @(cat.CatergoryNameEn)
+                </option>
+                } } }
+              </select>
+            </div>
+          </div>
+          <div class="mt-2">
+            <p class="d-inline-flex gap-1">
+              <button
+                class="btn btn-danger"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapse"
+                aria-expanded="false"
+                aria-controls="collapse"
+              >
+                Tags
+              </button>
+            </p>
+            <div class="collapse" id="collapse">
+              @if (Model.Tags != null && Model.Tags.Count > 0) { @foreach (Tag
+              tag in Model.Tags) { if (ViewBag.Tags != null &&
+              ViewBag.Tags.Contains(tag.TagNameEn)) {
+              <div class="form-check form-check-inline">
+                <input
+                  checked
+                  class="form-check-input"
+                  type="checkbox"
+                  name="tags"
+                  value="@(tag.TagNameEn)"
+                  id="flexCheckDefault_@(tag.TagNameEn)"
+                />
+                <label
+                  class="form-check-label"
+                  for="flexCheckDefault_@(tag.TagNameEn)"
+                >
+                  @(tag.TagNameEn)
+                </label>
+              </div>
+              } else {
+              <div class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="tags"
+                  value="@(tag.TagNameEn)"
+                  id="flexCheckDefault_@(tag.TagNameEn)"
+                />
+                <label
+                  class="form-check-label"
+                  for="flexCheckDefault_@(tag.TagNameEn)"
+                >
+                  @(tag.TagNameEn)
+                </label>
+              </div>
+              } } }
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- Blog List Section -->
+    <div class="container">
+      <div class="row">
+          @* One item *@
+        @if(Model.publicBlogList != null)
+        {
+            @foreach(var preview in Model.publicBlogList)
+            {
+                <div class="col-md-6">
+                    <div class="card mb-3" style="max-width: 540px">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                        <img
+                            src="@(preview?.ImageView?.src)"
+                            class="img-fluid rounded-start"
+                                     alt="@(preview?.ImageView?.Filename)" />
+                        </div>
+                        <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">@(preview?.TitleEn)</h5>
+                            <p class="card-text">
+                            @(preview?.DescriptionEn)
+                            </p>
+                            <p class="card-text">
+                            <small class="text-body-secondary"
+                                >Last updated 3 mins ago</small
+                            >
+                            </p>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            }
+        }
+        @* one item end *@
+        @* One item *@
+        <div class="col-md-6">
+            <div class="card mb-3" style="max-width: 540px">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="/images/UPlaceHolder.jpg"
+                             class="img-fluid rounded-start"
+                             alt="..." />
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Card title</h5>
+                            <p class="card-text">
+                                This is a wider card with supporting text below as a natural
+                                lead-in to additional content. This content is a little bit
+                                longer.
+                            </p>
+                            <p class="card-text">
+                                <small class="text-body-secondary">Last updated 3 mins ago</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @* one item end *@
+      </div>
+
+    </div>
+
+
+@if (Model.PageCount > 1)
+{
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            @if (ViewBag.PageIndex != 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="/admin-blog-views?pageIndex=@(ViewBag.PageIndex - 1)&category=@(ViewBag.Category)&tags=@(string.Join(",", ViewBag.Tags ?? new List<string>()))">Previous</a>
+                </li>
+            }
+
+            @for (int i = Math.Max(1, ViewBag.PageIndex - 2); i <= Math.Min(Model.PageCount, ViewBag.PageIndex + 2); i++)
+            {
+                if (i == ViewBag.PageIndex)
+                {
+                    <li class="page-item active">
+                        <a class="page-link" href="#">@(i)</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="/admin-blog-views?pageIndex=@(i)&category=@(ViewBag.Category)&tags=@(string.Join(",", ViewBag.Tags ?? new List<string>()))">@(i)</a>
+                    </li>
+                }
+            }
+
+            @if (ViewBag.PageIndex != Model.PageCount)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="/admin-blog-views?pageIndex=@(ViewBag.PageIndex + 1)&category=@(ViewBag.Category)&tags=@(string.Join(",", ViewBag.Tags ?? new List<string>()))">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
+
+}

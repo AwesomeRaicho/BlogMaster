@@ -18,6 +18,7 @@ namespace BlogMaster.Core.DTO
         public string? Author { get; set; }
         public DateTime? DatePublished { get; set; }
         public decimal? AverageRating { get; set; }
+        public ImageViewDto? ImageView { get; set; }
 
     }
 }

@@ -13,7 +13,7 @@ namespace BlogMaster.Core.Contracts
         // Blog CRUD Operations
         public Task<BlogResponseDto> GetBlogByIdAsync(Guid id);
         public Task<BlogResponseDto> GetBlogBySlug(string slug);
-        public Task<IEnumerable<PublicBlogListDto>> GetAllBlogPreviews(int pageIndex, int pageSize, string category, List<string> tags);
+        public Task<BlogPreviewsDto> GetAllBlogPreviews(int pageIndex, string category, List<string> tags);
         public Task CreateBlogAsync(BlogPostPutDto blog);
         public Task UpdateBlogAsync(BlogPostPutDto blog);
         public Task DeleteBlogAsync(Guid id);
@@ -51,6 +51,7 @@ namespace BlogMaster.Core.Contracts
         public Task AddImageToBlogAsync(BlogImagePostPutDto image);
         public Task RemoveImageAsync(Guid imageId);
         public Task<List<BlogImagesResponseDto>> GetAllBlogImages(string blogId);
+        public Task<BlogImagesResponseDto?> GetFirstBlogImage(string blogId);
 
 
         // Category Management

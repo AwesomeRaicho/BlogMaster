@@ -32,12 +32,11 @@ namespace BlogMaster.Core.Models
                 Email = "example@example.com",
                 NormalizedEmail = "EXAMPLE@EXAMPLE.COM",
                 EmailConfirmed = true,
-                
             };
 
             modelBuilder.Entity<ApplicationUser>().HasData(admin);
 
-            // Contraseñas de usuarios
+            // Users and passwords
             var hasher =  new PasswordHasher<ApplicationUser>();
             admin.PasswordHash = hasher.HashPassword(admin, "adminpass");
 

@@ -4,6 +4,7 @@ using BlogMaster.Core.Models;
 using BlogMaster.Core.Models.Identity;
 using BlogMaster.Core.Utilities;
 using Microsoft.Win32.SafeHandles;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Printing;
@@ -30,7 +31,6 @@ namespace BlogMaster.Core.Services
         private readonly IBlogRepository _blogUniqueRepository;
 
 
-
         private readonly IRepository<Blog_Category> _blogCategoryRepository;
         private readonly IRepository<Blog_Keyword> _blogKeywordRepository;
         private readonly IRepository<Blog_Tag> _blogTagRepository;
@@ -38,7 +38,6 @@ namespace BlogMaster.Core.Services
 
         // add a way to calculate the avergae rating of a blog
         
-
 
         public BlogService(IRepository<Blog> blogRepository, IRepository<Category> categoryRepository, IRepository<Comment> commentRepository, IRepository<Keyword> keywordRepository, IRepository<Modification> modificationRepository, IRepository<Rating> ratingRepository, IRepository<Tag> tagRepository, IRepository<Blog_Category> blogCategoryRepository, IRepository<Blog_Keyword> blogKeywordRepository, IRepository<Blog_Tag> blogTagRepository, IBlogRepository blogUniqueRepository, IRepository<BlogImage> blogImageRepository, IRepository<ApplicationUser> applicationUser)
         {
@@ -241,12 +240,6 @@ namespace BlogMaster.Core.Services
             return blogResponseDto;
 
         }
-
-
-
-
-
-
 
 
 
@@ -654,11 +647,14 @@ namespace BlogMaster.Core.Services
             await _blogRepository.Update(blog);
         }
 
-        public async Task<IEnumerable<PublicBlogListDto>> GetAllBlogPreviews(int pageIndex, int pageSize, string category, List<string> tags)
+        public async Task<BlogPreviewsDto> GetAllBlogPreviews(int pageIndex, string category, List<string> tags)
         {
+            int pageSize = 50;
+
+
             IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviews(pageIndex, pageSize, category, tags);
 
-            List<PublicBlogListDto> result = new List<PublicBlogListDto>();
+            List<PublicBlogListDto> publicList = new List<PublicBlogListDto>();
 
             foreach(Blog preview in blogs)
             {
@@ -676,10 +672,41 @@ namespace BlogMaster.Core.Services
                     TitleEs = preview.TitleEs,
                 };
 
-                result.Add(blogPreviewDto);
+                publicList.Add(blogPreviewDto);
             }
 
-            return result;
+            foreach(var blogpreview in publicList)
+            {
+                var ImageView = await GetFirstBlogImage(blogpreview.BlogId.ToString());
+
+                if (ImageView != null && ImageView.ImageData != null)
+                {
+                    ImageViewDto imageView = new ImageViewDto();
+                    string base64String = Convert.ToBase64String(ImageView.ImageData);
+
+                    imageView.src = $"data:{ImageView.MimeType};base64,{base64String}";
+                    imageView.MimeType = ImageView.MimeType;
+                    imageView.ImageId = ImageView.BlogImageId;
+                    imageView.Filename = ImageView.ImageName;
+
+                    blogpreview.ImageView = imageView;
+
+                }
+
+            }
+            BlogPreviewsDto response = new BlogPreviewsDto();
+
+            int blogCount = await _blogUniqueRepository.GetBlogCountAsync();
+
+            response.PageCount = (int)Math.Ceiling((double)blogCount / pageSize);
+
+            response.Categories = (List<Category>)await _categoryRepository.GetAll(1, 1000);
+
+            response.Tags = (List<Tag>)await _tagRepository.GetAll(1, 1000);
+
+
+            response.publicBlogList = publicList;
+            return response;
 
         }
 
@@ -1389,5 +1416,27 @@ namespace BlogMaster.Core.Services
 
             return imageresponses;
         }
+        public async Task<BlogImagesResponseDto?> GetFirstBlogImage(string blogId)
+        {
+            List<BlogImagesResponseDto> imageresponses = new List<BlogImagesResponseDto>();
+
+            BlogImage? image = await _blogImageRepository.Find(i => i.BlogId == Guid.Parse(blogId));
+
+            if (image == null) return null;
+
+            BlogImagesResponseDto imageResponse = new BlogImagesResponseDto()
+            {
+                BlogImageId = image.ImageId,
+                ImageData = image.ImageData,
+                ImageName = image.ImageName,
+                MimeType = image.MimeType,
+                Url = image.Url,
+            };
+
+
+            return imageResponse;
+        }
+
+
     }
 }
