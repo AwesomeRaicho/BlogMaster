@@ -7,11 +7,13 @@ using Microsoft.Win32.SafeHandles;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
@@ -229,6 +231,7 @@ namespace BlogMaster.Core.Services
                     ImageName = image.ImageName,
                     MimeType = image.MimeType,
                     Url = image.Url,
+                    CreatedDate = image.CreatedDate,
                 };
 
                 imageresponses.Add(imageResponse);
@@ -298,7 +301,8 @@ namespace BlogMaster.Core.Services
                 ImageData = image.ImageData,
                 MimeType = image.MimeType,
                 ImageName = image.ImageName,
-                Url = image.Url
+                Url = image.Url,
+                CreatedDate = DateTime.UtcNow,
             };
 
             await _blogImageRepository.Create(imageEntity);
@@ -376,6 +380,12 @@ namespace BlogMaster.Core.Services
 
             await _blogTagRepository.Create(entity);
         }
+        private string? RemoveSpacesBetweenTags(string? input)
+        {
+            if (string.IsNullOrEmpty(input)) return input;
+
+            return Regex.Replace(input, @">\s+<", "><");
+        }
 
         public async Task CreateBlogAsync(BlogPostPutDto blog)
         {
@@ -406,15 +416,15 @@ namespace BlogMaster.Core.Services
             {
                 BlogId = Guid.NewGuid(),
                 UserId = blog.UserId,
-                ArticleEn = blog.ArticleEn,
-                ArticleEs = blog.ArticleEs,
-                TitleEn = blog.TitleEn,
-                TitleEs = blog.TitleEs,
-                DescriptionEs = blog.DescriptionEs,
-                DescriptionEn = blog.DescriptionEn,
+                ArticleEn = RemoveSpacesBetweenTags(blog.ArticleEn?.Trim()),
+                ArticleEs = RemoveSpacesBetweenTags(blog.ArticleEs?.Trim()),
+                TitleEn = blog.TitleEn?.Trim(),
+                TitleEs = blog.TitleEs?.Trim(),
+                DescriptionEs = blog.DescriptionEs?.Trim(),
+                DescriptionEn = blog.DescriptionEn?.Trim(),
                 SlugEn = !string.IsNullOrEmpty(blog.TitleEn) ? SlugGenerator.GenerateSlug(blog.TitleEn) : null,
                 SlugEs = !string.IsNullOrEmpty(blog.TitleEs) ? SlugGenerator.GenerateSlug(blog.TitleEs) : null,
-                Author = blog.Author,
+                Author = blog.Author?.Trim(),
                 IsSubscriptionRequired = blog.IsSubscriptionRequired == "true" ? true : false,
                 
                 
@@ -1135,15 +1145,15 @@ namespace BlogMaster.Core.Services
                 throw new Exception("Blog does not exist");
             }
 
-            entity.TitleEs = blog.TitleEs;
-            entity.TitleEn = blog.TitleEn;
-            entity.ArticleEn = blog.ArticleEn;
-            entity.ArticleEs = blog.ArticleEs;
+            entity.TitleEs = blog.TitleEs?.Trim();
+            entity.TitleEn = blog.TitleEn?.Trim();
+            entity.ArticleEn = RemoveSpacesBetweenTags(blog.ArticleEn?.Trim());
+            entity.ArticleEs = RemoveSpacesBetweenTags(blog.ArticleEs?.Trim());
             entity.SlugEn = SlugGenerator.GenerateSlug(entity.TitleEn ?? "");
             entity.SlugEs = SlugGenerator.GenerateSlug(entity.TitleEs ?? "");
-            entity.Author = blog.Author;
-            entity.DescriptionEn = blog.DescriptionEn;
-            entity.DescriptionEs = blog.DescriptionEs;
+            entity.Author = blog.Author?.Trim();
+            entity.DescriptionEn = blog.DescriptionEn?.Trim();
+            entity.DescriptionEs = blog.DescriptionEs?.Trim();
             entity.IsSubscriptionRequired = blog.IsSubscriptionRequired == "true" ? true : false;
             entity.IsFeatured = blog.IsFeatured == "true" ? true : false;
             entity.IsPublished = blog.IsPublished == "true" ? true : false;
@@ -1409,18 +1419,21 @@ namespace BlogMaster.Core.Services
                     ImageName = image.ImageName,
                     MimeType = image.MimeType,
                     Url = image.Url,
+                    CreatedDate = image.CreatedDate,
                 };
 
                 imageresponses.Add(imageResponse);
             }
 
-            return imageresponses;
+            return imageresponses.OrderBy(i => i.CreatedDate).ToList();
         }
         public async Task<BlogImagesResponseDto?> GetFirstBlogImage(string blogId)
         {
             List<BlogImagesResponseDto> imageresponses = new List<BlogImagesResponseDto>();
 
-            BlogImage? image = await _blogImageRepository.Find(i => i.BlogId == Guid.Parse(blogId));
+            BlogImage? image = await _blogUniqueRepository.GetFirstBlogImage(blogId);
+
+
 
             if (image == null) return null;
 

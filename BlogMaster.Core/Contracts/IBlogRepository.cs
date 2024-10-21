@@ -32,8 +32,11 @@ namespace BlogMaster.Core.Contracts
 
         //images
         public Task<IEnumerable<BlogImage?>> GetAllBlogImages(Guid blogId);
+        public Task<BlogImage?> GetFirstBlogImage(string blogGuid);
+
 
         public Task<bool> IsSubscriptionRequired(Guid blogId);
+
 
         public Task<IEnumerable<Blog>> GetAllBlogPreviewsByKeyword(Guid keywordId, int pageIndex, int pageSize);
 

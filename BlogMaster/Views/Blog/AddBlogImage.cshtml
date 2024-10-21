@@ -57,10 +57,8 @@
             const addMoreButton = document.getElementById('addMoreImages');
             const removeLastButton = document.getElementById('removeLastImage');
 
-            // Store the file input elements for tracking
             const fileInputs = [];
 
-            // Function to handle file input change
             const handleFileInputChange = (input) => {
                 const files = input.files;
                 const previewContainer = document.createElement('div');
@@ -71,24 +69,21 @@
                         const img = document.createElement('img');
                         img.src = e.target.result;
                         img.classList.add('image-preview');
-                        img.style.width = '100px'; // Set a fixed width for the preview
-                        img.style.margin = '5px';  // Add some spacing
+                        img.style.width = '100px'; 
+                        img.style.margin = '5px';  
                         previewContainer.appendChild(img);
                     };
                     reader.readAsDataURL(file);
                 });
 
-                // Append the preview container to the form
                 container.appendChild(previewContainer);
             };
 
-            // Initial file input change event
             const initialInput = container.querySelector('input[type="file"]');
             initialInput.addEventListener('change', function () {
                 handleFileInputChange(initialInput);
             });
 
-            // Add more file inputs
             addMoreButton.addEventListener('click', function () {
                 const newInput = document.createElement('input');
                 newInput.type = 'file';
@@ -107,17 +102,15 @@
                 fileInputs.push(newInput);
             });
 
-            // Remove the last file input
             removeLastButton.addEventListener('click', function () {
                 if (fileInputs.length > 0) {
                     const lastInput = fileInputs.pop();
                     lastInput.remove();
 
-                    // Also remove the corresponding previews (if any)
                     const previews = container.querySelectorAll('.image-preview');
                     if (previews.length > 0) {
                         const lastPreview = previews[previews.length - 1];
-                        lastPreview.parentElement.remove(); // Remove the last preview
+                        lastPreview.parentElement.remove(); 
                     }
                 }
             });

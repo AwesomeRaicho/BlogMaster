@@ -1,4 +1,5 @@
 ﻿using BlogMaster.Core.Contracts;
+using BlogMaster.Core.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogMaster.Controllers
@@ -48,6 +49,27 @@ namespace BlogMaster.Controllers
             var previews = await _blogService.GetAllBlogPreviews(pageIndex, category, tags.Count != 0 && tags[0] != null ? tags : new List<string>());
 
             return View(previews);
+        }
+
+
+        [Route("/blogs/blogpage/{slug?}")]
+        public async Task<IActionResult> BlogPage(string? slug = null)
+        { 
+            if (string.IsNullOrEmpty(slug))
+            {
+                return RedirectToAction("Blogs");
+            }
+
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+
+            BlogResponseDto? blog = await _blogService.GetBlogBySlug(slug);
+
+            if (blog == null)
+            {
+                return NotFound(); 
+            }
+
+            return View(blog);
         }
     }
 }

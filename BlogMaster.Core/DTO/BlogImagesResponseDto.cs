@@ -13,5 +13,6 @@ namespace BlogMaster.Core.DTO
         public string? Url { get; set; }
         public string? ImageName { get; set; }
         public string? MimeType { get; set; }
+        public DateTime? CreatedDate { get; set; }
     }
 }

@@ -1,0 +1,72 @@
+﻿@model BlogResponseDto;
+
+
+@{
+    string keywords = "";
+    if (Model.Keywords != null)
+    {
+        foreach(KeywordResponseDto keyword in Model.Keywords)
+        {
+            keywords += $"{keyword.KeywordNameEn}, {keyword.KeywordNameEs}, ";
+        }
+    }
+        
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benefits of Learning to Code</title>
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Meta Description -->
+    <meta name="description" content="@(Model.DescriptionEn?.Trim())">
+
+    <!-- Meta Keywords -->
+    <meta name="keywords" content="@(keywords)">
+
+
+</head>
+<body>
+    @if (ViewBag.SignedIn)
+    {
+        @await Html.PartialAsync("_SignedInNavigation_PartialView")
+    }
+    else
+    {
+        @await Html.PartialAsync("_UnsignedInNavigation_PartialView")
+
+    }
+    <article class="mt-5">
+        @(Html.Raw(Model.ArticleEn))
+
+    </article>
+
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"></script>
+    <script src="~/js/bootstrap.min.js" asp-append-version="true"></script>
+    <script>
+        const blogImages = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.BlogImages));
+
+        blogImages.sort((a, b) => new Date(a.CreatedDate) - new Date(b.CreatedDate));
+
+        const imageElements = document.getElementsByClassName("blog-image");
+
+        const imageArray = Array.from(imageElements);
+
+        if (blogImages.length > 0 && imageArray.length > 0) {
+            for (let i = 0; i < Math.min(blogImages.length, imageArray.length); i++) {
+                const imageToAdd = blogImages[i];
+                const element = imageArray[i];
+
+                element.src = `data:${imageToAdd.MimeType};base64,${imageToAdd.ImageData}`;
+
+            }
+        }
+    </script>
+
+</body>
+</html>

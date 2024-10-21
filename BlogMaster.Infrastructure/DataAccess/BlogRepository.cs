@@ -58,7 +58,9 @@ namespace BlogMaster.Infrastructure.DataAccess
                 throw new InvalidOperationException("The DbSet Blogs is not available in the database context.");
             }
 
-            return await _context.Blogs.FirstOrDefaultAsync(blog =>  (blog.ArticleEn == slug || blog.ArticleEs == slug));
+            var blog = await _context.Blogs.FirstOrDefaultAsync(blog => blog.SlugEn == slug || blog.SlugEs== slug);
+
+            return blog;
 
         }
 
@@ -104,6 +106,13 @@ namespace BlogMaster.Infrastructure.DataAccess
 
             }
             return await _context.Ratings.FirstOrDefaultAsync(r => r.UserId == userId && r.BlogId == blogId);
+        }
+
+        public async Task<BlogImage?> GetFirstBlogImage(string blogGuid)
+        {
+
+            return await _context.BlogImages.Where(i => i.BlogId == Guid.Parse(blogGuid)).OrderBy(i => i.CreatedDate).FirstOrDefaultAsync();
+            
         }
 
         public async Task<IEnumerable<Category?>> GetAllBlogCategories(Guid blogId)

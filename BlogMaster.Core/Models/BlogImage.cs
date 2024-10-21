@@ -15,6 +15,7 @@ namespace BlogMaster.Core.Models
         public string? ImageName { get; set; }
         public string? MimeType { get; set; }
         public Guid BlogId { get; set; }
+        public DateTime CreatedDate { get; set; }
 
 
         //Navigation Prop

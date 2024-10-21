@@ -5,73 +5,72 @@
 
 
 <!-- Filter Section -->
-    <a
-      class="btn btn-info m-3 text-white fw-bolder fs-5"
-      data-bs-toggle="offcanvas"
-      href="#offcanvas"
-      role="button"
-      aria-controls="offcanvas"
-    >
-      Filters
-    </a>
+        <div class="" style="position: relative">
+            <a class="btn btn-danger text-white m-3 fs-5 rounded-pill text-end"
+               data-bs-toggle="offcanvas"
+               style="
+                  width: 100px;
+                  margin: 0%;
+                  position: absolute;
+                  z-index: 2;
+                  left: -45px;
+                "
+               href="#offcanvas"
+               role="button"
+               aria-controls="offcanvas">
+                Filter
+            </a>
+        </div>
 
-    <div
-      class="offcanvas offcanvas-start"
-      tabindex="-1"
-      id="offcanvas"
-      aria-labelledby="offcanvasLabel"
-    >
-      <div class="offcanvas-header">
-        <h3 class="offcanvas-title" id="offcanvasLabel">Filters</h3>
+        <div class="offcanvas offcanvas-start bg-dark p-3"
+          tabindex="-1"
+          id="offcanvas"
+          aria-labelledby="offcanvasLabel"
+        >
+          <div class="offcanvas-header">
+            <h3 class="offcanvas-title text-white" id="offcanvasLabel">Filters</h3>
 
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="offcanvas"
-          aria-label="Close"
-        ></button>
-      </div>
-      <button type="submit" class="btn btn-danger m-3 fw-bold">Apply</button>
+            <button
+              type="button"
+              class="btn-close bg-light text-bg-light"
+              data-bs-dismiss="offcanvas"
+              aria-label="Close"
+            ></button>
+          </div>
 
-      <div class="offcanvas-body">
+    <div class="offcanvas-body bg-dark p-3">
         <form method="get" class="p-3">
+      
           <div class="row">
-            <div class="pb-3">
-              <select
-                name="category"
-                class="form-select"
-                aria-label="Default select"
-              >
-                <option selected disabled>Choose a category</option>
-                <option value="">All</option>
-                @if(Model.Categories != null) { @foreach(Category cat in
-                Model.Categories) { if (ViewBag.Category == cat.CatergoryNameEn)
-                {
-                <option selected value="@(cat.CatergoryNameEn)">
-                  @(cat.CatergoryNameEn)
-                </option>
-                }else {
-                <option value="@(cat.CatergoryNameEn)">
-                  @(cat.CatergoryNameEn)
-                </option>
-                } } }
-              </select>
-            </div>
+                <div class="col-12 mb-3">
+                    <button type="submit" class="btn btn-danger text-white border-0 rounded-0 fw-bold">Apply</button>
+                </div>
+
+                <div class="col-12 mb-3">
+                    <select name="category" class="form-select" aria-label="Default select">
+                        <option selected disabled>Choose a category</option>
+                        <option value="">All</option>
+                        @if (Model.Categories != null)
+                        {
+                            @foreach (Category cat in Model.Categories)
+                            {
+                                if (ViewBag.Category == cat.CatergoryNameEn)
+                                {
+                                    <option selected value="@(cat.CatergoryNameEn)">@(cat.CatergoryNameEn)</option>
+                                }
+                                else
+                                {
+                                    <option value="@(cat.CatergoryNameEn)">@(cat.CatergoryNameEn)</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
           </div>
           <div class="mt-2">
-            <p class="d-inline-flex gap-1">
-              <button
-                class="btn btn-danger"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapse"
-                aria-expanded="false"
-                aria-controls="collapse"
-              >
-                Tags
-              </button>
-            </p>
-            <div class="collapse" id="collapse">
+
+                <h5 class="text-white">Tags</h5>
+            <div class="" id="">
               @if (Model.Tags != null && Model.Tags.Count > 0) { @foreach (Tag
               tag in Model.Tags) { if (ViewBag.Tags != null &&
               ViewBag.Tags.Contains(tag.TagNameEn)) {
@@ -101,7 +100,7 @@
                   id="flexCheckDefault_@(tag.TagNameEn)"
                 />
                 <label
-                  class="form-check-label"
+                  class="form-check-label text-white"
                   for="flexCheckDefault_@(tag.TagNameEn)"
                 >
                   @(tag.TagNameEn)
@@ -114,67 +113,33 @@
       </div>
     </div>
     <!-- Blog List Section -->
-    <div class="container">
-      <div class="row">
+    <div class="container mt-5 pt-5">
+      <div class="row" >
           @* One item *@
         @if(Model.publicBlogList != null)
         {
             @foreach(var preview in Model.publicBlogList)
             {
-                <div class="col-md-6">
-                    <div class="card mb-3" style="max-width: 540px">
-                    <div class="row g-0">
-                        <div class="col-md-4">
-                        <img
-                            src="@(preview?.ImageView?.src)"
-                            class="img-fluid rounded-start"
-                                     alt="@(preview?.ImageView?.Filename)" />
+                <div class="col-md-6 col-xl-4">
+                    <a href="/blogs/blogpage/@(preview.SlugEn)" style="text-decoration: none">
+                        <div class="card mb-3">
+                            <img src="@(preview?.ImageView?.src)"
+                                 style="height: 250px; object-fit: cover"
+                                 class="img-fluid rounded-start "
+                                 alt="@(preview?.ImageView?.Filename)" />
+                            <div class="card-body">
+                                <h5 class="card-title">@(preview?.TitleEn)</h5>
+                                <p class="card-text">@(preview?.DescriptionEn)</p>
+                                <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                            </div>
                         </div>
-                        <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">@(preview?.TitleEn)</h5>
-                            <p class="card-text">
-                            @(preview?.DescriptionEn)
-                            </p>
-                            <p class="card-text">
-                            <small class="text-body-secondary"
-                                >Last updated 3 mins ago</small
-                            >
-                            </p>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
+                    </a>
                 </div>
+
             }
         }
         @* one item end *@
-        @* One item *@
-        <div class="col-md-6">
-            <div class="card mb-3" style="max-width: 540px">
-                <div class="row g-0">
-                    <div class="col-md-4">
-                        <img src="/images/UPlaceHolder.jpg"
-                             class="img-fluid rounded-start"
-                             alt="..." />
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <p class="card-text">
-                                This is a wider card with supporting text below as a natural
-                                lead-in to additional content. This content is a little bit
-                                longer.
-                            </p>
-                            <p class="card-text">
-                                <small class="text-body-secondary">Last updated 3 mins ago</small>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @* one item end *@
+
       </div>
 
     </div>

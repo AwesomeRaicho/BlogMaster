@@ -100,8 +100,6 @@ namespace BlogMaster.Controllers
             }
             
 
-            
-
             string? id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id == null)
             {

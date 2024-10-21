@@ -9,7 +9,7 @@
         @if (Model.BlogResponseDto?.BlogId != Guid.Empty)
         {
             <div>
-                <a href="/add-blog-image?BlogId=@(Model.BlogResponseDto?.BlogId)" class="btn btn-info mb-3">Add/Remove Images</a>
+                <a href="/add-blog-image?BlogId=@(Model.BlogResponseDto?.BlogId)" class="btn btn-info mb-3 text-white">Add/Remove Images</a>
             </div>
             <p class="fs-6 text-danger fst-italic">*Add/Remove images before making any other changes to the blog.</p>
         }else
@@ -49,8 +49,8 @@
                 Images will be embedded through fetch with JavaScript. Wherever you
                 would like to embed the image, simply add: <br />
                 <span class="text-secondary fw-bold">
-                    &lt;img class="img-fluid d-block m-auto blog-image"
-                    style="max-height: 400px" /&gt;
+                    &lt;img class="img-fluid d-block m-auto blog-image mt-4 mb-4"
+                    style="height: 400px; object-fit: cover;" /&gt;
                 </span><br />
                 JavaScript will take care of getting the image and adding them in
                 order.
@@ -89,13 +89,14 @@
                 </textarea>
             </div>
             <!-- Article -->
+            <img style="object-fit: cover"></img>
             <h4>Article</h4>
             <p class="ps-2 border rounded-2 text-danger bg-danger-subtle">
                 Images will be embedded through fetch with JavaScript. Wherever you
                 would like to embed the image, simply add: <br />
                 <span class="text-secondary fw-bold">
-                    &lt;img class="img-fluid d-block m-auto blog-image"
-                    style="max-height: 400px" /&gt;
+                    &lt;img class="img-fluid d-block m-auto blog-image mt-4 mb-4"
+                    style="height: 400px; object-fit: cover;" /&gt;
                 </span><br />
                 JavaScript will take care of getting the image and adding them in
                 order.
