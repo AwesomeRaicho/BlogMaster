@@ -114,18 +114,18 @@
     </div>
     <!-- Blog List Section -->
     <div class="container mt-5 pt-5">
-      <div class="row" >
+      <div class="row" style="min-height: 350px">
           @* One item *@
         @if(Model.publicBlogList != null)
         {
             @foreach(var preview in Model.publicBlogList)
             {
                 <div class="col-md-6 col-xl-4">
-                    <a href="/blogs/blogpage/@(preview.SlugEn)" style="text-decoration: none">
+                    <a href="/blogs/blogpage/@(preview.SlugEn)" style="text-decoration: none;">
                         <div class="card mb-3">
                             <img src="@(preview?.ImageView?.src)"
                                  style="height: 250px; object-fit: cover"
-                                 class="img-fluid rounded-start "
+                                 class="img-fluid"
                                  alt="@(preview?.ImageView?.Filename)" />
                             <div class="card-body">
                                 <h5 class="card-title">@(preview?.TitleEn)</h5>

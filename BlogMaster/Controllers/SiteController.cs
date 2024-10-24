@@ -8,10 +8,11 @@ namespace BlogMaster.Controllers
     {
 
         private readonly IBlogService _blogService;
+        private readonly IConfiguration _configuration;
 
-
-        public SiteController(IBlogService blogService)
+        public SiteController(IBlogService blogService, IConfiguration configuration)
         {
+            _configuration = configuration;
             _blogService = blogService;
         }
 
@@ -61,6 +62,8 @@ namespace BlogMaster.Controllers
             }
 
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
 
             BlogResponseDto? blog = await _blogService.GetBlogBySlug(slug);
 

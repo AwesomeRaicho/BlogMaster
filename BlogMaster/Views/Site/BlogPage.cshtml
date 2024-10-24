@@ -27,7 +27,6 @@
     <!-- Meta Keywords -->
     <meta name="keywords" content="@(keywords)">
 
-
 </head>
 <body>
     @if (ViewBag.SignedIn)
@@ -37,13 +36,44 @@
     else
     {
         @await Html.PartialAsync("_UnsignedInNavigation_PartialView")
-
     }
-    <article class="mt-5">
-        @(Html.Raw(Model.ArticleEn))
+    <div class="container" style="max-width: 750px ">
 
-    </article>
+        <main>
+            <article class="mt-5 mb-5">
+                <h1>@Model.TitleEn</h1>
+                <small>@Model.DescriptionEn</small>
+                @(Html.Raw(Model.ArticleEn))
+            </article>
+            <div class="bg-danger-subtle mb-5">
+                HERE THERE SHOULD BE A SECTION FOR "NEXT" AND/OR RELATED ARTICLES OR RECOMENDED
+            </div>
+            @* comment Section *@
+            <section class="mb-4">
+                <h2>Comments</h2>
+                <hr>
+                <div class="card " style="max-width: 600px">
 
+                    <h6 class="card-header"><i class="fa-solid fa-user me-3 fs-5 bg-white" style="color: #007BFF; border: solid 2px #007BFF; border-radius: 20px; padding: 5px"></i> Iroquois Pliskin</h6>
+                    <div class="card-body">
+                        @* stars *@
+                        <h6 class="card-title mb-3 fs-6">
+                            <span class="fw-bold">Rating:</span>
+                            <i class="fa-solid fa-star" style="color: gold"></i>
+                            <i class="fa-solid fa-star" style="color: gold"></i>
+                            <i class="fa-solid fa-star" style="color: gold"></i>
+                            <i class="fa-regular fa-star-half-stroke" style="color: gold"></i>
+                            <i class="fa-regular fa-star" style="color: gold"></i>
+                        </h6>
+
+                        @* Comment *@
+                        <p class="card-text">This Article was super dope!!</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.8/dist/umd/popper.min.js"
             integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
             crossorigin="anonymous"></script>
@@ -61,12 +91,10 @@
             for (let i = 0; i < Math.min(blogImages.length, imageArray.length); i++) {
                 const imageToAdd = blogImages[i];
                 const element = imageArray[i];
-
                 element.src = `data:${imageToAdd.MimeType};base64,${imageToAdd.ImageData}`;
-
             }
         }
     </script>
-
+    <script src="https://kit.fontawesome.com/@(ViewBag.FontAwesomeKey).js" crossorigin="anonymous"></script>
 </body>
 </html>
