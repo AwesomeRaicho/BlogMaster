@@ -277,6 +277,7 @@ namespace BlogMaster.Core.Services
                 UserId = commentPostPutDto.UserId,
                 CommentId = Guid.NewGuid(),
                 Created = DateTime.UtcNow,
+                UserName = commentPostPutDto.UserName,
             };
 
             await _commentRepository.Create(comment);
@@ -601,9 +602,9 @@ namespace BlogMaster.Core.Services
             await _categoryRepository.Delete(entity);
         }
 
-        public async Task DeleteCommentAsync(Guid id)
+        public async Task DeleteCommentAsync(Guid commentId)
         {
-            var entity = await _commentRepository.Get(id);
+            var entity = await _commentRepository.Get(commentId);
             if (entity == null)
             {
                 throw new Exception("Comment does not exist");
@@ -1283,7 +1284,7 @@ namespace BlogMaster.Core.Services
 
         public async Task UpdateCommentAsync(CommentPostPutDto commentPostPutDto)
         {
-            Comment? comment = await _commentRepository.Get(commentPostPutDto.CommmentId);
+            Comment? comment = await _commentRepository.Get(commentPostPutDto.CommentId);
             
             if (comment == null)
             {

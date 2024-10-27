@@ -63,10 +63,10 @@ namespace BlogMaster.Core.Contracts
 
 
         // Comment Management
-        public Task<CommentResponseDto> GetCommentAsync(Guid id);
+        public Task<CommentResponseDto> GetCommentAsync(Guid CommentId);
         public Task<IEnumerable<CommentResponseDto>> GetAllCommentsAsync();
         public Task CreateCommentAsync(CommentPostPutDto commentPostPutDto);
-        public Task DeleteCommentAsync(Guid id);
+        public Task DeleteCommentAsync(Guid commentId);
         public Task UpdateCommentAsync(CommentPostPutDto commentPostPutDto);
 
 

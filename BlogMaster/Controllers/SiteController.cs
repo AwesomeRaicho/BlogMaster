@@ -70,7 +70,6 @@ namespace BlogMaster.Controllers
             ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
             ViewBag.Slug = slug;
 
-
             BlogResponseDto? blog = await _blogService.GetBlogBySlug(slug);
 
             if (blog == null)
@@ -98,6 +97,7 @@ namespace BlogMaster.Controllers
             ViewBag.BlogId = blogId;
             ViewBag.RatingId = ratingResponse?.RatingId;
             ViewBag.Slug = slug;
+            ViewBag.UserName = User.Identity?.Name;
 
             return View(ratingResponse);
         }
@@ -122,11 +122,11 @@ namespace BlogMaster.Controllers
                 await _blogService.DeleteRatingAsync(rating.RatingId);
             }
 
-            if(!string.IsNullOrEmpty(comment.Message) && comment.CommmentId == Guid.Empty) 
+            if(!string.IsNullOrEmpty(comment.Message) && comment.CommentId == Guid.Empty) 
             {
                 await _blogService.AddCommentToBlogAsync(comment);
             }
-            if (!string.IsNullOrEmpty(comment.Message) && comment.CommmentId != Guid.Empty)
+            if (!string.IsNullOrEmpty(comment.Message) && comment.CommentId != Guid.Empty)
             {
                 await _blogService.UpdateCommentAsync(comment);
             }
@@ -135,6 +135,79 @@ namespace BlogMaster.Controllers
 
             return RedirectToAction("BlogPage", new { slug = slug });
         }
+
+
+
+        [HttpGet]
+        [Route("/edit-comment")]
+        public async Task<IActionResult> EditComment([FromQuery] string blogId, string userId, string slug, string commentId)
+        {
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+
+            if (!ViewBag.SignedIn)
+            {
+                return RedirectToAction("SignIn", "Identity");
+            }
+
+            RatingResponseDto? ratingResponse = await _blogService.GetUserRatingOnBlog(Guid.Parse(blogId), Guid.Parse(userId));
+            var comment = await _blogService.GetCommentAsync(Guid.Parse(commentId));
+            ViewBag.Comment = comment.Message;
+            ViewBag.CommentId = commentId;
+            ViewBag.UserId = userId;
+            ViewBag.BlogId = blogId;
+            ViewBag.RatingId = ratingResponse?.RatingId;
+            ViewBag.Slug = slug;
+
+            return View(ratingResponse);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("/edit-comment")]
+        public async Task<IActionResult> EditComment(RatingPostPutDto rating, CommentPostPutDto comment, [FromQuery] string slug)
+        {
+
+            //Handle rating
+            if (rating.RatingScore != null && rating.RatingId == Guid.Empty)
+            {
+                await _blogService.AddRatingToBlogAsync(rating);
+            }
+            if (rating.RatingScore != null && rating.RatingId != Guid.Empty)
+            {
+                await _blogService.UpdateRatingAsync(rating);
+            }
+            if (rating.RatingScore == null && rating.RatingId != Guid.Empty)
+            {
+                await _blogService.DeleteRatingAsync(rating.RatingId);
+            }
+            ViewBag.Slug = slug;
+
+            if (comment.CommentId != Guid.Empty)
+            {
+                await _blogService.UpdateCommentAsync(comment);
+            }
+
+
+
+            return RedirectToAction("BlogPage", new { slug = slug });
+        }
+
+
+        [Route("/delete-comment")]
+        public async Task<IActionResult> DeleteComment(string commentId, string slug)
+        {
+
+            if(!string.IsNullOrEmpty(commentId))
+            {
+                await _blogService.DeleteCommentAsync(Guid.Parse(commentId));
+            }
+
+            return RedirectToAction("BlogPage", new { slug = slug });
+
+        }
+
+
+
 
         [HttpGet]
         [Route("/create-rating")]
@@ -153,6 +226,8 @@ namespace BlogMaster.Controllers
             ViewBag.RatingId = ratingResponse?.RatingId;
             ViewBag.Slug = slug;
 
+
+            
             return View(ratingResponse);
         }
 
