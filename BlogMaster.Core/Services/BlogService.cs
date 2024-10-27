@@ -105,7 +105,6 @@ namespace BlogMaster.Core.Services
                 //create list that will go in BlogResponseDTO
                 List<CommentRatingResponseDto> commentRatings = new List<CommentRatingResponseDto>();
 
-
                 foreach (Comment comment in comments)
                 {
 
@@ -1450,6 +1449,23 @@ namespace BlogMaster.Core.Services
             return imageResponse;
         }
 
+        public async Task<RatingResponseDto?> GetUserRatingOnBlog(Guid blogId, Guid userId)
+        {
+
+            Rating? rating = await _ratingRepository.Find(r => r.UserId == userId && r.BlogId == blogId);
+
+            if(rating == null) return null;
+
+            RatingResponseDto ratingResponse = new RatingResponseDto()
+            {
+                BlogId = blogId,
+                RatingId = rating != null ? rating.RatingId : Guid.Empty,
+                RatingScore = rating != null ? rating.RatingScore : 0,
+                UserId = userId
+            };
+
+            return ratingResponse;
+        }
 
     }
 }

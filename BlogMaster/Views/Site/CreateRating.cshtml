@@ -1,0 +1,35 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model RatingResponseDto;
+
+
+
+<form method="post" class="m-auto p-5 border mt-5 rounded-3 bg-light" style="max-width: 500px">
+
+    <input name="BlogId" value="@(ViewBag.BlogId)" hidden />
+    <input name="UserId" value="@(ViewBag.UserId)" hidden />
+    <input name="RatingId" value="@(ViewBag.RatingId ?? Guid.Empty)" hidden />
+
+    <div class="mb-3">
+        <label class="form-label">@(Model != null ? "Change Rating" : "Add Rating")</label>
+        <select class="form-select form-select-sm" name="RatingScore" style="max-width: 50%">
+
+            <option selected></option>
+
+            <option value="0.5" @(Model != null && Model.RatingScore == (decimal)0.5 ? "selected" : "")>0.5 Star</option>
+            <option value="1" @(Model != null && Model.RatingScore == 1 ? "selected" : "")>1 Star</option>
+            <option value="1.5" @(Model != null && Model.RatingScore == (decimal)1.5 ? "selected" : "")>1.5 Stars</option>
+            <option value="2" @(Model != null && Model.RatingScore == 2 ? "selected" : "")>2 Stars</option>
+            <option value="2.5" @(Model != null && Model.RatingScore == (decimal)2.5 ? "selected" : "")>2.5 Stars</option>
+            <option value="3" @(Model != null && Model.RatingScore == 3 ? "selected" : "")>3 Stars</option>
+            <option value="3.5" @(Model != null && Model.RatingScore == (decimal)3.5 ? "selected" : "")>3.5 Stars</option>
+            <option value="4" @(Model != null && Model.RatingScore == 4 ? "selected" : "")>4 Stars</option>
+            <option value="4.5" @(Model != null && Model.RatingScore == (decimal)4.5 ? "selected" : "")>4.5 Stars</option>
+            <option value="5" @(Model != null && Model.RatingScore == 5 ? "selected" : "")>5 Stars</option>
+
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

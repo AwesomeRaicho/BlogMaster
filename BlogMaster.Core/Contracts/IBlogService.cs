@@ -92,8 +92,8 @@ namespace BlogMaster.Core.Contracts
         public Task AddRatingToBlogAsync(RatingPostPutDto rating);
         public Task DeleteRatingAsync(Guid id);
         public Task UpdateRatingAsync(RatingPostPutDto ratingPostPutDto);
+        public Task<RatingResponseDto?> GetUserRatingOnBlog(Guid blogId, Guid userId);
 
-        
         // Tag Management
         public Task<TagResponseDto> GetTagAsync(Guid tagId);
         public Task CreateTagAsync(TagPostPutDto tag);

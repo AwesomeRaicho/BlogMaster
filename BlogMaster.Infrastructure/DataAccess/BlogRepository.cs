@@ -52,7 +52,6 @@ namespace BlogMaster.Infrastructure.DataAccess
         public async Task<Blog?> GetBlogBySlug(string slug)
         {
 
-
             if (_context.Blogs == null)
             {
                 throw new InvalidOperationException("The DbSet Blogs is not available in the database context.");

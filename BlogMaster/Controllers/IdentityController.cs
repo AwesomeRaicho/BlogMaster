@@ -126,14 +126,12 @@ namespace BlogMaster.Controllers
         public IActionResult SignIn() 
         {
 
-
-
             return View();
         }
 
         [HttpPost]
         [Route("/signin")]
-        public async Task<IActionResult> SignIn(IdentityRequestDto requestDto)
+        public async Task<IActionResult> SignInSubmit(IdentityRequestDto requestDto)
         {
             List<string> errors = new List<string>();
             

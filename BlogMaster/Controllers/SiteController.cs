@@ -1,6 +1,8 @@
 ﻿using BlogMaster.Core.Contracts;
 using BlogMaster.Core.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BlogMaster.Controllers
 {
@@ -63,7 +65,11 @@ namespace BlogMaster.Controllers
 
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
 
+            ViewBag.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+            ViewBag.Slug = slug;
+
 
             BlogResponseDto? blog = await _blogService.GetBlogBySlug(slug);
 
@@ -74,5 +80,109 @@ namespace BlogMaster.Controllers
 
             return View(blog);
         }
+
+        
+        [HttpGet]
+        [Route("/create-comment")]
+        public async Task<IActionResult> CreateComment([FromQuery] string blogId, string userId, string slug)
+            {
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+
+            if(!ViewBag.SignedIn)
+            {
+                return RedirectToAction("SignIn", "Identity");
+            }
+
+            RatingResponseDto? ratingResponse = await _blogService.GetUserRatingOnBlog(Guid.Parse(blogId), Guid.Parse(userId));
+            ViewBag.UserId = userId;
+            ViewBag.BlogId = blogId;
+            ViewBag.RatingId = ratingResponse?.RatingId;
+            ViewBag.Slug = slug;
+
+            return View(ratingResponse);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("/create-comment")]
+        public async Task<IActionResult> CreateComment(RatingPostPutDto rating, CommentPostPutDto comment, [FromQuery] string slug)
+        {
+
+            //Handle rating
+            if(rating.RatingScore != null && rating.RatingId == Guid.Empty)
+            {
+                await _blogService.AddRatingToBlogAsync(rating);
+            }
+            if(rating.RatingScore != null && rating.RatingId != Guid.Empty)
+            {
+                await _blogService.UpdateRatingAsync(rating);
+            }
+            if(rating.RatingScore == null && rating.RatingId != Guid.Empty)
+            {
+                await _blogService.DeleteRatingAsync(rating.RatingId);
+            }
+
+            if(!string.IsNullOrEmpty(comment.Message) && comment.CommmentId == Guid.Empty) 
+            {
+                await _blogService.AddCommentToBlogAsync(comment);
+            }
+            if (!string.IsNullOrEmpty(comment.Message) && comment.CommmentId != Guid.Empty)
+            {
+                await _blogService.UpdateCommentAsync(comment);
+            }
+
+
+
+            return RedirectToAction("BlogPage", new { slug = slug });
+        }
+
+        [HttpGet]
+        [Route("/create-rating")]
+        public async Task<IActionResult> CreateRating([FromQuery] string blogId, string userId, string slug)
+        {
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+
+            if (!ViewBag.SignedIn)
+            {
+                return RedirectToAction("SignIn", "Identity");
+            }
+
+            RatingResponseDto? ratingResponse = await _blogService.GetUserRatingOnBlog(Guid.Parse(blogId), Guid.Parse(userId));
+            ViewBag.UserId = userId;
+            ViewBag.BlogId = blogId;
+            ViewBag.RatingId = ratingResponse?.RatingId;
+            ViewBag.Slug = slug;
+
+            return View(ratingResponse);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("/create-rating")]
+        public async Task<IActionResult> CreateRating(RatingPostPutDto rating, [FromQuery] string slug)
+        {
+
+            //Handle rating
+            if (rating.RatingScore != null && rating.RatingId == Guid.Empty)
+            {
+                await _blogService.AddRatingToBlogAsync(rating);
+            }
+            if (rating.RatingScore != null && rating.RatingId != Guid.Empty)
+            {
+                await _blogService.UpdateRatingAsync(rating);
+            }
+            if (rating.RatingScore == null && rating.RatingId != Guid.Empty)
+            {
+                await _blogService.DeleteRatingAsync(rating.RatingId);
+            }
+
+
+
+
+
+            return RedirectToAction("BlogPage", new { slug = slug });
+        }
+
+
     }
 }
