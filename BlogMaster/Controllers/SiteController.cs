@@ -16,11 +16,14 @@ namespace BlogMaster.Controllers
         {
             _configuration = configuration;
             _blogService = blogService;
+
         }
 
         [Route("/")]
         public IActionResult Index()
         {
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+
             ViewBag.Title = "Blog Master";
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
             string? user = User.Identity?.Name;
@@ -34,6 +37,8 @@ namespace BlogMaster.Controllers
         [Route("/blogs")]
         public async Task<IActionResult> Blogs([FromQuery] int pageIndex, string category, List<string> tags)
         {
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+
             if (pageIndex == 0)
             {
                 pageIndex = 1;
@@ -68,9 +73,13 @@ namespace BlogMaster.Controllers
             ViewBag.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+            
             ViewBag.Slug = slug;
 
             BlogResponseDto? blog = await _blogService.GetBlogBySlug(slug);
+
+            //ViewBag.Recomendations = await _blogService.GetBlogRecomendations(blog.Categories != null ? blog.Categories?[0].CategoryNameEn : "All");
+
 
             if (blog == null)
             {

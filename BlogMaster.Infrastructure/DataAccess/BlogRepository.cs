@@ -15,7 +15,7 @@ namespace BlogMaster.Infrastructure.DataAccess
 
         public BlogRepository(EntityDbContext context) : base(context) { }
 
-        public async Task<IEnumerable<Blog>> GetAllBlogPreviews(int pageIndex, int pageSize, string category, List<string> tags)
+        public async Task<IEnumerable<Blog>> GetAllBlogPreviews(int pageIndex, int pageSize, string category, List<string> tags, bool isAdmin)
         {
             IQueryable<Blog>? query = _context.Blogs;
 
@@ -38,6 +38,11 @@ namespace BlogMaster.Infrastructure.DataAccess
             {
                 query = query
                     .Where(blog => blog.BlogTags != null && blog.BlogTags.Any(bt => bt.Tag != null && (tags.Contains(bt.Tag.TagNameEn ?? "") || tags.Contains(bt.Tag.TagNameEs ?? ""))));
+            }
+
+            if(!isAdmin)
+            {
+                query = query.Where(blog => blog.IsPublished == true);
             }
 
             // pagination

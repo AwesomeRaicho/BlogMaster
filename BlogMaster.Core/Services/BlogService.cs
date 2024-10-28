@@ -5,6 +5,7 @@ using BlogMaster.Core.Models.Identity;
 using BlogMaster.Core.Utilities;
 using Microsoft.Win32.SafeHandles;
 using Org.BouncyCastle.Asn1.Ocsp;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -657,12 +658,89 @@ namespace BlogMaster.Core.Services
             await _blogRepository.Update(blog);
         }
 
+        public async Task<BlogPreviewsDto> GetBlogRecomendations(string? category)
+        {
+            List<PublicBlogListDto> publicList = new List<PublicBlogListDto>();
+
+            IEnumerable<Blog?> blogs = await _blogUniqueRepository.FindAll(b => b.BlogCategories != null && b.BlogCategories.Exists(c => c.Category != null && c.Category.CatergoryNameEn == category), 0, 4);
+
+
+            foreach (Blog? preview in blogs)
+            {
+                if (preview != null)
+                {
+                    PublicBlogListDto blogPreviewDto = new PublicBlogListDto()
+                    {
+                        BlogId = preview.BlogId,
+                        Author = preview.Author,
+                        DatePublished = preview.DatePublished,
+                        DescriptionEn = preview.DescriptionEn,
+                        DescriptionEs = preview.DescriptionEs,
+                        SlugEn = preview.SlugEn,
+                        SlugEs = preview.SlugEs,
+                        TitleEn = preview.TitleEn,
+                        TitleEs = preview.TitleEs,
+                        AverageRating = await GetBlogAverageRatingAsync(preview.BlogId),
+
+                    };
+                    publicList.Add(blogPreviewDto);
+                }
+            }
+
+            foreach (var blogpreview in publicList)
+            {
+                var ImageView = await GetFirstBlogImage(blogpreview.BlogId.ToString());
+
+                if (ImageView != null && ImageView.ImageData != null)
+                {
+                    ImageViewDto imageView = new ImageViewDto();
+                    string base64String = Convert.ToBase64String(ImageView.ImageData);
+
+                    imageView.src = $"data:{ImageView.MimeType};base64,{base64String}";
+                    imageView.MimeType = ImageView.MimeType;
+                    imageView.ImageId = ImageView.BlogImageId;
+                    imageView.Filename = ImageView.ImageName;
+
+                    blogpreview.ImageView = imageView;
+
+                }
+
+            }
+
+            foreach (var blogpreview in publicList)
+            {
+                var ImageView = await GetFirstBlogImage(blogpreview.BlogId.ToString());
+
+                if (ImageView != null && ImageView.ImageData != null)
+                {
+                    ImageViewDto imageView = new ImageViewDto();
+                    string base64String = Convert.ToBase64String(ImageView.ImageData);
+
+                    imageView.src = $"data:{ImageView.MimeType};base64,{base64String}";
+                    imageView.MimeType = ImageView.MimeType;
+                    imageView.ImageId = ImageView.BlogImageId;
+                    imageView.Filename = ImageView.ImageName;
+
+                    blogpreview.ImageView = imageView;
+
+                }
+
+            }
+
+            BlogPreviewsDto response = new BlogPreviewsDto();
+
+            response.publicBlogList = publicList;
+            
+            return response;
+        }
+
+
         public async Task<BlogPreviewsDto> GetAllBlogPreviews(int pageIndex, string category, List<string> tags)
         {
             int pageSize = 50;
 
 
-            IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviews(pageIndex, pageSize, category, tags);
+            IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviews(pageIndex, pageSize, category, tags, false);
 
             List<PublicBlogListDto> publicList = new List<PublicBlogListDto>();
 
@@ -672,7 +750,6 @@ namespace BlogMaster.Core.Services
                 {
                     BlogId = preview.BlogId,
                     Author = preview.Author,
-                    AverageRating = preview.AverageRating,
                     DatePublished = preview.DatePublished,
                     DescriptionEn = preview.DescriptionEn,
                     DescriptionEs = preview.DescriptionEs,
@@ -680,6 +757,8 @@ namespace BlogMaster.Core.Services
                     SlugEs = preview.SlugEs,
                     TitleEn = preview.TitleEn,
                     TitleEs = preview.TitleEs,
+                    AverageRating = await GetBlogAverageRatingAsync(preview.BlogId),
+                    
                 };
 
                 publicList.Add(blogPreviewDto);
@@ -1157,6 +1236,14 @@ namespace BlogMaster.Core.Services
             entity.IsSubscriptionRequired = blog.IsSubscriptionRequired == "true" ? true : false;
             entity.IsFeatured = blog.IsFeatured == "true" ? true : false;
             entity.IsPublished = blog.IsPublished == "true" ? true : false;
+            
+            if(entity.DatePublished == null && entity.IsPublished == true)
+            {
+                entity.DatePublished = DateTime.UtcNow;
+            }else if(entity.DatePublished != null && entity.IsPublished == false)
+            {
+                entity.DatePublished = null;
+            }
 
             await _blogRepository.Update(entity);
 
@@ -1344,11 +1431,11 @@ namespace BlogMaster.Core.Services
 
 
         public async Task<BlogPreviewsDto> GetAllAdminBlogPreviews(int pageIndex, string category, List<string> tags)
-        {
+        {   
             int perPage = 50;
 
 
-            IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviews(pageIndex, perPage, category, tags);
+            IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviews(pageIndex, perPage, category, tags, true);
 
             List<AdminBlogListDto> responseList = new List<AdminBlogListDto>();
 
@@ -1466,6 +1553,19 @@ namespace BlogMaster.Core.Services
             };
 
             return ratingResponse;
+        }
+
+        public async Task<decimal?> GetBlogAverageRatingAsync(Guid blogId)
+        {
+            var ratings = await _ratingRepository.FindAll(r => r.BlogId == blogId, 0, 1000);
+
+            if (ratings == null || !ratings.Any())
+            {
+                return null;
+            }
+
+            return ratings.Average(r => r?.RatingScore);
+
         }
 
     }

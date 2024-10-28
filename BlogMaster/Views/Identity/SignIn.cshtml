@@ -11,12 +11,13 @@
     <title>Sign in</title>
 </head>
 <body>
-    <div class="container">
+    @await Html.PartialAsync("_UnsignedInNavigation_PartialView")
+    <div class="container mt-5">
         <div>
-            <form style="max-width: 500px"
+            <form  style="max-width: 500px"
                   class="border p-5 m-5 rounded-4 bg-light m-auto mt-5"
                   method="post"
-                  action="/signin">
+                  action="/signinsubmit">
                 <div class="mb-3">
                     <label for="username" class="form-label fs-5">User</label>
                     <input type="text"
@@ -35,7 +36,11 @@
                            required />
                 </div>
 
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary mb-4">Submit</button>
+
+                <div>
+                    <a class="me-auto" href="/registration">Create an account</a>
+                </div>
 
                 @if(Model != null)
                 {

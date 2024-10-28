@@ -11,7 +11,8 @@
     <title>Registration</title>
 </head>
 <body>
-    <div class="container">
+    @await Html.PartialAsync("_UnsignedInNavigation_PartialView")
+    <div class="container mt-5">
         <div>
             <form style="max-width: 500px"
                   class="border p-5 m-5 rounded-4 bg-light m-auto mt-5"
@@ -54,7 +55,11 @@
                            name="ConfirmPassword" 
                            required />
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary mb-4">Submit</button>
+
+                <div>
+                    <a class="me-auto" href="/signin">Sign in</a>
+                </div>
 
                 @if(Model != null && Model.Count > 0)
                 {

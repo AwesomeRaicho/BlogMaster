@@ -6,7 +6,7 @@
 
 <!-- Filter Section -->
         <div class="" style="position: relative">
-    <a class="btn btn-danger text-white m-3 fs-5 rounded-pill text-end shadow"
+            <a class="btn btn-danger text-white m-3 fs-5 rounded-pill text-end shadow"
                data-bs-toggle="offcanvas"
                style="
                   width: 100px;
@@ -129,8 +129,30 @@
                             <div class="card-body">
                                 <h5 class="card-title">@(preview?.TitleEn)</h5>
                                 <p class="card-text">@(preview?.DescriptionEn)</p>
-                                <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                                <p class="card-text">
+                                    <small class="text-body-secondary">
+                                        @if (preview != null && preview.AverageRating > 0)
+                                        {
+                                            @for (int i = 0; i < 6; i++)
+                                            {
+                                                if (preview.AverageRating > i && preview.AverageRating < i + 1)
+                                                {
+                                                    <i class="fa-regular fa-star-half-stroke" style="color: gold"></i>
+                                                }
+                                                else if (preview.AverageRating > i)
+                                                {
+                                                    <i class="fa-solid fa-star" style="color: gold"></i>
+                                                }
+                                                else if (i < 5)
+                                                {
+                                                    <i class="fa-regular fa-star" style="color: gold"></i>
+                                                }
+                                            }
+                                        }
+                                    </small>
+                                </p>
                             </div>
+                           
                         </div>
                     </a>
                 </div>

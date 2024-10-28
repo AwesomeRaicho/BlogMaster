@@ -11,10 +11,12 @@ namespace BlogMaster.Controllers
     {
 
         private readonly IIdentityService _identityService;
+        private readonly IConfiguration _configuration;
 
-        public IdentityController(IIdentityService identityService)
+        public IdentityController(IIdentityService identityService, IConfiguration configuration)
         {
             _identityService = identityService;
+            _configuration = configuration;
         }
 
 
@@ -23,7 +25,8 @@ namespace BlogMaster.Controllers
         [Route("/registration")]
         public IActionResult Registration()
         {
-
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
 
             return View();
         }
@@ -33,6 +36,8 @@ namespace BlogMaster.Controllers
         [Route("/registration")]
         public async Task<IActionResult> Registration(IdentityRegistrationDto registrationDto)
         {
+
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
             if (!ModelState.IsValid || registrationDto.Password != registrationDto.ConfirmPassword)
             {
                 Dictionary<string, List<string>> errors = ControllerHelper.GetErrors(ModelState);
@@ -125,14 +130,16 @@ namespace BlogMaster.Controllers
         [Route("/signin")]
         public IActionResult SignIn() 
         {
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
 
             return View();
         }
 
         [HttpPost]
-        [Route("/signin")]
+        [Route("/signinsubmit")]
         public async Task<IActionResult> SignInSubmit(IdentityRequestDto requestDto)
         {
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
             List<string> errors = new List<string>();
             
             if ( requestDto == null ||string.IsNullOrEmpty(requestDto.UserName) || string.IsNullOrEmpty(requestDto.Password))

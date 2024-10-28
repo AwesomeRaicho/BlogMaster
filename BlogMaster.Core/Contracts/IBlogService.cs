@@ -19,6 +19,7 @@ namespace BlogMaster.Core.Contracts
         public Task DeleteBlogAsync(Guid id);
         public Task<IEnumerable<CommentResponseDto>> GetAllBlogComments(Guid blogId, int pageIndex, int pageSize);
         public Task<BlogPreviewsDto> GetAllAdminBlogPreviews(int pageIndex, string category, List<string> tags);
+        public Task<BlogPreviewsDto> GetBlogRecomendations(string? category); 
 
         // Blog Publication Management
         public Task PublishBlogAsync(Guid id);
@@ -93,6 +94,7 @@ namespace BlogMaster.Core.Contracts
         public Task DeleteRatingAsync(Guid id);
         public Task UpdateRatingAsync(RatingPostPutDto ratingPostPutDto);
         public Task<RatingResponseDto?> GetUserRatingOnBlog(Guid blogId, Guid userId);
+        public Task<decimal?> GetBlogAverageRatingAsync(Guid blogId);
 
         // Tag Management
         public Task<TagResponseDto> GetTagAsync(Guid tagId);
