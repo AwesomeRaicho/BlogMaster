@@ -19,7 +19,7 @@ namespace BlogMaster.Core.Contracts
         public Task DeleteBlogAsync(Guid id);
         public Task<IEnumerable<CommentResponseDto>> GetAllBlogComments(Guid blogId, int pageIndex, int pageSize);
         public Task<BlogPreviewsDto> GetAllAdminBlogPreviews(int pageIndex, string category, List<string> tags);
-        public Task<BlogPreviewsDto> GetBlogRecomendations(string? category); 
+        public Task<BlogPreviewsDto?> GetBlogRecomendations(List<CategoryResponseDto> categories, string blogId); 
 
         // Blog Publication Management
         public Task PublishBlogAsync(Guid id);

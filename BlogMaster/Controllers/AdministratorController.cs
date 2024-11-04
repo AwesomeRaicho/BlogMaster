@@ -3,7 +3,6 @@ using BlogMaster.Core.Contracts;
 using BlogMaster.Core.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BlogMaster.Controllers
 {
@@ -23,7 +22,6 @@ namespace BlogMaster.Controllers
        [Route("/Administrator")]
         public IActionResult AdministratorIndex()
         {
-
             return View();
         }
 

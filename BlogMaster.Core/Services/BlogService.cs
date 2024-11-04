@@ -658,16 +658,31 @@ namespace BlogMaster.Core.Services
             await _blogRepository.Update(blog);
         }
 
-        public async Task<BlogPreviewsDto> GetBlogRecomendations(string? category)
+        public async Task<BlogPreviewsDto?> GetBlogRecomendations(List<CategoryResponseDto> categories, string blogId)
         {
-            List<PublicBlogListDto> publicList = new List<PublicBlogListDto>();
+ 
+            if (categories == null || categories.Count == 0)
+            {
+                return null;
+            }
 
-            IEnumerable<Blog?> blogs = await _blogUniqueRepository.FindAll(b => b.BlogCategories != null && b.BlogCategories.Exists(c => c.Category != null && c.Category.CatergoryNameEn == category), 0, 4);
+            List<PublicBlogListDto> publicList = new List<PublicBlogListDto>();
+            List<Blog> blogs = (List<Blog>)await _blogUniqueRepository.GetAllBlogPreviews(1, 5, categories[0].CategoryNameEn ?? "", new List<string>(), false);
+
+            int catCount = 1;
+            while (blogs.Count < 5 && catCount < categories.Count)
+            {
+                var categoryName = categories[catCount].CategoryNameEn ?? "";
+                var set = await _blogUniqueRepository.GetAllBlogPreviews(1, 5 - blogs.Count, categoryName, new List<string>(), false);
+
+                blogs = blogs.Concat(set).ToList();
+                catCount++;
+            }
 
 
             foreach (Blog? preview in blogs)
             {
-                if (preview != null)
+                if (preview != null && preview.BlogId.ToString() != blogId)
                 {
                     PublicBlogListDto blogPreviewDto = new PublicBlogListDto()
                     {
@@ -739,7 +754,6 @@ namespace BlogMaster.Core.Services
         {
             int pageSize = 50;
 
-
             IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviews(pageIndex, pageSize, category, tags, false);
 
             List<PublicBlogListDto> publicList = new List<PublicBlogListDto>();
@@ -758,7 +772,6 @@ namespace BlogMaster.Core.Services
                     TitleEn = preview.TitleEn,
                     TitleEs = preview.TitleEs,
                     AverageRating = await GetBlogAverageRatingAsync(preview.BlogId),
-                    
                 };
 
                 publicList.Add(blogPreviewDto);
@@ -777,9 +790,7 @@ namespace BlogMaster.Core.Services
                     imageView.MimeType = ImageView.MimeType;
                     imageView.ImageId = ImageView.BlogImageId;
                     imageView.Filename = ImageView.ImageName;
-
                     blogpreview.ImageView = imageView;
-
                 }
 
             }

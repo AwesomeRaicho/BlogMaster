@@ -1,11 +1,11 @@
-﻿@model BlogResponseDto;
+﻿@model BlogAndRecomendations;
 
 
 @{
     string keywords = "";
-    if (Model.Keywords != null)
+    if (Model.Blog?.Keywords != null)
     {
-        foreach(KeywordResponseDto keyword in Model.Keywords)
+        foreach (KeywordResponseDto keyword in Model.Blog.Keywords)
         {
             keywords += $"{keyword.KeywordNameEn}, {keyword.KeywordNameEs}, ";
         }
@@ -23,7 +23,7 @@
     <link href="~/css/bootstrap.min.css" rel="stylesheet" />
 
     <!-- Meta Description -->
-    <meta name="description" content="@(Model.DescriptionEn?.Trim())">
+    <meta name="description" content="@(Model.Blog?.DescriptionEn?.Trim())">
 
     <!-- Meta Keywords -->
     <meta name="keywords" content="@(keywords)">
@@ -38,80 +38,90 @@
     {
         @await Html.PartialAsync("_UnsignedInNavigation_PartialView")
     }
+    <div class="d-flex justify-content-center bg-light-subtle p-3 align-content-center">
+        <nav aria-label="breadcrumb d-flex align-content-center">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/blogs">Blogs</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><a href="/blogs?category=@(ViewBag.Category)">@(ViewBag.Category)</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@(ViewBag.Slug)</li>
+
+            </ol>
+        </nav>
+    </div>
     <div class="container" style="max-width: 750px ">
 
         <main>
             <article class="mt-5 mb-5">
-                <h1>@Model.TitleEn</h1>
-                <small>@Model.DescriptionEn</small>
-                @(Html.Raw(Model.ArticleEn))
+                <h1>@Model.Blog?.TitleEn</h1>
+                <small>@Model.Blog?.DescriptionEn</small>
+                @(Html.Raw(Model.Blog?.ArticleEn))
             </article>
-
+            <div class="border border-5 p-4 d-flex mb-5">
+                <div class="me-3 p-3 bg-light d-flex justify-content-center align-items-center rounded-2">
+                    <h1 class="fs-2">BM</h1>
+                </div>
+                <div class="pt-3">
+                    <a class="fs-5" style="text-decoration: none" href="/">BlogMaster</a>
+                    @if (Model.Blog != null && !string.IsNullOrEmpty(Model.Blog.Author))
+                    {
+                        <p class="fs-6">Author: <i>@(Model.Blog.Author)</i></p>
+                    }
+                </div>
+            </div>
 
             @* Recomended *@
-            <section>
-                <div class="bg-info-subtle mb-3 rounded-4 shadow">
-                    <h2 class="fs-2 p-3">Recomended</h2>
-                    <div class="row justify-content-center p-3">
+            @if(Model.BlogPreviews?.publicBlogList != null)
+            {
+                <section>
+                    <div class="bg-info-subtle mb-3 rounded-4 shadow p-3">
+                        <h2 class="fs-2 p-1 ps-3">Recomended</h2>
+                        <div class="row justify-content-center overflow-hidden">
                     
 
-                        @for(int i = 0; i < 4; i++)
-                        {
-                            @* make sure to link through slug *@
-                            <div class="col-5 m-2" style="height: 150px">
-                                <a href="#" style="text-decoration: none;">
-                                        <div class="card text-bg-dark">
-                                            <img src="..." class="card-img" alt="..." style="object-fit: cover; height: 100%">
-                                            <div class="card-img-overlay">
-                                                <h5 class="card-title">Card title</h5>
-                                                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                            
+                            @foreach (var recom in Model.BlogPreviews.publicBlogList)
+                            {
+
+                                <div class="col-12 col-md-3 rounded-0 overflow-hidden" style="min-height: 250px; max-height: 250px;">
+                                    <a href="/blogs/blogpage/@(recom.SlugEn)" style="text-decoration: none; margin: 0px; padding: 0px">
+                                        <div class="card text-bg-dark rounded-0">
+                                            <img src="@(recom.ImageView?.src)" class="card-img bg-black opacity-50 rounded-0" alt="@(recom.ImageView?.Filename)" style="object-fit: cover; min-height: 200px; max-height: 200px;">
+                                            <div class="card-img-overlay d-flex align-items-end p-3">
+                                                <h5 class="card-title text-decoration-underline">@(recom.TitleEn)</h5>
+                                                @* <p class="card-text">@(recom.DescriptionEn)</p> *@
                                             </div>
                                         </div>
-                                </a>
-                            </div>
-                        }
+                                    </a>
+                                </div>
+                            }
 
-                    @*     @foreach (var recom in ViewBag.Recomendations)
-                        {
-                            
-                            <div class="col-5 m-2" style="height: 150px">
-                                <a href="#" style="text-decoration: none;">
-                                    <div class="card text-bg-dark">
-                                        <img src="@(recom.publicBlogList.ImageView.src)" class="card-img" alt="recom.publicBlogList.ImageView.Filename" style="object-fit: cover; height: 100%">
-                                        <div class="card-img-overlay">
-                                            <h5 class="card-title">Card title</h5>
-                                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        } *@
 
+                        </div>
 
                     </div>
 
-                </div>
-
-            </section>
-            <hr>
+                </section>
+            }
 
             @* add Rating/Comment *@
-            <div class="p-4 mt-5 mb-2 rounded-3 d-flex justify-content-around">
+            <div class="p-4 mt-2 mb-2 rounded-3 d-flex justify-content-around">
 
-                <a href="/create-rating?blogId=@(Model.BlogId)&userId=@(ViewBag.UserId != null ? ViewBag.UserId : "")&slug=@(ViewBag.Slug)" class="btn btn-info m-3 shadow fw-bolder text-white"><i class="fa-solid fa-star fs-3" style="color: white"></i> Rate this article</a>
+                <a href="/create-rating?blogId=@(Model.Blog?.BlogId)&userId=@(ViewBag.UserId != null ? ViewBag.UserId : "")&slug=@(ViewBag.Slug)" class="btn btn-info m-3 shadow fw-bolder text-white"><i class="fa-solid fa-star fs-3" style="color: white"></i> Rate this article</a>
 
-                <a href="/create-comment?blogId=@(Model.BlogId)&userId=@(ViewBag.UserId != null ? ViewBag.UserId : "")&slug=@(ViewBag.Slug)" class="btn btn-info m-3 shadow fw-bolder text-white"><i class="fa-solid fa-comment text-white fs-3"></i> Add Comment</a>
+                <a href="/create-comment?blogId=@(Model.Blog?.BlogId)&userId=@(ViewBag.UserId != null ? ViewBag.UserId : "")&slug=@(ViewBag.Slug)" class="btn btn-info m-3 shadow fw-bolder text-white"><i class="fa-solid fa-comment text-white fs-3"></i> Add Comment</a>
             </div>
 
 
             @* comment Section *@
             <section class="mb-4">
-                
-                <h2>Comments</h2>
-                
-                @if(Model.CommentsRatings != null && Model.CommentsRatings.Count > 0)
+                @if (Model.Blog != null && Model.Blog.CommentsRatings != null && Model.Blog.CommentsRatings.Count > 0)
                 {
-                    foreach(var comment in Model.CommentsRatings)
+                    <h2>Comments</h2>
+                }
+                
+                @if (Model.Blog?.CommentsRatings != null && Model.Blog?.CommentsRatings.Count > 0)
+                {
+                    foreach (var comment in Model.Blog.CommentsRatings)
                     {
                         <div class="d-flex mb-3 justify-content-start align-items-center">
                             <div class="card me-3 flex-grow-1" style="max-width: 600px">
@@ -153,7 +163,7 @@
                             </div>
                             @if (!string.IsNullOrEmpty(ViewBag.UserId) && ViewBag.UserId == comment.UserId.ToString())
                             {
-                                <a class="text-white btn btn-danger p-1 fs-4 flex-gr" href="/edit-comment?commentId=@(comment.CommentId)&blogId=@(Model.BlogId)&slug=@(ViewBag.Slug)&userId=@(ViewBag.UserId)" style="width: 50px"><i class="fa-regular fa-pen-to-square"></i></a>
+                                <a class="text-white btn btn-danger p-1 fs-4 flex-gr" href="/edit-comment?commentId=@(comment.CommentId)&blogId=@(Model.Blog?.BlogId)&slug=@(ViewBag.Slug)&userId=@(ViewBag.UserId)" style="width: 50px"><i class="fa-regular fa-pen-to-square"></i></a>
                                 
                             }
                         </div>
@@ -168,7 +178,7 @@
             crossorigin="anonymous"></script>
     <script src="~/js/bootstrap.min.js" asp-append-version="true"></script>
     <script>
-        const blogImages = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.BlogImages));
+        const blogImages = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Blog?.BlogImages));
 
         blogImages.sort((a, b) => new Date(a.CreatedDate) - new Date(b.CreatedDate));
 

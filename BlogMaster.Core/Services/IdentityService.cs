@@ -205,7 +205,11 @@ namespace BlogMaster.Core.Services
 
             if (user == null)
             {
-                throw new InvalidOperationException("User does not exist.");
+                return new SignInResponseDto()
+                {
+                    ErrorMessage = "User does not exist.",
+                    IsSeccess = false,
+                };
             }
 
             if (!user.EmailConfirmed)

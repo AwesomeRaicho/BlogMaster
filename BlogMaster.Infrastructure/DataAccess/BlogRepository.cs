@@ -46,10 +46,24 @@ namespace BlogMaster.Infrastructure.DataAccess
             }
 
             // pagination
-            var result = await query
+            List<Blog> result;
+
+            if(isAdmin)
+            {
+                result = await query
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
+                .OrderByDescending(i => i.CreatedDate)
                 .ToListAsync();
+
+            }else
+            {
+                result = await query
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .OrderByDescending(i => i.DatePublished)
+                .ToListAsync();
+            }
 
             return result;
         }

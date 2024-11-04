@@ -43,16 +43,17 @@ namespace BlogMaster.Controllers
             {
                 pageIndex = 1;
             }
-            if (string.IsNullOrEmpty(category))
+
+            if (string.IsNullOrEmpty(category) || category == "All")
             {
                 category = "";
             }
+
             ViewBag.Title = "Blogs";
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
             ViewBag.PageIndex = pageIndex;
             ViewBag.Category = category;
             ViewBag.Tags = tags.Count != 0 && tags[0] != null ? tags : null;
-
 
             var previews = await _blogService.GetAllBlogPreviews(pageIndex, category, tags.Count != 0 && tags[0] != null ? tags : new List<string>());
 
@@ -61,7 +62,7 @@ namespace BlogMaster.Controllers
 
 
         [Route("/blogs/blogpage/{slug?}")]
-        public async Task<IActionResult> BlogPage(string? slug = null)
+        public async Task<IActionResult> BlogPage(string? slug = null, [FromQuery] string? category = "All")
         { 
             if (string.IsNullOrEmpty(slug))
             {
@@ -76,24 +77,35 @@ namespace BlogMaster.Controllers
             
             ViewBag.Slug = slug;
 
+            ViewBag.Category = category;
+
+
             BlogResponseDto? blog = await _blogService.GetBlogBySlug(slug);
 
-            //ViewBag.Recomendations = await _blogService.GetBlogRecomendations(blog.Categories != null ? blog.Categories?[0].CategoryNameEn : "All");
-
+            BlogPreviewsDto? previews = await _blogService.GetBlogRecomendations(blog.Categories != null ? blog.Categories : new List<CategoryResponseDto>(), blog.BlogId.ToString());
 
             if (blog == null)
             {
                 return NotFound(); 
             }
 
-            return View(blog);
+            BlogAndRecomendations blogAndRecomendations = new BlogAndRecomendations() 
+            { 
+                Blog = blog,
+                BlogPreviews = previews
+
+            };
+
+            return View(blogAndRecomendations);
         }
 
         
         [HttpGet]
         [Route("/create-comment")]
         public async Task<IActionResult> CreateComment([FromQuery] string blogId, string userId, string slug)
-            {
+        {
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
 
             if(!ViewBag.SignedIn)
@@ -151,6 +163,8 @@ namespace BlogMaster.Controllers
         [Route("/edit-comment")]
         public async Task<IActionResult> EditComment([FromQuery] string blogId, string userId, string slug, string commentId)
         {
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
 
             if (!ViewBag.SignedIn)
@@ -222,6 +236,8 @@ namespace BlogMaster.Controllers
         [Route("/create-rating")]
         public async Task<IActionResult> CreateRating([FromQuery] string blogId, string userId, string slug)
         {
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
 
             if (!ViewBag.SignedIn)

@@ -128,11 +128,12 @@ namespace BlogMaster.Controllers
         // SIGNING IN
         [HttpGet]
         [Route("/signin")]
-        public IActionResult SignIn() 
+        public IActionResult SignIn(List<string> errors) 
         {
+
             ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
 
-            return View();
+            return View(errors);
         }
 
         [HttpPost]
@@ -155,7 +156,7 @@ namespace BlogMaster.Controllers
             if (response.IsSeccess == false)
             {
                 errors.Add($"{response.ErrorMessage}");
-                return View(errors);
+                return RedirectToAction("SignIn", new { errors });
 
             }
 
