@@ -119,8 +119,14 @@
         {
             @foreach(var preview in Model.publicBlogList)
             {
-                <div class="col-md-6 col-xl-4">
+                <div class="col-md-6 col-xl-4 overflow-hidden" style="position: relative;">
                     <a href="/blogs/blogpage/@(preview.SlugEn)?category=@(ViewBag.Category)" style="text-decoration: none;">
+                        @if (preview.Subscription)
+                        {
+                            <div class="bg-danger d-flex justify-content-center align-content-center p-2 rounded-bottom-2 text-white fw-bold" style="position: absolute; right: 15px; top: 0px; z-index: 2">
+                                Subscription
+                            </div>
+                        }
                         <div class="card mb-3">
                             <img src="@(preview?.ImageView?.src)"
                                  style="height: 250px; object-fit: cover"

@@ -14,57 +14,54 @@ namespace BlogMaster.Controllers
 
         private readonly IStripeService _stripeService;
         private readonly IAppSubscriptionService _appSubscriptionService;
+        private readonly IIdentityService _identityService;
 
-        public PaymentController(IStripeService stripeService, IAppSubscriptionService appSubscriptionService)
+        public PaymentController(IStripeService stripeService, IAppSubscriptionService appSubscriptionService, IIdentityService identityService)
         {
             _stripeService = stripeService;
             _appSubscriptionService = appSubscriptionService;
+            _identityService = identityService;
         }
-
 
         //SUBSCRIPTION
         //[Authorize]
         [HttpGet("/checkout-subscription")]
         public async Task<ActionResult> PayFormSubscription(GetFormRequestDto getFormRequestDto)
         {
+            string? userName = User.Identity?.Name;
+            string? userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             //check if there is an active subscription
             SubscriptionRequestDto requestDto = new SubscriptionRequestDto()
             {
-                UserName = User.Identity?.Name,
-                UserEmail = User.FindFirst(ClaimTypes.Email)?.Value,
-                UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                UserName = userName,
+                UserEmail = userEmail,
+                UserId = userId
             };
-
-            requestDto.UserName = "Raicho";
-            requestDto.UserEmail = "testing@testing.com";
-
-
 
             ViewBag.PublishableKey = _stripeService.GetPublishableKey();
 
-            bool isSubscripbed = await _appSubscriptionService.IsSubscriptionActive(requestDto);
+            string? CustomerId = await _identityService.GetStripeCustomerId(userId ?? "");
 
-            if(isSubscripbed)
+            if(CustomerId != null)
             {
-                return RedirectToAction("Subscription", "SubscriptionDetails");
-            }
+                string? isSubscripbed = await _stripeService.SubscriptionStatus(CustomerId);
 
+                if(!string.IsNullOrEmpty(isSubscripbed) && isSubscripbed == "Active") 
+                { 
+                    return RedirectToAction("SubscriptionDetails", "Subscription");
+                }   
+            };
 
             return View();
         }
     
         //[Authorize]
-        [HttpPost("/create-checkout-session-subscription")]
+        [HttpPost("/checkout-session-subscription")]
         public async Task<IActionResult> CheckoutSessionSubscription(GetFormRequestDto getFormRequestDto)
         {
-
             getFormRequestDto.Username = User.Identity?.Name;
             getFormRequestDto.UserEmail = User.FindFirst(ClaimTypes.Email)?.Value;
-
-
-            //these new two lines are replacing the previous 2 for testing purposes (to be eliminated)
-            getFormRequestDto.Username = "Raicho";
-            getFormRequestDto.UserEmail = "testing@testing.com";
 
             SessionReturnDto session = await _stripeService.StartSessionForEmbededFormSubscription(getFormRequestDto);
 
@@ -73,11 +70,6 @@ namespace BlogMaster.Controllers
             return Json(new { clientSecret = session.StripeSession?.ClientSecret });
         }
 
-
-
-
-
-
         //DONTATION
 
         [HttpGet("/checkout-donation")]
@@ -85,30 +77,28 @@ namespace BlogMaster.Controllers
         {
             getFormRequestDto.Amount = 100;
 
-
             ViewBag.PublishableKey = _stripeService.GetPublishableKey();
+
             return View(getFormRequestDto);
         }
-
-
 
         [HttpPost("/create-checkout-session-donation")]
         public async Task<IActionResult> CheckoutSessionDonation(GetFormRequestDto getFormRequestDto)
         {
-
             Session session =  await _stripeService.StartSessionForEmbededFormDonation(getFormRequestDto);
 
             return Json(new { clientSecret = session.ClientSecret });
         }
 
-
-
-
-
-        
         [HttpGet("/payment-return")]
-        public IActionResult PaymentReturn([FromQuery] string session_id)
+        public async Task<IActionResult> PaymentReturn([FromQuery] string session_id)
         {
+            if (session_id == null)
+            {
+                throw new ArgumentNullException(nameof(session_id)); 
+            }
+
+
             // Returned data needs to be saved for billing cycle, payment history, 
 
             var sessionService = new SessionService();
@@ -123,15 +113,13 @@ namespace BlogMaster.Controllers
                 CustomerId = session.CustomerId,
                 SubscriptionId = session.SubscriptionId,
                 UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null,
-                
             };
             
             if(session.Mode == "subscription")
             {
                 //get subscription
-                var service = new SubscriptionService();
-                Subscription subscriptionResponse = service.Get(session.SubscriptionId);
-
+                var stripeServiceSubscription = new SubscriptionService();
+                Subscription stripeSubscriptionResponse = stripeServiceSubscription.Get(session.SubscriptionId);
 
                 SubscriptionRequestDto subscriptionRequestDto = new SubscriptionRequestDto()
                 {
@@ -140,23 +128,20 @@ namespace BlogMaster.Controllers
                     UserName = User.Identity?.Name,
                     SubscriptionId= session.SubscriptionId,
                     CustomerId = session.CustomerId,
-                    StartDate = subscriptionResponse.StartDate,
-                    EndDate = subscriptionResponse.CurrentPeriodEnd,
-                    NextBillingDate = subscriptionResponse.CurrentPeriodEnd
+                    StartDate = stripeSubscriptionResponse.StartDate,
+                    EndDate = stripeSubscriptionResponse.CurrentPeriodEnd,
+                    NextBillingDate = stripeSubscriptionResponse.CurrentPeriodEnd
                 };
 
-                //Return a subscription screen
-                return View(subscriptionRequestDto);
+                var subscriptionResponse = await _appSubscriptionService.CreateSubscription(subscriptionRequestDto);
 
+                //Return a subscription screen
+                return View(subscriptionResponse);
             }
 
             //return a regular donation
             return View();
         }
-
-
-
-
 
     }
 }

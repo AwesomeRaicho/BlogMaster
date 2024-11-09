@@ -56,7 +56,7 @@ namespace BlogMaster.Controllers
 
         [HttpPost]
         [Route("/add-image-test")]
-        public async Task<IActionResult> AddImageTest(IFormFile image)
+        public IActionResult AddImageTest(IFormFile image)
         {
 
             return View();

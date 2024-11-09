@@ -1,6 +1,7 @@
 ﻿using BlogMaster.Core.Contracts;
 using BlogMaster.Core.DTO;
 using BlogMaster.Core.Models;
+using BlogMaster.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Stripe;
@@ -16,13 +17,13 @@ public class WebhookController : Controller
 
     private string? endpointSecret;
     private IAppSubscriptionService _subscriptionService;
+    private IStripeService _stripeService;
 
-
-
-    public WebhookController(IConfiguration configuration, IAppSubscriptionService appSubscriptionService)
+    public WebhookController(IConfiguration configuration, IAppSubscriptionService appSubscriptionService, IStripeService stripeService)
     {
         endpointSecret = configuration["Stripe:SercretEndpoint"];
         _subscriptionService = appSubscriptionService;
+        _stripeService = stripeService;
     }
 
     [Route("/webhook")]
@@ -36,8 +37,6 @@ public class WebhookController : Controller
             json = await reader.ReadToEndAsync();
         }
 
-
-
         try
         {
             var stripeEvent = EventUtility.ParseEvent(json);
@@ -49,23 +48,34 @@ public class WebhookController : Controller
             if (stripeEvent.Type == Events.InvoicePaid)
             {
 
-
-
+                
 
                 var invoice = stripeEvent.Data.Object as Stripe.Invoice;
 
+                
+                    
                 if (invoice != null)
                 {
+                    Subscription? stripeSubscription = await _stripeService.GetCustomerSubscription(invoice.CustomerId);
+
+                    if (stripeSubscription == null)
+                    {
+                        throw new Exception("Received payment from a non existing customer/subscription");
+                    }
+
+
+
                     SubscriptionRequestDto subRequest = new SubscriptionRequestDto()
                     {
                         CustomerId = invoice.CustomerId,
                         SubscriptionId = invoice.SubscriptionId,
                         UserName = invoice.CustomerName,
                         UserEmail = invoice.CustomerEmail,
+                        NextBillingDate = stripeSubscription.CurrentPeriodEnd
 
                     };
 
-                     await _subscriptionService.CreateSubscription(subRequest);
+                     await _subscriptionService.SuccessfulPayment(subRequest);
 
 
                 }
@@ -73,11 +83,6 @@ public class WebhookController : Controller
             else if (stripeEvent.Type == Events.InvoicePaymentFailed)
             {
                 var invoice = stripeEvent.Data.Object as Stripe.Invoice;
-
-
-
-
-
 
                 // Then define and call a method to handle the successful attachment of a PaymentMethod.
                 // handlePaymentMethodAttached(paymentMethod);

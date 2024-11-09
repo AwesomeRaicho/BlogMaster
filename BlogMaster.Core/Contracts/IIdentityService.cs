@@ -41,6 +41,10 @@ namespace BlogMaster.Core.Contracts
 
         public Task<List<IdentityResponseDto>> GetWrittersEditors();
 
+        public Task<string?> GetStripeCustomerId(string userId);
+
+        public Task<bool> UpdateStripeCustomerId(string userId, string stripeCustomerId);
+
         //Change password and reser password will be implemented after the EmailService gets implemented.
 
         //public Task<IdentityResult> ChangePasswordAsync(IdentityRequestDto identityRequestDto);

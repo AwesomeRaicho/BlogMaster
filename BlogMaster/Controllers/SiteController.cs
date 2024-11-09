@@ -79,8 +79,9 @@ namespace BlogMaster.Controllers
 
             ViewBag.Category = category;
 
-
             BlogResponseDto? blog = await _blogService.GetBlogBySlug(slug);
+
+
 
             BlogPreviewsDto? previews = await _blogService.GetBlogRecomendations(blog.Categories != null ? blog.Categories : new List<CategoryResponseDto>(), blog.BlogId.ToString());
 
@@ -93,7 +94,6 @@ namespace BlogMaster.Controllers
             { 
                 Blog = blog,
                 BlogPreviews = previews
-
             };
 
             return View(blogAndRecomendations);

@@ -1,17 +1,21 @@
-﻿@model SubscriptionRequestDto;
+﻿@model SubscriptionResponseDto;
 
 @{
 }
 
 @{
 
+    <h2>Start Date: @(Model.CreatedDate)</h2>
+    <h2>End Date: @(Model.EndDate)</h2>
+    <h2>Next billing date: @(Model.NextBillingDate)</h2>
+
     if (Model == null)
     {
-        <h1>Thank you for donating</h1>
+        <h5>Thank you for donating</h5>
     }
     else
     {
-        <h1>Thank you for Subscribing</h1>
+        <h5>Thank you for Subscribing</h5>
 
     }
 }

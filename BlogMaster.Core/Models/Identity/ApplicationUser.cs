@@ -11,7 +11,7 @@ namespace BlogMaster.Core.Models.Identity
     {
         public string? FirstName { get; set; }
         public string? LastName { get; set;}
-
+        public string? StripeCustomerId { get; set; }
 
         //Navigation
         //public Subscription? Subscription { get; set; }

@@ -26,7 +26,8 @@ namespace BlogMaster.Core.Contracts
 
         public Task<bool> IsSubscriptionActive(SubscriptionRequestDto subscriptionRequestDto);
 
-
+        public Task<SubscriptionResponseDto> SuccessfulPayment(SubscriptionRequestDto subscriptionRequestDto);
+        
         //public Task ChangePaymentMethod(SubscriptionRequestDto subscriptionRequestDto);
         //public bool IsSubscribed(string subscriptionId);
     }

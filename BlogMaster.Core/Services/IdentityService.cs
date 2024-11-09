@@ -407,7 +407,33 @@ namespace BlogMaster.Core.Services
 
         }
 
-        
+        public async Task<string?> GetStripeCustomerId(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
 
+            if (user == null)
+            {
+                return null;
+            }
+
+            return user.StripeCustomerId;
+        }
+
+        public async Task<bool> UpdateStripeCustomerId(string userId, string stripeCustomerId)
+        {
+            var user = await GetEntityById(Guid.Parse(userId));
+
+            if (user != null) 
+            { 
+                user.StripeCustomerId = stripeCustomerId;
+                
+                await _userManager.UpdateAsync(user);
+                return true;
+            }
+
+            return false;
+        }
+
+        
     }
 }

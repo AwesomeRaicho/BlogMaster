@@ -696,6 +696,7 @@ namespace BlogMaster.Core.Services
                         TitleEn = preview.TitleEn,
                         TitleEs = preview.TitleEs,
                         AverageRating = await GetBlogAverageRatingAsync(preview.BlogId),
+                        Subscription = preview.IsSubscriptionRequired
 
                     };
                     publicList.Add(blogPreviewDto);
@@ -772,6 +773,7 @@ namespace BlogMaster.Core.Services
                     TitleEn = preview.TitleEn,
                     TitleEs = preview.TitleEs,
                     AverageRating = await GetBlogAverageRatingAsync(preview.BlogId),
+                    Subscription = preview.IsSubscriptionRequired,
                 };
 
                 publicList.Add(blogPreviewDto);

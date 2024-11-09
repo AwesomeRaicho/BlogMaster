@@ -1,8 +1,38 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@model Subscription;
+
+<h1>Subscription details</h1>
+
+    <div style="padding: 10px">
+        <strong>SubscriptionId:</strong> @(Model.Id), <br>
+        <strong>CustomerId:</strong> @(Model.CustomerId), <br>
+        <strong>Cancel at:</strong> @(Model.CancelAt)<br>
+        <strong>Created:</strong>  @(Model.Created),<br>
+        <strong>CurrentPeriodStart:</strong> @(Model.CurrentPeriodStart),<br>
+        <strong>CurrentPeriodEnd:</strong> @(Model.CurrentPeriodEnd),<br>
+        <strong>Next Pending Invoice:</strong> @(Model.NextPendingInvoiceItemInvoice)<br>
+        <strong>Status:</strong> @(Model.Status),<br>
+        <strong>Collection Method:</strong> @(Model.CollectionMethod),<br>
+        <br>
+        <br>
+        <br>
+        <strong>InvoiceSettings:</strong> <br>
+        @(Model.InvoiceSettings.RawJObject),
+
+    </div>
+<br />
+<br />
+<br />
+<br />
+
+@if (Model.Status == "active" && Model.CancelAt != null)
+{
+    <a href="/resume-subscription?subscriptionId=@(Model.Id)&customerId=@(Model.CustomerId)">Continue Subscription for next month</a>
+}
+else if (Model.Status == "canceled")
+{
+    <a href="/checkout-subscription">Resume Subscription</a>
+}else
+{
+    <a href="/cancel-subscription?subscriptionId=@(Model.Id)">Cancel Subscription</a>
 }
 
-
-<h1>You are already subscribed Sir!!</h1>

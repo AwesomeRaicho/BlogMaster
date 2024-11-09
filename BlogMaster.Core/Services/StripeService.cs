@@ -16,7 +16,6 @@ namespace BlogMaster.Core.Services
     public class StripeService : IStripeService
     {
 
-
         private readonly string DomainName = "https://localhost:7218";
         private readonly string PriceId = "price_1Prtw409TbzP0h4ikMqH8DnJ";
         private readonly StripeSettings _stripeSettings;
@@ -29,6 +28,14 @@ namespace BlogMaster.Core.Services
         }
 
         //Customer Methods
+
+        /// <summary>
+        /// This method will create a user on Stripe or it will return the customer if it alredy exists (looks for matching userName and Email )
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="userEmail"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public Customer CreateStripeCustomer(string userName, string userEmail)
         {
             try
@@ -74,13 +81,7 @@ namespace BlogMaster.Core.Services
             }
         }
 
-
-
-
         ////////////////////////////////////////////////////////////////
-
-
-
 
         public Task<Session> StartSessionForEmbededFormDonation(GetFormRequestDto getFormRequestDto)
         {
@@ -116,6 +117,7 @@ namespace BlogMaster.Core.Services
             {
                 Console.WriteLine(ex.ToString());
                 throw new Exception(ex.ToString());
+
             }
         }
 
@@ -131,19 +133,14 @@ namespace BlogMaster.Core.Services
 
             };
 
-
-
             // Get or create a customer for the subscription session
             Customer? customer =  this.CreateStripeCustomer(getFormRequestDto.Username, getFormRequestDto.UserEmail);
-
-
 
             try
             {
 
                 var sessionCreatedOptions = new SessionCreateOptions
                 {
-
                     Customer = $"{customer.Id}", 
                     SubscriptionData =
                     {
@@ -156,10 +153,12 @@ namespace BlogMaster.Core.Services
                             Price = PriceId, 
                             Quantity = 1,
                         },
+                      
                     },
                     Mode = "subscription",
                     UiMode = "embedded",
                     ReturnUrl = $"{DomainName}/payment-return?session_id={{CHECKOUT_SESSION_ID}}",
+                    
                 };
 
                 var sessionService = new SessionService();
@@ -175,6 +174,8 @@ namespace BlogMaster.Core.Services
             }
         }
 
+
+
         /// <summary>
         /// ////////////////////
         /// </summary>
@@ -186,22 +187,9 @@ namespace BlogMaster.Core.Services
             return _stripeSettings.PublishableKey;
         }
 
-        public void CancelSubscription(string subId)
-        {
-            var options = new SubscriptionUpdateOptions()
-            { 
-                CancelAtPeriodEnd = true 
-            };
-
-            var service = new SubscriptionService();
-            service.Update(subId, options);
-
-        }
 
         public async Task<Subscription?> GetCustomerSubscription(string customerId)
         {
-            //check if there is a subscription
-
             var options = new SubscriptionListOptions
             {
                 Customer = customerId,
@@ -219,11 +207,60 @@ namespace BlogMaster.Core.Services
 
                 return subscriptions.Data[0] as Subscription;
 
-                
-
             }
 
             return null;
         }
+
+
+
+        //CONSIDER REFACTORING THE NEXT METHODS, 
+
+
+        public void CancelSubscription(string subId)
+        {
+            var options = new SubscriptionUpdateOptions()
+            { 
+                CancelAtPeriodEnd = true 
+            };
+
+            var service = new SubscriptionService();
+            service.Update(subId, options);
+        }
+
+
+
+        //added
+        /// <summary>
+        /// Possible values are incomplete, incomplete_expired, trialing, active, past_due, canceled, unpaid, or paused.
+        /// </summary>
+        /// <param name="stripeCustomerId"></param>
+        /// <returns></returns>
+        public async Task<string?> SubscriptionStatus(string stripeCustomerId)
+        {
+            Subscription? subscription = await GetCustomerSubscription(stripeCustomerId);
+
+            if (subscription == null)
+            {
+                return null;
+            }
+
+            return subscription.Status;
+
+        }
+
+        public bool ResumeSubscription(string subscriptionId)
+        {
+
+            var options = new SubscriptionUpdateOptions()
+            {
+                CancelAtPeriodEnd = false
+            };
+
+            var service = new SubscriptionService();
+            service.Update(subscriptionId, options);
+            return false;
+        }
+
     }
 }

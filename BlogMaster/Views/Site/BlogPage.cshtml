@@ -48,7 +48,7 @@
             </ol>
         </nav>
     </div>
-    <div class="container" style="max-width: 750px ">
+    <div class="container mb-5" style="max-width: 750px ">
 
         <main>
             <article class="mt-5 mb-5">
@@ -82,8 +82,14 @@
                             @foreach (var recom in Model.BlogPreviews.publicBlogList)
                             {
 
-                                <div class="col-12 col-md-3 rounded-0 overflow-hidden" style="min-height: 250px; max-height: 250px;">
+                                <div class="col-12 col-md-3 rounded-0 overflow-hidden" style="min-height: 250px; max-height: 250px; position: relative">
                                     <a href="/blogs/blogpage/@(recom.SlugEn)" style="text-decoration: none; margin: 0px; padding: 0px">
+                                        @if (recom.Subscription)
+                                        {
+                                            <div class="bg-danger d-flex justify-content-center align-content-center p-2 rounded-bottom-2 text-white fw-bold fs-6" style="position: absolute; right: 15px; top: 0px; z-index: 2">
+                                                Subscription
+                                            </div>
+                                        }
                                         <div class="card text-bg-dark rounded-0">
                                             <img src="@(recom.ImageView?.src)" class="card-img bg-black opacity-50 rounded-0" alt="@(recom.ImageView?.Filename)" style="object-fit: cover; min-height: 200px; max-height: 200px;">
                                             <div class="card-img-overlay d-flex align-items-end p-3">
@@ -173,6 +179,8 @@
         </main>
 
     </div>
+    @await Html.PartialAsync("_Footer_PartialView")
+
     <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.8/dist/umd/popper.min.js"
             integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
             crossorigin="anonymous"></script>

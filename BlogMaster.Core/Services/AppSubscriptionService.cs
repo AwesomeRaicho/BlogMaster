@@ -214,9 +214,11 @@ namespace BlogMaster.Core.Services
 
         }
 
-
         public async Task<SubscriptionResponseDto> CreateSubscription(SubscriptionRequestDto subscriptionRequestDto)
         {
+
+            //HERE CHECK IF THERE IS ALREADY AN ENTRY IN THE TABLE TO AVOID A CONFILCT BETWEEN WEBHOOK AND "return-payment"
+
             ApplicationUser? user = await _identityService.GetByUserName(subscriptionRequestDto.UserName ?? "");
 
             if (user == null)
@@ -224,11 +226,9 @@ namespace BlogMaster.Core.Services
                 throw new Exception("User name not identified");
             }
 
-
             Subscription subscription = await _stripeService.GetCustomerSubscription(subscriptionRequestDto.CustomerId ?? "");
 
             if (subscription == null) throw new Exception("subscription cant be found");
-
 
             AppSubscription appSubscription = new AppSubscription()
             {
@@ -243,19 +243,13 @@ namespace BlogMaster.Core.Services
                 SubscriptionId = subscriptionRequestDto.SubscriptionId,
             };
 
-
-
-
             await _subscriptionRepository.Create(appSubscription);
-
-            
 
             SubscriptionResponseDto subscriptionResponseDto = new SubscriptionResponseDto()
             {
                 NextBillingDate = appSubscription.NextBillingDate,
                 CancelationDate = appSubscription.CancelationDate,
                 Status = appSubscription.Status
-                
             };
 
             return subscriptionResponseDto;
@@ -268,8 +262,6 @@ namespace BlogMaster.Core.Services
 
         public async Task<bool> IsSubscriptionActive(SubscriptionRequestDto subscriptionRequestDto)
         {
-
-
             //check local subscription entity
             AppSubscription? appSubscription = await _subscriptionRepository.Find(sub => sub.User != null && sub.User.Id.ToString() == subscriptionRequestDto.UserId);
 
@@ -277,7 +269,6 @@ namespace BlogMaster.Core.Services
             {
                 return false;
             }
-
 
             //if we have it as active, we search stripe directly
             if(appSubscription.Status == "active")
@@ -293,7 +284,6 @@ namespace BlogMaster.Core.Services
                 {
                     return true;
                 }
-
             }
 
             //for testing because we are not adding to the DB right now
@@ -309,15 +299,17 @@ namespace BlogMaster.Core.Services
                 return true;
             }
 
-
-
-
-
             return false;
 
-
-
         }
+        public Task<SubscriptionResponseDto> SuccessfulPayment(SubscriptionRequestDto subscriptionRequestDto)
+        {
+
+
+
+            throw new NotImplementedException();        
+        }
+
 
     }
 }
