@@ -193,6 +193,7 @@ namespace BlogMaster.Core.Services
             var options = new SubscriptionListOptions
             {
                 Customer = customerId,
+                
             };
 
             var service = new SubscriptionService();
@@ -277,5 +278,40 @@ namespace BlogMaster.Core.Services
             return paymentMethods;
 
         }
+
+
+
+        public void RemovePaymentMethod(string paymentMethodId)
+        {
+            var service = new PaymentMethodService();
+            service.Detach(paymentMethodId);
+        }
+
+        public void ChangeDefaultPaymentMethod(string customerId, string paymentMethodId, string subscriptionId)
+        {
+
+            var customerOptions = new CustomerUpdateOptions
+            {
+                InvoiceSettings = new CustomerInvoiceSettingsOptions()
+                {
+                    DefaultPaymentMethod = paymentMethodId
+                },
+                
+            };
+
+            var customerService = new CustomerService();
+            customerService.Update(customerId, customerOptions);
+
+            var subscriptionOptions = new SubscriptionUpdateOptions
+            {
+                DefaultPaymentMethod = paymentMethodId,
+            };
+
+            var subdcriptionService = new SubscriptionService();
+            subdcriptionService.Update(subscriptionId, subscriptionOptions);
+
+        }
+
+
     }
 }

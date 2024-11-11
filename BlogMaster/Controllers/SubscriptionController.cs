@@ -1,4 +1,5 @@
 ﻿using BlogMaster.Core.Contracts;
+using BlogMaster.Infrastructure.Migrations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -53,7 +54,7 @@ namespace BlogMaster.Controllers
                 stripeCustomerId = stripeCustomer.Id;
 
             }
-                Subscription subscription = await _stripeService.GetCustomerSubscription(stripeCustomerId);
+                Stripe.Subscription subscription = await _stripeService.GetCustomerSubscription(stripeCustomerId);
 
                 return View(subscription);
         }
@@ -79,7 +80,7 @@ namespace BlogMaster.Controllers
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
             ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
 
-            Subscription subscription = await _stripeService.GetCustomerSubscription(customerId);
+            Stripe.Subscription subscription = await _stripeService.GetCustomerSubscription(customerId);
 
             if(subscription != null && subscription.Id == subscriptionId && subscription.CanceledAt != null && subscription.Status == "active") 
             {
@@ -92,11 +93,14 @@ namespace BlogMaster.Controllers
 
         [Authorize]
         [Route("/payment-methods")]
-        public IActionResult PaymentMethods([FromQuery] string customerId, string method)
+        public IActionResult PaymentMethods([FromQuery] string customerId, string method, string subscriptionId)
         {
+
+            //need subscription id to updated the "SubscriptionPaymentSettingsOptions" in the update default payhment method
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
             ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
             ViewBag.PayMethod = method;
+            ViewBag.SubscriptionId = subscriptionId;
             StripeList<PaymentMethod> paymethods = _stripeService.StripePaymentMethods(customerId);
 
             return View(paymethods);
@@ -105,25 +109,25 @@ namespace BlogMaster.Controllers
         //deault
         [Authorize]
         [Route("/default-payment-method")]
-        public IActionResult DefaultPaymentMethod(string methodId)
+        public IActionResult DefaultPaymentMethod(string methodId, string customerId, string subscriptionId)
         {
-            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
-            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
 
-            return View();
+            _stripeService.ChangeDefaultPaymentMethod(customerId, methodId, subscriptionId);
+
+            return RedirectToAction("SubscriptionDetails");
+
         }
 
 
         //remove 
         [Authorize]
         [Route("/remove-payment-method")]
-        public IActionResult RemovePaymentMethod(string methodId)
+        public IActionResult RemovePaymentMethod(string methodId, string customerId, string defaultMethod)
         {
 
-            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
-            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+            _stripeService.RemovePaymentMethod(methodId);
 
-            return View();
+            return RedirectToAction("PaymentMethods", new { customerId , method = defaultMethod });
         }
     }
 }

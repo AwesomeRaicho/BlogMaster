@@ -80,6 +80,9 @@
                     <div class="modal-footer">
                         <form action="/default-payment-method" method="post">
                             <input type="hidden" name="methodId" value="@(method.Id)" />
+                            <input type="hidden" name="customerId" value="@(method.CustomerId)" />
+                            <input type="hidden" name="subscriptionId" value="@(ViewBag.SubscriptionId)" />
+
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
                                 <button type="submit" class="btn btn-primary">Yes</button>
                         </form>
@@ -107,6 +110,8 @@
                     <div class="modal-footer">
                         <form action="/remove-payment-method" method="post">
                             <input type="hidden" name="methodId" value="@(method.Id)" />
+                            <input type="hidden" name="defaultMethod" value="@(ViewBag.PayMethod ?? "")" />
+                            <input type="hidden" name="customerId" value="@(method.CustomerId)" />
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
                                 <button type="submit" class="btn btn-primary">Yes</button>
                         </form>

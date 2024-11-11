@@ -28,5 +28,9 @@ namespace BlogMaster.Core.Contracts
         public bool ResumeSubscription(string subscriptionId);
 
         public StripeList<PaymentMethod> StripePaymentMethods(string stripeCustomerId);
+
+        public void RemovePaymentMethod(string paymentMethodId);
+
+        public void ChangeDefaultPaymentMethod(string customerId, string paymentMethodId, string subscriptionId);
     }
 }
