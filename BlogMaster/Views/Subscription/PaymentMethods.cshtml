@@ -1,0 +1,118 @@
+﻿@model StripeList<PaymentMethod>;
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="d-flex justify-content-center bg-light-subtle p-1 p-sm-3 align-content-center m-0">
+    <nav aria-label="breadcrumb d-flex align-content-center m-0">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <a href="/subscription-details">Subscription details</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                Payment methods
+            </li>
+        </ol>
+    </nav>
+</div>
+<div class="container mt-5" style="max-width: 600px">
+
+@foreach(PaymentMethod method in Model.Data)
+{
+
+        <div class="border mb-3 p-1 overflow-hidden" style="max-width: 540px; position: relative;">
+        <div class="row g-0 p-1" >
+                <div class="col-2 d-flex justify-content-center align-items-center ps-md-3" >
+                <img style="object-fit: cover;"
+                         src="~/images/@(method.Card.Brand == "visa" ? "VisaLogoPS.png" : method.Card.Brand == "mastercard" ? "MasterCardLogoPS.png" : "CardLogo.png")"
+                        class="img-fluid rounded-start mt-2 mt-sm-0"
+                        alt="card-logo" />
+            </div>
+            <div class="col-8">
+                <div class="ps-5" >
+                    <h5 class="text-uppercase p-0">@(method.Card.Brand)</h5>
+                    <p class="p-0 m-0">
+                        Card number ending with: **** @(method.Card.Last4) <br /><small> @(method.Card.ExpMonth)/@(method.Card.ExpYear)</small> <br />
+                        <small class="text-body-secondary ">
+                                @if (ViewBag.PayMethod != method.Id)
+                                {
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#@(method.Id)">Make default method</a> 
+                                    
+                                <span> | </span>
+                                }
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#@(method.Id)remove">Remove</a>
+                        </small>
+                    </p>
+                </div>
+            </div>
+        </div>
+        @if (ViewBag.PayMethod == method.Id)
+        {
+            <div class="bg-danger text-white fw-bold fst-italic p-1"
+                        style="
+                position: absolute;
+                left: -6px;
+                top: 0px;
+                transform: skew(-15deg);
+                width: 80px;
+                height: 30px;
+                    ">
+            </div>
+            <span class="text-white fw-bold fst-italic p-1 ps-2" style="position: absolute; left: 0px; top: 0px">Default</span>
+        }
+    </div>
+
+        <!-- Modal default method-->
+        <div class="modal fade modal-dialog modal-dialog-scrollable" id="@(method.Id)" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit payment method</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="fs-5">Do you want to make this card the default payment method?</p>
+                        <p class="p-0 m-0">
+                            <span class="text-uppercase fs-6 fw-bold">@(method.Card.Brand) </span> <br />Card ending in **** @(method.Card.Last4) <br /> <small> @(method.Card.ExpMonth)/@(method.Card.ExpYear)</small>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <form action="/default-payment-method" method="post">
+                            <input type="hidden" name="methodId" value="@(method.Id)" />
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                                <button type="submit" class="btn btn-primary">Yes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal remove-->
+        <div class="modal fade modal-dialog modal-dialog-scrollable" id="@(method.Id)remove" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Remove payment method</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="fs-5">
+                            Do you want to remove this payment method?
+                        </p>
+                        <p class="p-0 m-0">
+                            <span class="text-uppercase fs-6 fw-bold">@(method.Card.Brand) </span> <br />Card ending in **** @(method.Card.Last4) <br /> <small> @(method.Card.ExpMonth)/@(method.Card.ExpYear)</small>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <form action="/remove-payment-method" method="post">
+                            <input type="hidden" name="methodId" value="@(method.Id)" />
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                                <button type="submit" class="btn btn-primary">Yes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+}
+</div>

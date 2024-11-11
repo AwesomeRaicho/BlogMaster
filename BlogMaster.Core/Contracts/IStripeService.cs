@@ -24,7 +24,9 @@ namespace BlogMaster.Core.Contracts
 
         public Task<Subscription> GetCustomerSubscription(string customerId);
 
-         public Task<string?> SubscriptionStatus(string customerId);
+        public Task<string?> SubscriptionStatus(string customerId);
         public bool ResumeSubscription(string subscriptionId);
+
+        public StripeList<PaymentMethod> StripePaymentMethods(string stripeCustomerId);
     }
 }

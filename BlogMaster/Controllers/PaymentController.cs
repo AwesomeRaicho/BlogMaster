@@ -31,6 +31,7 @@ namespace BlogMaster.Controllers
             string? userName = User.Identity?.Name;
             string? userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
             string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             //check if there is an active subscription
             SubscriptionRequestDto requestDto = new SubscriptionRequestDto()
             {

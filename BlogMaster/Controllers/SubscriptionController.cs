@@ -12,17 +12,22 @@ namespace BlogMaster.Controllers
     {
         private readonly IStripeService _stripeService;
         private readonly IIdentityService _identityService;
+        private readonly IConfiguration _configuration;
 
-        public SubscriptionController(IStripeService stripeService, IIdentityService identityService) 
+        public SubscriptionController(IStripeService stripeService, IIdentityService identityService, IConfiguration configuration) 
         {
             _stripeService = stripeService;
             _identityService = identityService;
+            _configuration = configuration;
         }
 
         
         [Route("/subscription-details")]
         public async Task<IActionResult> SubscriptionDetails()
         {
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+
             string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if(User.Identity == null || !User.Identity.IsAuthenticated || userId == null)
@@ -56,8 +61,10 @@ namespace BlogMaster.Controllers
         [Route("/cancel-subscription")]
         public IActionResult CancelSubscription([FromQuery] string subscriptionId)
         {
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
 
-            if(subscriptionId != null) 
+            if (subscriptionId != null) 
             { 
                 _stripeService.CancelSubscription(subscriptionId);
             }
@@ -69,7 +76,9 @@ namespace BlogMaster.Controllers
         [Route("/resume-subscription")]
         public async Task<IActionResult> ResumeSubscription([FromQuery] string subscriptionId, string customerId)
         {
-            
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+
             Subscription subscription = await _stripeService.GetCustomerSubscription(customerId);
 
             if(subscription != null && subscription.Id == subscriptionId && subscription.CanceledAt != null && subscription.Status == "active") 
@@ -79,6 +88,42 @@ namespace BlogMaster.Controllers
 
             return RedirectToAction("SubscriptionDetails");
 
+        }
+
+        [Authorize]
+        [Route("/payment-methods")]
+        public IActionResult PaymentMethods([FromQuery] string customerId, string method)
+        {
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+            ViewBag.PayMethod = method;
+            StripeList<PaymentMethod> paymethods = _stripeService.StripePaymentMethods(customerId);
+
+            return View(paymethods);
+        }
+
+        //deault
+        [Authorize]
+        [Route("/default-payment-method")]
+        public IActionResult DefaultPaymentMethod(string methodId)
+        {
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+
+            return View();
+        }
+
+
+        //remove 
+        [Authorize]
+        [Route("/remove-payment-method")]
+        public IActionResult RemovePaymentMethod(string methodId)
+        {
+
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+
+            return View();
         }
     }
 }

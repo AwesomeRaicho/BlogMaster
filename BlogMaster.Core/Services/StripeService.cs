@@ -262,5 +262,20 @@ namespace BlogMaster.Core.Services
             return false;
         }
 
+        public StripeList<PaymentMethod> StripePaymentMethods(string stripeCustomerId)
+        {
+
+            var options = new PaymentMethodListOptions
+            {
+                Type = "card",
+                Customer = stripeCustomerId,
+                Limit = 10
+            };
+            var service = new PaymentMethodService();
+            StripeList<PaymentMethod> paymentMethods = service.List(options);
+
+            return paymentMethods;
+
+        }
     }
 }

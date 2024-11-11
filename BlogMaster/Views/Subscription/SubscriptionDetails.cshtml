@@ -1,8 +1,19 @@
 ﻿@model Subscription;
 
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Payment methods</h3>
+<a href="/payment-methods?customerId=@(Model.CustomerId)&method=@(Model.DefaultPaymentMethodId)">View your payment methods</a>
+
+<hr />
+
 <h1>Subscription details</h1>
 
     <div style="padding: 10px">
+        <strong>Default:</strong> @(Model.DefaultPaymentMethodId), <br>
+
         <strong>SubscriptionId:</strong> @(Model.Id), <br>
         <strong>CustomerId:</strong> @(Model.CustomerId), <br>
         <strong>Cancel at:</strong> @(Model.CancelAt)<br>
@@ -19,11 +30,8 @@
         @(Model.InvoiceSettings.RawJObject),
 
     </div>
-<br />
-<br />
-<br />
-<br />
 
+<hr />
 @if (Model.Status == "active" && Model.CancelAt != null)
 {
     <a href="/resume-subscription?subscriptionId=@(Model.Id)&customerId=@(Model.CustomerId)">Continue Subscription for next month</a>
