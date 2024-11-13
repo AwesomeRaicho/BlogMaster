@@ -141,7 +141,8 @@ namespace BlogMaster.Core.Services
 
                 var sessionCreatedOptions = new SessionCreateOptions
                 {
-                    Customer = $"{customer.Id}", 
+                    Customer = $"{customer.Id}",
+                    PaymentMethodTypes = new List<string> { "card" },
                     SubscriptionData =
                     {
                         
@@ -152,13 +153,13 @@ namespace BlogMaster.Core.Services
                         {
                             Price = PriceId, 
                             Quantity = 1,
+                            
                         },
                       
                     },
                     Mode = "subscription",
                     UiMode = "embedded",
                     ReturnUrl = $"{DomainName}/payment-return?session_id={{CHECKOUT_SESSION_ID}}",
-                    
                 };
 
                 var sessionService = new SessionService();
