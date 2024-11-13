@@ -3,7 +3,10 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="d-flex justify-content-center bg-light-subtle p-1 p-sm-3 align-content-center m-0">
+
+
+
+<div class="d-flex justify-content-center bg-light pt-2 p-1 p-sm-3 align-content-center m-0">
     <nav aria-label="breadcrumb d-flex align-content-center m-0">
         <ol class="breadcrumb">
             <li class="breadcrumb-item active"><a href="/">Home</a></li>
@@ -16,14 +19,61 @@
         </ol>
     </nav>
 </div>
-<div class="container mt-5" style="max-width: 600px">
+<div class="container mt-5" style="max-width: 1000px">
+
+    <div class="card mb-3 bg-info-subtle" style="max-width: 540px;">
+        <div class="row g-0">
+            <div class="col-4 d-flex justify-content-center align-items-center">
+                <div data-bs-target="#addmethod" class="bg-white d-flex justify-content-center align-items-center fs-2 " style="border: dotted 2px gray; color: gray; width: 100px; height: 75px; border-radius: 10px;">
+                    <i class="fa-solid fa-plus" style="color: gray;"></i>
+                </div>
+            </div>
+            <div class="col-6 ">
+                <div class="card-body d-flex align-items-center" style="height: 125px">
+                    <a href="#" class="" id="addmethodfetch" data-bs-toggle="modal" data-bs-target="#addmethod">
+                        Add payment method
+                    </a>
+                    <!-- Modal -->
+                    <div class="modal fade " id="addmethod" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addmethodLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="addmethodLabel">New Card</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="checkout"></div>
+                                        
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+    @if (string.IsNullOrEmpty(ViewBag.PayMethod))
+    {
+        <br />
+        <small class="text-danger fst-italic p-1">*No dafault payment method has been selected</small>
+        <br />
+        <br />
+
+    }
+
+
+
 
 @foreach(PaymentMethod method in Model.Data)
 {
 
-        <div class="border mb-3 p-1 overflow-hidden" style="max-width: 540px; position: relative;">
+    <div class="border mb-3 p-1 overflow-hidden" style="max-width: 540px; position: relative;">
         <div class="row g-0 p-1" >
-                <div class="col-2 d-flex justify-content-center align-items-center ps-md-3" >
+            <div class="col-2 d-flex justify-content-center align-items-center ps-md-3" >
                 <img style="object-fit: cover;"
                          src="~/images/@(method.Card.Brand == "visa" ? "VisaLogoPS.png" : method.Card.Brand == "mastercard" ? "MasterCardLogoPS.png" : "CardLogo.png")"
                         class="img-fluid rounded-start mt-2 mt-sm-0"
@@ -64,7 +114,7 @@
     </div>
 
         <!-- Modal default method-->
-        <div class="modal fade modal-dialog modal-dialog-scrollable" id="@(method.Id)" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal fade" id="@(method.Id)" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -92,7 +142,7 @@
         </div>
 
         <!-- Modal remove-->
-        <div class="modal fade modal-dialog modal-dialog-scrollable" id="@(method.Id)remove" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal fade " id="@(method.Id)remove" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -112,6 +162,7 @@
                             <input type="hidden" name="methodId" value="@(method.Id)" />
                             <input type="hidden" name="defaultMethod" value="@(ViewBag.PayMethod ?? "")" />
                             <input type="hidden" name="customerId" value="@(method.CustomerId)" />
+                            <input type="hidden" name="subscriptionId" value="@(ViewBag.SubscriptionId)" />
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
                                 <button type="submit" class="btn btn-primary">Yes</button>
                         </form>
@@ -121,3 +172,30 @@
         </div>
 }
 </div>
+@section Scripts {
+    <script type="text/javascript">
+        const stripe = Stripe("@(ViewBag.PublishableKey)");
+
+        initialize();
+
+        // Fetch Checkout Session and retrieve the client secret
+        async function initialize() {
+            const fetchClientSecret = async () => {
+                const response = await fetch("/create-payment-method?customerId=@(ViewBag.CustomerId)", {
+                    method: "POST",
+                });
+                const { clientSecret } = await response.json();
+                return clientSecret;
+            };
+
+            // Initialize Checkout
+            const checkout = await stripe.initEmbeddedCheckout({
+                fetchClientSecret,
+            });
+
+            // Mount Checkout
+            checkout.mount('#checkout');
+        }
+    </script>
+
+}

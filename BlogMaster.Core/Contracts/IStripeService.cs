@@ -32,5 +32,11 @@ namespace BlogMaster.Core.Contracts
         public void RemovePaymentMethod(string paymentMethodId);
 
         public void ChangeDefaultPaymentMethod(string customerId, string paymentMethodId, string subscriptionId);
+
+        public void CreatePaymentMethod(CardPaymentMethodDTO cardPaymentMethod);
+
+        public SetupIntent StartSessionForEmbededIntent(string customerId, string? email);
+        public Session StartSessionForEmbededSession(string customerId, string? email);
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using BlogMaster.Core.Contracts;
 using BlogMaster.Core.DTO;
 using BlogMaster.Core.Models;
+using BlogMaster.Infrastructure.Migrations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
@@ -94,54 +95,37 @@ namespace BlogMaster.Controllers
         [HttpGet("/payment-return")]
         public async Task<IActionResult> PaymentReturn([FromQuery] string session_id)
         {
-            if (session_id == null)
+            if(session_id == null)
             {
-                throw new ArgumentNullException(nameof(session_id)); 
+                return RedirectToAction("SubscriptionDetails", "Subscription");
+
             }
 
-
             // Returned data needs to be saved for billing cycle, payment history, 
+            
 
             var sessionService = new SessionService();
             Session session = sessionService.Get(session_id);
 
-            PaymentHistory entry = new PaymentHistory()
+            if(session.SetupIntentId != null)
             {
-                Amount = session.AmountSubtotal,
-                PaymentId = Guid.NewGuid(),
-                PaymentStatus = session.PaymentStatus,
-                PaymentDate = DateTime.UtcNow,
-                CustomerId = session.CustomerId,
-                SubscriptionId = session.SubscriptionId,
-                UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? null,
-            };
-            
-            if(session.Mode == "subscription")
-            {
-                //get subscription
-                var stripeServiceSubscription = new SubscriptionService();
-                Subscription stripeSubscriptionResponse = stripeServiceSubscription.Get(session.SubscriptionId);
+                var service = new SetupIntentService();
+                var SetupIntent = service.Get(session.SetupIntentId);
 
-                SubscriptionRequestDto subscriptionRequestDto = new SubscriptionRequestDto()
-                {
-                    UserEmail = session.CustomerEmail,
-                    UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
-                    UserName = User.Identity?.Name,
-                    SubscriptionId= session.SubscriptionId,
-                    CustomerId = session.CustomerId,
-                    StartDate = stripeSubscriptionResponse.StartDate,
-                    EndDate = stripeSubscriptionResponse.CurrentPeriodEnd,
-                    NextBillingDate = stripeSubscriptionResponse.CurrentPeriodEnd
-                };
+                var paymentMethodAttachOptions = new PaymentMethodAttachOptions { Customer = SetupIntent.CustomerId };
+                Stripe.Subscription subscription = await _stripeService.GetCustomerSubscription(SetupIntent.CustomerId);
 
-                var subscriptionResponse = await _appSubscriptionService.CreateSubscription(subscriptionRequestDto);
+                var paymentMethodService = new PaymentMethodService();
+                paymentMethodService.Attach(SetupIntent.PaymentMethodId, paymentMethodAttachOptions);
+            //string customerId, string method, string subscriptionId
+                return RedirectToAction("PaymentMethods", "Subscription", new { customerId = SetupIntent.CustomerId, method = subscription.DefaultPaymentMethodId, subscriptionId = subscription.Id });
 
-                //Return a subscription screen
-                return View(subscriptionResponse);
             }
 
-            //return a regular donation
-            return View();
+
+
+            return RedirectToAction("SubscriptionDetails", "Subscription");
+
         }
 
     }

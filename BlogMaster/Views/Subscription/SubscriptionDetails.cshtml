@@ -4,43 +4,61 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h3>Payment methods</h3>
-<a href="/payment-methods?customerId=@(Model.CustomerId)&method=@(Model.DefaultPaymentMethodId)&subscriptionId=@(Model.Id)">View your payment methods</a>
 
-<hr />
+<div class="container mt-5">
+    <div class="row bg-light p-4 rounded-5">
+        <div class="col-md-6 ">
+            <h1 class="pb-3">Subscription details</h1>
 
-<h1>Subscription details</h1>
+            <div>
+                <div style="padding: 10px">
+                    <p><strong>Current status:</strong> @(Model.Status.ToString().ToUpper())</p>
 
-    <div style="padding: 10px">
-        <strong>Default:</strong> @(Model.DefaultPaymentMethodId), <br>
+                    @if(Model.Status == "canceled")
+                    {
+                        <p><strong>Ended at:</strong>  @(Model.EndedAt.ToString()?.Remove(10))</p>
+                    }
+                    else if (Model.CancelAt == null)
+                    {
+                        <p><strong>Next Payment:</strong> @(Model.CurrentPeriodEnd.ToString()?.Remove(10))</p>
+                        <p><strong>Subscription cost:</strong> 50 @(Model.Currency)</p>
+                    }
+                    <br />
+                    @if (Model.CancelAt != null && Model.Status == "active")
+                    {
+                        <p><strong>Subscription will end with no additional charge on: </strong> @(Model.CancelAt.ToString()?.Remove(10))</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 pt-5 ">
+            <div class="mb-3">
+                <a href="/payment-methods?customerId=@(Model.CustomerId)&method=@(Model.DefaultPaymentMethodId)&subscriptionId=@(Model.Id)">View your payment methods</a>
+                @if (string.IsNullOrEmpty(Model.DefaultPaymentMethodId) && Model.CancelAt == null)
+                {
+                    <br />
+                    <small class="text-danger fst-italic p-1">*No dafault payment method has been selected</small>
+                }
+            </div>
 
-        <strong>SubscriptionId:</strong> @(Model.Id), <br>
-        <strong>CustomerId:</strong> @(Model.CustomerId), <br>
-        <strong>Cancel at:</strong> @(Model.CancelAt)<br>
-        <strong>Created:</strong>  @(Model.Created),<br>
-        <strong>CurrentPeriodStart:</strong> @(Model.CurrentPeriodStart),<br>
-        <strong>CurrentPeriodEnd:</strong> @(Model.CurrentPeriodEnd),<br>
-        <strong>Next Pending Invoice:</strong> @(Model.NextPendingInvoiceItemInvoice)<br>
-        <strong>Status:</strong> @(Model.Status),<br>
-        <strong>Collection Method:</strong> @(Model.CollectionMethod),<br>
-        <br>
-        <br>
-        <br>
-        <strong>InvoiceSettings:</strong> <br>
-        @(Model.InvoiceSettings.RawJObject),
+            <div>
+                @if (Model.Status == "active" && Model.CancelAt != null)
+                {
 
+                    <a href="/resume-subscription?subscriptionId=@(Model.Id)&customerId=@(Model.CustomerId)">Continue Subscription next month</a>
+                }
+                else if (Model.Status == "canceled")
+                {
+                    <a href="/checkout-subscription">Resume Subscription</a>
+                }
+                else
+                {
+                    <a href="/cancel-subscription?subscriptionId=@(Model.Id)">Cancel Subscription</a>
+                }
+            </div>
+        </div>
     </div>
+</div>
 
-<hr />
-@if (Model.Status == "active" && Model.CancelAt != null)
-{
-    <a href="/resume-subscription?subscriptionId=@(Model.Id)&customerId=@(Model.CustomerId)">Continue Subscription for next month</a>
-}
-else if (Model.Status == "canceled")
-{
-    <a href="/checkout-subscription">Resume Subscription</a>
-}else
-{
-    <a href="/cancel-subscription?subscriptionId=@(Model.Id)">Cancel Subscription</a>
-}
+
 

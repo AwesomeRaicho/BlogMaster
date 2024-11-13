@@ -1,9 +1,12 @@
 ﻿using BlogMaster.Core.Contracts;
+using BlogMaster.Core.DTO;
+using BlogMaster.Core.Models;
 using BlogMaster.Infrastructure.Migrations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Stripe;
+using Stripe.Checkout;
 using System.Security.Claims;
 
 
@@ -59,6 +62,25 @@ namespace BlogMaster.Controllers
                 return View(subscription);
         }
 
+        [Authorize]
+        [Route("/payment-methods")]
+        public IActionResult PaymentMethods([FromQuery] string customerId, string method, string subscriptionId)
+        {
+
+
+            ViewBag.PublishableKey = _stripeService.GetPublishableKey();
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+            ViewBag.PayMethod = method;
+            ViewBag.SubscriptionId = subscriptionId;
+            ViewBag.CustomerId = customerId;
+            StripeList<PaymentMethod> paymethods = _stripeService.StripePaymentMethods(customerId);
+
+            return View(paymethods);
+        }
+
+
+
         [Route("/cancel-subscription")]
         public IActionResult CancelSubscription([FromQuery] string subscriptionId)
         {
@@ -70,7 +92,7 @@ namespace BlogMaster.Controllers
                 _stripeService.CancelSubscription(subscriptionId);
             }
 
-            return RedirectToAction("SubscriptionDetails");
+            return RedirectToAction("SubscriptionDetails", new { subscriptionId =  subscriptionId });
         }
 
         [Authorize]
@@ -91,20 +113,7 @@ namespace BlogMaster.Controllers
 
         }
 
-        [Authorize]
-        [Route("/payment-methods")]
-        public IActionResult PaymentMethods([FromQuery] string customerId, string method, string subscriptionId)
-        {
 
-            //need subscription id to updated the "SubscriptionPaymentSettingsOptions" in the update default payhment method
-            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
-            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
-            ViewBag.PayMethod = method;
-            ViewBag.SubscriptionId = subscriptionId;
-            StripeList<PaymentMethod> paymethods = _stripeService.StripePaymentMethods(customerId);
-
-            return View(paymethods);
-        }
 
         //deault
         [Authorize]
@@ -114,7 +123,7 @@ namespace BlogMaster.Controllers
 
             _stripeService.ChangeDefaultPaymentMethod(customerId, methodId, subscriptionId);
 
-            return RedirectToAction("SubscriptionDetails");
+            return RedirectToAction("PaymentMethods", new { subscriptionId, customerId, method = methodId });
 
         }
 
@@ -122,12 +131,27 @@ namespace BlogMaster.Controllers
         //remove 
         [Authorize]
         [Route("/remove-payment-method")]
-        public IActionResult RemovePaymentMethod(string methodId, string customerId, string defaultMethod)
+        public IActionResult RemovePaymentMethod(string methodId, string customerId, string defaultMethod, string subscriptionId )
         {
 
             _stripeService.RemovePaymentMethod(methodId);
 
-            return RedirectToAction("PaymentMethods", new { customerId , method = defaultMethod });
+            return RedirectToAction("PaymentMethods", new { customerId , method = defaultMethod, subscriptionId   });
         }
+
+        [Authorize]
+        [Route("/create-payment-method")]
+        public IActionResult CreatePaymentMethod([FromQuery] string customerId)
+        {
+
+            string? email = User.FindFirstValue(ClaimTypes.Email);
+
+            SetupIntent intent = _stripeService.StartSessionForEmbededIntent(customerId, email);
+            Session session = _stripeService.StartSessionForEmbededSession(customerId, email);
+
+            
+            return Json(new { clientSecret = session.ClientSecret });
+        }
+
     }
 }

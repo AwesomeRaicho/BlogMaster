@@ -312,6 +312,93 @@ namespace BlogMaster.Core.Services
 
         }
 
+        public void CreatePaymentMethod(CardPaymentMethodDTO cardPaymentMethod)
+        {
+            try
+            {
+                var options = new PaymentMethodCreateOptions
+                {
+                    Type = "card",
+                    Card = new PaymentMethodCardOptions
+                    {
+                        Cvc = cardPaymentMethod.Cvc,
+                        Number = cardPaymentMethod.Number,
+                        ExpMonth = cardPaymentMethod.ExpMonth,
+                        ExpYear = cardPaymentMethod.ExpYear
+                    },
+                    BillingDetails = new PaymentMethodBillingDetailsOptions
+                    {
+                        Name = cardPaymentMethod.Name,
+                        //Email = cardPaymentMethod.Email, 
+                        //Address = new AddressOptions
+                        //{
+                        //    Line1 = cardPaymentMethod.AddressLine1,
+                        //    City = cardPaymentMethod.City,
+                        //    State = cardPaymentMethod.State,
+                        //    PostalCode = cardPaymentMethod.PostalCode,
+                        //    Country = cardPaymentMethod.Country
+                        //}
+                    }
+                };
 
+                var paymentMethodService = new PaymentMethodService();
+                var paymentMethod = paymentMethodService.Create(options);
+
+                var attachOptions = new PaymentMethodAttachOptions
+                {
+                    Customer = cardPaymentMethod.StripeCustomerId
+                };
+
+                paymentMethodService.Attach(paymentMethod.Id, attachOptions);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating payment method: {ex.Message}");
+            }
+        }
+
+        public Session StartSessionForEmbededSession(string customerId, string? email)
+        {
+            //MODES:
+            //payment_intent_data
+            //setup_intent_data
+
+            var options = new SessionCreateOptions
+            {
+                Currency = "mxn",
+                Mode = "setup",
+                UiMode = "embedded",
+                Customer = customerId,
+                ReturnUrl = $"{DomainName}/payment-return?session_id={{CHECKOUT_SESSION_ID}}",
+
+            };
+
+
+
+            var service = new SessionService();
+            return service.Create(options);
+        }
+        public SetupIntent StartSessionForEmbededIntent(string customerId, string? email)
+        {
+            var options = new SetupIntentCreateOptions
+            {
+                PaymentMethodTypes = new List<string> { "card" },
+                Customer = customerId,
+            };
+            var service = new SetupIntentService();
+            return service.Create(options);
+
+            //var options = new SessionCreateOptions
+            //{
+            //    PaymentMethodTypes = new List<string> { "card" },
+            //    Mode = "setup",
+            //    Customer = customerId,
+            //    ReturnUrl = $"{DomainName}/payment-return?session_id={{CHECKOUT_SESSION_ID}}",
+            //    UiMode = "embedded"
+            //};
+
+            //var service = new SessionService();
+            //return service.Create(options);
+        }
     }
 }
