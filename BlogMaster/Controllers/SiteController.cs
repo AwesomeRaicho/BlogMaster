@@ -3,6 +3,8 @@ using BlogMaster.Core.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using BlogMaster.Core.Services;
+
 
 namespace BlogMaster.Controllers
 {
@@ -11,12 +13,16 @@ namespace BlogMaster.Controllers
 
         private readonly IBlogService _blogService;
         private readonly IConfiguration _configuration;
-
-        public SiteController(IBlogService blogService, IConfiguration configuration)
+        private readonly CookieService _cookieService;
+        private readonly IStripeService _stripeService;
+        private readonly IIdentityService _identityService;
+        public SiteController(IBlogService blogService, IConfiguration configuration, CookieService cookieService, IStripeService stripeService, IIdentityService identityService)
         {
             _configuration = configuration;
             _blogService = blogService;
-
+            _cookieService = cookieService;
+            _stripeService = stripeService;
+            _identityService = identityService;
         }
 
         [Route("/")]
@@ -68,6 +74,83 @@ namespace BlogMaster.Controllers
             {
                 return RedirectToAction("Blogs");
             }
+            BlogResponseDto? blog = await _blogService.GetBlogBySlug(slug);
+
+            if (blog.IsSubscriptionRequired != null && blog.IsSubscriptionRequired == true)
+            {
+                //check if user is signed in
+                if(User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    
+                    //check if already contains activbe cookie
+                    string? subed = _cookieService.Unprotect(Request.Cookies["subed"]);
+
+                    if (string.IsNullOrEmpty(subed) && !string.IsNullOrEmpty(userId))
+                    {
+                        //get StripeCustomerId from DB
+                        string? stripeCustomerId = await _identityService.GetStripeCustomerId(userId);
+
+
+                        if (string.IsNullOrEmpty(stripeCustomerId))
+                        {
+                            //if theres no StripId it means no subscription created 
+                            return RedirectToAction("PayFormSubscription", "Payment");
+                        }
+
+                        string? status = await _stripeService.SubscriptionStatus(stripeCustomerId);
+
+                        if(status != null && status == "active")
+                        {
+                            //create cookie
+                            string? cookieValue = _cookieService.Protect("active");
+                            if (!string.IsNullOrEmpty(cookieValue))
+                            {
+                                Response.Cookies.Append("subed", cookieValue, new CookieOptions { HttpOnly = true, Secure = true, Expires = DateTime.UtcNow.AddDays(2) });
+                            }
+
+                            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+
+                            ViewBag.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+
+                            ViewBag.Slug = slug;
+
+                            ViewBag.Category = category;
+
+                            BlogPreviewsDto? previewssub = await _blogService.GetBlogRecomendations(blog.Categories != null ? blog.Categories : new List<CategoryResponseDto>(), blog.BlogId.ToString());
+
+                            if (blog == null)
+                            {
+                                return NotFound();
+                            }
+
+                            BlogAndRecomendations blogAndRecomendationssub = new BlogAndRecomendations()
+                            {
+                                Blog = blog,
+                                BlogPreviews = previewssub
+                            };
+
+                            return View(blogAndRecomendationssub);
+
+                        }
+                        else
+                        {
+                            //if status is not active the need to subscribe
+                            return RedirectToAction("SubscriptionDetails", "Subscription");
+                        }
+
+                    }
+                }
+                else
+                {
+                    //redirect to sign in page if not signed in
+                    return RedirectToAction("SignIn", "Identity");
+                }
+            }
+
+
 
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
 
@@ -78,10 +161,6 @@ namespace BlogMaster.Controllers
             ViewBag.Slug = slug;
 
             ViewBag.Category = category;
-
-            BlogResponseDto? blog = await _blogService.GetBlogBySlug(slug);
-
-
 
             BlogPreviewsDto? previews = await _blogService.GetBlogRecomendations(blog.Categories != null ? blog.Categories : new List<CategoryResponseDto>(), blog.BlogId.ToString());
 

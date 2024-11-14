@@ -175,7 +175,7 @@ namespace BlogMaster.Controllers
             {
                 await _identityService.LogOut();
             }
-
+            Response.Cookies.Delete("subed");
             return RedirectToAction("Index", "Site");
 
         }

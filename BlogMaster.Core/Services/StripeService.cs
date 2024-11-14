@@ -207,6 +207,11 @@ namespace BlogMaster.Core.Services
                     throw new Exception("There are more than 2 subscription for this user");
                 }
 
+                if(subscriptions.Data.Count == 0)
+                {
+                    return null;
+                }
+
                 return subscriptions.Data[0] as Subscription;
 
             }

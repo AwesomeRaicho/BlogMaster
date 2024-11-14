@@ -45,15 +45,16 @@ namespace BlogMaster.Controllers
 
             string? CustomerId = await _identityService.GetStripeCustomerId(userId ?? "");
 
-            if(CustomerId != null)
+            if(!string.IsNullOrEmpty(CustomerId))
             {
                 string? isSubscripbed = await _stripeService.SubscriptionStatus(CustomerId);
 
-                if(!string.IsNullOrEmpty(isSubscripbed) && isSubscripbed == "Active") 
+                if(!string.IsNullOrEmpty(isSubscripbed) && isSubscripbed == "active") 
                 { 
                     return RedirectToAction("SubscriptionDetails", "Subscription");
                 }   
             };
+
 
             return View();
         }

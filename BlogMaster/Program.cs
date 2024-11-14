@@ -64,6 +64,7 @@ builder.Services.AddScoped<IIdentityService, IdentityService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IStripeService, StripeService>();
 builder.Services.AddScoped<IAppSubscriptionService, AppSubscriptionService>();
+builder.Services.AddScoped<CookieService>();
 
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 

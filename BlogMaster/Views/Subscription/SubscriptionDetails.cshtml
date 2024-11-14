@@ -4,7 +4,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
+@if (Model != null)
+{
 <div class="container mt-5">
     <div class="row bg-light p-4 rounded-5">
         <div class="col-md-6 ">
@@ -58,7 +59,28 @@
             </div>
         </div>
     </div>
-</div>
-
+    </div>
+}
+else
+{
+    <div class="container mt-5">
+        <div class="row bg-light p-4 rounded-5">
+            <div class="col-md-6">
+                <h1 class="pb-3">Unlock Exclusive Content</h1>
+                <p>
+                    Get unlimited access to premium articles, in-depth tutorials, and expert insights available only to subscribers. Stay ahead with fresh, valuable content updated regularly.
+                </p>
+                <p>
+                    Join our community of dedicated readers and take your learning journey to the next level!
+                </p>
+            </div>
+            <div class="col-md-6 pt-5 text-center">
+                <div>
+                    <a href="/checkout-subscription" class="btn btn-primary btn-lg">Start Subscription</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 

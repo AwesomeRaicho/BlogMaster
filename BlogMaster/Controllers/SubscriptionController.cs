@@ -55,11 +55,12 @@ namespace BlogMaster.Controllers
 
                  await _identityService.UpdateStripeCustomerId(userId, stripeCustomer.Id);
                 stripeCustomerId = stripeCustomer.Id;
+                Stripe.Subscription subscription = await _stripeService.GetCustomerSubscription(stripeCustomerId);
+                return View(subscription);
 
             }
-                Stripe.Subscription subscription = await _stripeService.GetCustomerSubscription(stripeCustomerId);
 
-                return View(subscription);
+            return View();
         }
 
         [Authorize]
