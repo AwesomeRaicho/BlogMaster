@@ -41,7 +41,7 @@ namespace BlogMaster.Controllers
 
             string? stripeCustomerId = await _identityService.GetStripeCustomerId(userId);
 
-            if(stripeCustomerId == null)
+            if(!string.IsNullOrEmpty(stripeCustomerId))
             {
                 string userName = User.Identity.Name ?? "";
                 string userEmail = User.FindFirstValue(ClaimTypes.Email) ?? "";

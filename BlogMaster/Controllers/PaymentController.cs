@@ -14,13 +14,11 @@ namespace BlogMaster.Controllers
     {
 
         private readonly IStripeService _stripeService;
-        private readonly IAppSubscriptionService _appSubscriptionService;
         private readonly IIdentityService _identityService;
 
         public PaymentController(IStripeService stripeService, IAppSubscriptionService appSubscriptionService, IIdentityService identityService)
         {
             _stripeService = stripeService;
-            _appSubscriptionService = appSubscriptionService;
             _identityService = identityService;
         }
 
@@ -78,7 +76,7 @@ namespace BlogMaster.Controllers
         [HttpGet("/checkout-donation")]
         public ActionResult PayFormDonation(GetFormRequestDto getFormRequestDto)
         {
-            getFormRequestDto.Amount = 100;
+            getFormRequestDto.Amount = 15;
 
             ViewBag.PublishableKey = _stripeService.GetPublishableKey();
 

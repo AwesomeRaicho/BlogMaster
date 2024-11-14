@@ -20,7 +20,8 @@ namespace BlogMaster.Core.Models
 
         //Navigation 
         public ApplicationUser? User { get; set; }
-        public AppSubscription? subscription { get; set; }
+
+
 
     }
 }

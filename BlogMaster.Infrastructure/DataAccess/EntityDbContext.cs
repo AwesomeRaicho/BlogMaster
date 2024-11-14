@@ -25,7 +25,6 @@ namespace BlogMaster.Infrastructure.DataAccess
         public DbSet<Modification>? Modifications { get; set; }
         public DbSet<Rating>? Ratings { get; set; }
         public DbSet<Tag>? Tags { get; set; }
-        public DbSet<AppSubscription>? AppSubscriptions { get; set; }
 
         public EntityDbContext(DbContextOptions<EntityDbContext> options) : base(options) { }
 
