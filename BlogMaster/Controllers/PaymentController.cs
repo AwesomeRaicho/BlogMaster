@@ -15,11 +15,13 @@ namespace BlogMaster.Controllers
 
         private readonly IStripeService _stripeService;
         private readonly IIdentityService _identityService;
+        private readonly IConfiguration _configuration;
 
-        public PaymentController(IStripeService stripeService, IAppSubscriptionService appSubscriptionService, IIdentityService identityService)
+        public PaymentController(IStripeService stripeService, IIdentityService identityService, IConfiguration configuration)
         {
             _stripeService = stripeService;
             _identityService = identityService;
+            _configuration = configuration;
         }
 
         //SUBSCRIPTION
@@ -27,6 +29,9 @@ namespace BlogMaster.Controllers
         [HttpGet("/checkout-subscription")]
         public async Task<ActionResult> PayFormSubscription(GetFormRequestDto getFormRequestDto)
         {
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+
             string? userName = User.Identity?.Name;
             string? userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
             string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -61,7 +66,7 @@ namespace BlogMaster.Controllers
         [HttpPost("/checkout-session-subscription")]
         public async Task<IActionResult> CheckoutSessionSubscription(GetFormRequestDto getFormRequestDto)
         {
-            getFormRequestDto.Username = User.Identity?.Name;
+            getFormRequestDto.UserName = User.Identity?.Name;
             getFormRequestDto.UserEmail = User.FindFirst(ClaimTypes.Email)?.Value;
 
             SessionReturnDto session = await _stripeService.StartSessionForEmbededFormSubscription(getFormRequestDto);
@@ -73,10 +78,23 @@ namespace BlogMaster.Controllers
 
         //DONTATION
 
-        [HttpGet("/checkout-donation")]
+        [HttpPost("/checkout-donation")]
         public ActionResult PayFormDonation(GetFormRequestDto getFormRequestDto)
         {
-            getFormRequestDto.Amount = 15;
+            if(getFormRequestDto.Amount < 20)
+            {
+                return RedirectToAction("Index", "Site");
+            }
+
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+
+            if(ViewBag.SignedIn)
+            {
+                ViewBag.UserName = User.Identity?.Name;
+                ViewBag.UserEmail = User.FindFirstValue(ClaimTypes.Email);
+            }
 
             ViewBag.PublishableKey = _stripeService.GetPublishableKey();
 

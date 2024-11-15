@@ -116,7 +116,7 @@ namespace BlogMaster.Controllers
 
 
 
-        //deault
+        //default
         [Authorize]
         [Route("/default-payment-method")]
         public IActionResult DefaultPaymentMethod(string methodId, string customerId, string subscriptionId)

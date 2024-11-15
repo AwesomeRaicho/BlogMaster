@@ -12,7 +12,7 @@ namespace BlogMaster.Core.Models
         public int Amount {  get; set; }
         public string? Currency { get; set; }
         public string? Mode { get; set; }
-        public string? Username { get; set; }
+        public string? UserName { get; set; }
         public string? UserEmail { get; set; }
     }
 }

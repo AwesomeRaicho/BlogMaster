@@ -21,8 +21,45 @@
                             <a class="nav-link active text" href="/signin">Sign in</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active border border-success rounded-3 ms-3 bg-success text-white fw-semibold text-center mt-sm-3 mt-lg-0"
-                               href="/checkout-donation" style="width: 75px"><i class="fa-solid fa-mug-hot text-white fs-4"></i></a>
+                            <a class="nav-link active border border-success bg-success rounded-3 ms-3 text-white fw-semibold text-center mt-sm-3 mt-lg-0"
+                               href="#" style="width: 75px" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="fa-solid fa-mug-hot text-white fs-4"></i></a>
+                            <!-- Modal -->
+                            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Buy Me a Coffee! Any Amount Counts</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="/checkout-donation" method="post">
+                                                <div class="row g-3 align-items-center mb-4">
+                                                    <div class="col-auto">
+                                                        <label for="Amount" class="col-form-label">Amount</label>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <input type="number" id="Amount" class="form-control" aria-describedby="DonoAmount" name="Amount" required min="20" value="20">
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <span id="DonoAmount" class="form-text">
+                                                            MXN
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-4">
+                                                    <small class="text-body-secondary ps-5">* Feel free to add more if you wish</Small>
+                                                </div>
+                                                <input type="hidden" name="UserName" value="@(ViewBag.Username)" />
+                                                <input type="hidden" name="UserEmail" value="@(ViewBag.UserEmail)" />
+                                                <div>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No Coffee Today!</button>
+                                                    <button type="submit" class="btn border-success bg-success text-white">Continue to Checkout</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </li>
                     </ul>
                 </div>

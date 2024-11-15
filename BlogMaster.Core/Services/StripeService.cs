@@ -81,7 +81,6 @@ namespace BlogMaster.Core.Services
             }
         }
 
-        ////////////////////////////////////////////////////////////////
 
         public Task<Session> StartSessionForEmbededFormDonation(GetFormRequestDto getFormRequestDto)
         {
@@ -123,7 +122,7 @@ namespace BlogMaster.Core.Services
 
         public async Task<SessionReturnDto> StartSessionForEmbededFormSubscription(GetFormRequestDto getFormRequestDto)
         {
-            if(getFormRequestDto == null || string.IsNullOrEmpty(getFormRequestDto.Username) || string.IsNullOrEmpty(getFormRequestDto.UserEmail))
+            if(getFormRequestDto == null || string.IsNullOrEmpty(getFormRequestDto.UserName) || string.IsNullOrEmpty(getFormRequestDto.UserEmail))
             {
                 throw new ArgumentNullException(nameof(getFormRequestDto));
             }
@@ -134,7 +133,7 @@ namespace BlogMaster.Core.Services
             };
 
             // Get or create a customer for the subscription session
-            Customer? customer =  this.CreateStripeCustomer(getFormRequestDto.Username, getFormRequestDto.UserEmail);
+            Customer? customer =  this.CreateStripeCustomer(getFormRequestDto.UserName, getFormRequestDto.UserEmail);
 
             try
             {
@@ -178,7 +177,7 @@ namespace BlogMaster.Core.Services
 
 
         /// <summary>
-        /// ////////////////////
+        /// Provides you the key that can be used to request the embedded form in the front end "public key"
         /// </summary>
         /// <returns></returns>
         public string? GetPublishableKey()
@@ -187,7 +186,6 @@ namespace BlogMaster.Core.Services
 
             return _stripeSettings.PublishableKey;
         }
-
 
         public async Task<Subscription?> GetCustomerSubscription(string customerId)
         {
@@ -220,10 +218,6 @@ namespace BlogMaster.Core.Services
         }
 
 
-
-        //CONSIDER REFACTORING THE NEXT METHODS, 
-
-
         public void CancelSubscription(string subId)
         {
             var options = new SubscriptionUpdateOptions()
@@ -237,7 +231,6 @@ namespace BlogMaster.Core.Services
 
 
 
-        //added
         /// <summary>
         /// Possible values are incomplete, incomplete_expired, trialing, active, past_due, canceled, unpaid, or paused.
         /// </summary>
@@ -335,15 +328,6 @@ namespace BlogMaster.Core.Services
                     BillingDetails = new PaymentMethodBillingDetailsOptions
                     {
                         Name = cardPaymentMethod.Name,
-                        //Email = cardPaymentMethod.Email, 
-                        //Address = new AddressOptions
-                        //{
-                        //    Line1 = cardPaymentMethod.AddressLine1,
-                        //    City = cardPaymentMethod.City,
-                        //    State = cardPaymentMethod.State,
-                        //    PostalCode = cardPaymentMethod.PostalCode,
-                        //    Country = cardPaymentMethod.Country
-                        //}
                     }
                 };
 
@@ -365,9 +349,6 @@ namespace BlogMaster.Core.Services
 
         public Session StartSessionForEmbededSession(string customerId, string? email)
         {
-            //MODES:
-            //payment_intent_data
-            //setup_intent_data
 
             var options = new SessionCreateOptions
             {
@@ -394,17 +375,6 @@ namespace BlogMaster.Core.Services
             var service = new SetupIntentService();
             return service.Create(options);
 
-            //var options = new SessionCreateOptions
-            //{
-            //    PaymentMethodTypes = new List<string> { "card" },
-            //    Mode = "setup",
-            //    Customer = customerId,
-            //    ReturnUrl = $"{DomainName}/payment-return?session_id={{CHECKOUT_SESSION_ID}}",
-            //    UiMode = "embedded"
-            //};
-
-            //var service = new SessionService();
-            //return service.Create(options);
         }
     }
 }

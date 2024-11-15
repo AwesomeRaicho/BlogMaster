@@ -20,18 +20,9 @@ var builder = WebApplication.CreateBuilder(args);
 //    options.Limits.RequestHeadersTimeout = TimeSpan.FromSeconds(30);
 //});
 
-
-
-
-
-
 builder.Configuration.AddJsonFile("Secret.json", optional: true, reloadOnChange: true);
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
-
-
-
-
 
 builder.Services.AddControllersWithViews();
 
@@ -49,11 +40,9 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(option =>
     .AddEntityFrameworkStores<EntityDbContext>()
     .AddDefaultTokenProviders();
 
-
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GeneralRepository<>));
 
 builder.Services.AddScoped<IBlogRepository, BlogRepository>();
-
 
 // DB ENTITY AND IDENTITY SERVICES ~ END
 
@@ -70,9 +59,6 @@ StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 // BUSINESS LAYER (SERVICES) ~ END
 
 var app = builder.Build();
-
-
-
 
 app.UseHttpsRedirection();
 

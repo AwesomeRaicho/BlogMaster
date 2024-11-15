@@ -33,6 +33,14 @@ namespace BlogMaster.Controllers
             ViewBag.Title = "Blog Master";
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
             string? user = User.Identity?.Name;
+
+
+            if (ViewBag.SignedIn)
+            {
+                ViewBag.UserName = User.Identity?.Name;
+                ViewBag.UserEmail = User.FindFirstValue(ClaimTypes.Email);
+            }
+
             if (User.IsInRole("Administrator"))
             {
                 return RedirectToAction("AdministratorIndex", "Administrator");
