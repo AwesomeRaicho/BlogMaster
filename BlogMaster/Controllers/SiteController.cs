@@ -239,8 +239,6 @@ namespace BlogMaster.Controllers
                 await _blogService.UpdateCommentAsync(comment);
             }
 
-
-
             return RedirectToAction("BlogPage", new { slug = slug });
         }
 
@@ -276,7 +274,6 @@ namespace BlogMaster.Controllers
         [Route("/edit-comment")]
         public async Task<IActionResult> EditComment(RatingPostPutDto rating, CommentPostPutDto comment, [FromQuery] string slug)
         {
-
             //Handle rating
             if (rating.RatingScore != null && rating.RatingId == Guid.Empty)
             {
@@ -297,8 +294,6 @@ namespace BlogMaster.Controllers
                 await _blogService.UpdateCommentAsync(comment);
             }
 
-
-
             return RedirectToAction("BlogPage", new { slug = slug });
         }
 
@@ -306,14 +301,11 @@ namespace BlogMaster.Controllers
         [Route("/delete-comment")]
         public async Task<IActionResult> DeleteComment(string commentId, string slug)
         {
-
             if(!string.IsNullOrEmpty(commentId))
             {
                 await _blogService.DeleteCommentAsync(Guid.Parse(commentId));
             }
-
             return RedirectToAction("BlogPage", new { slug = slug });
-
         }
 
 
@@ -338,8 +330,6 @@ namespace BlogMaster.Controllers
             ViewBag.RatingId = ratingResponse?.RatingId;
             ViewBag.Slug = slug;
 
-
-            
             return View(ratingResponse);
         }
 
@@ -348,7 +338,6 @@ namespace BlogMaster.Controllers
         [Route("/create-rating")]
         public async Task<IActionResult> CreateRating(RatingPostPutDto rating, [FromQuery] string slug)
         {
-
             //Handle rating
             if (rating.RatingScore != null && rating.RatingId == Guid.Empty)
             {
@@ -363,11 +352,21 @@ namespace BlogMaster.Controllers
                 await _blogService.DeleteRatingAsync(rating.RatingId);
             }
 
-
-
-
-
             return RedirectToAction("BlogPage", new { slug = slug });
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("/profile")]
+        public IActionResult Profile()
+        {
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+            ViewBag.Title = "Profile";
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+
+
+
+            return View();
         }
 
 

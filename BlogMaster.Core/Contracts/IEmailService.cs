@@ -10,5 +10,7 @@ namespace BlogMaster.Core.Contracts
     {
         public Task TestSendEmail(string to, string subject, string body);
         public Task SendEmailConfirmation(string toEmail, string userName, string callbackUrl);
+
+        public Task SendPasswordResetConfirmation(string toEmail, string userName, string callbackUrl);
     }
 }

@@ -45,6 +45,12 @@ namespace BlogMaster.Core.Contracts
 
         public Task<bool> UpdateStripeCustomerId(string userId, string stripeCustomerId);
 
+        public Task<bool> IsCorrectPassword(string userId, string password);
+
+        public Task<bool> SendChangePasswordEmailConfirmation(string userId);
+
+        public Task<IdentityResult?> ChangePassword(PasswordResetDto passwordResetDto);
+
         //Change password and reser password will be implemented after the EmailService gets implemented.
 
         //public Task<IdentityResult> ChangePasswordAsync(IdentityRequestDto identityRequestDto);

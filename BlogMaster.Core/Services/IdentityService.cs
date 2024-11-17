@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using BlogMaster.Core.Contracts;
 using BlogMaster.Core.DTO;
 using BlogMaster.Core.Models.Identity;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -182,14 +184,11 @@ namespace BlogMaster.Core.Services
 
                 var callbackUrl = $"{_domainName}/identity/confirmemail?userId={userId}&token={Uri.EscapeDataString(token)}";
 
-
                 if (callbackUrl != null)
                 {
                     await _emailService.SendEmailConfirmation(user.Email, user.UserName, callbackUrl);
                 }
             }
-
-
 
             return result;
         }
@@ -434,6 +433,81 @@ namespace BlogMaster.Core.Services
             return false;
         }
 
-        
+        public async Task<bool> IsCorrectPassword(string userId, string password)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            return await _userManager.CheckPasswordAsync(user, password);
+        }
+
+
+
+
+        public async Task<bool> SendChangePasswordEmailConfirmation(string userId)
+        {
+
+            //check if user eixists make change
+            ApplicationUser? user = await _userManager.FindByIdAsync(userId);
+
+            if(user == null)
+            {
+                Console.WriteLine("User does not exist");
+                return false;
+
+            }
+
+            //create a token that needs to be confirmed and once confirmed they can submit a change for the páss password
+            string token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            
+             
+
+
+            var callbackUrl = $"{_domainName}/password-reset-confirmation?UserId={user.Id}&Token={Uri.EscapeDataString(token)}";
+
+
+            if (!string.IsNullOrEmpty(callbackUrl) && !string.IsNullOrEmpty(user.Email) && !string.IsNullOrEmpty(user.UserName))
+            {
+                await _emailService.SendPasswordResetConfirmation(user.Email, user.UserName, callbackUrl);
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<IdentityResult?> ChangePassword(PasswordResetDto passwordResetDto)
+        {
+            if(
+                passwordResetDto == null || 
+                string.IsNullOrEmpty(passwordResetDto.UserId) ||
+                string.IsNullOrEmpty(passwordResetDto.CurrentPassword )||
+                string.IsNullOrEmpty(passwordResetDto.NewPassword)
+            )
+            {
+                return null;
+            }
+
+             ApplicationUser? user = await _userManager.FindByIdAsync(passwordResetDto.UserId);
+
+            if( user == null )
+            {
+                return null;
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, passwordResetDto.CurrentPassword, passwordResetDto.NewPassword);
+
+            return result;
+
+
+        }
+
+
     }
 }
