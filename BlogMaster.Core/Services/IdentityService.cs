@@ -464,15 +464,12 @@ namespace BlogMaster.Core.Services
             //create a token that needs to be confirmed and once confirmed they can submit a change for the páss password
             string token = await _userManager.GeneratePasswordResetTokenAsync(user);
             
-             
-
-
-            var callbackUrl = $"{_domainName}/password-reset-confirmation?UserId={user.Id}&Token={Uri.EscapeDataString(token)}";
+            var callbackUrl = $"{_domainName}/password-change-confirmation?UserId={user.Id}&Token={Uri.EscapeDataString(token)}";
 
 
             if (!string.IsNullOrEmpty(callbackUrl) && !string.IsNullOrEmpty(user.Email) && !string.IsNullOrEmpty(user.UserName))
             {
-                await _emailService.SendPasswordResetConfirmation(user.Email, user.UserName, callbackUrl);
+                await _emailService.SendPasswordChangeConfirmation(user.Email, user.UserName, callbackUrl);
             }
             else
             {
@@ -501,13 +498,62 @@ namespace BlogMaster.Core.Services
                 return null;
             }
 
+
             var result = await _userManager.ChangePasswordAsync(user, passwordResetDto.CurrentPassword, passwordResetDto.NewPassword);
 
+
             return result;
+        }
+
+        public async Task ResetPasswordEmailRequest(string userEmail)
+        {
+            if(string.IsNullOrEmpty(userEmail))
+            {
+                return;
+            }
+
+            var user = await _userManager.FindByEmailAsync(userEmail);
+            if( user == null )
+            {
+                return;
+            }
+
+            string token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var callbackUrl = $"{_domainName}/password-reset-confirmation?UserId={user.Id}&Token={Uri.EscapeDataString(token)}";
+
+
+            if (!string.IsNullOrEmpty(callbackUrl) && !string.IsNullOrEmpty(user.Email) && !string.IsNullOrEmpty(user.UserName))
+            {
+                await _emailService.SendPasswordChangeConfirmation(user.Email, user.UserName, callbackUrl);
+            }
 
 
         }
 
+        public async Task<IdentityResult?> ResetPassword(PasswordResetDto passwordResetDto)
+        {
+            if (
+            passwordResetDto == null ||
+            string.IsNullOrEmpty(passwordResetDto.UserId) ||
+            string.IsNullOrEmpty(passwordResetDto.NewPassword) ||
+            string.IsNullOrEmpty(passwordResetDto.Token)
+            )
+            {
+                return null;
+            }
+
+            ApplicationUser? user = await _userManager.FindByIdAsync(passwordResetDto.UserId);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, passwordResetDto.Token, passwordResetDto.NewPassword);
+
+            return result;
+        }
 
     }
 }

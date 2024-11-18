@@ -38,11 +38,15 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary mb-4">Submit</button>
+                <div class="d-flex ">
+                    <div class ="me-auto">
+                        <a  href="/registration">Create an account</a>
+                    </div>
+                    <div class="ms-auto">
+                        <a href="/forgot-password">Forgot Password?</a>
+                    </div>
 
-                <div>
-                    <a class="me-auto" href="/registration">Create an account</a>
                 </div>
-
                 @if(Model != null && Model.Count > 0)
                 {
                     foreach(string error in Model)

@@ -208,7 +208,7 @@ namespace BlogMaster.Core.Services
         /// <param name="userName"></param>
         /// <param name="callbackUrl"></param>
         /// <returns></returns>
-        public async Task SendPasswordResetConfirmation(string toEmail, string userName, string callbackUrl)
+        public async Task SendPasswordChangeConfirmation(string toEmail, string userName, string callbackUrl)
         {
             string body = GeneratePasswordResetBody(userName, callbackUrl);
 

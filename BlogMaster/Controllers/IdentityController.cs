@@ -246,7 +246,7 @@ namespace BlogMaster.Controllers
         }
 
         [HttpGet]
-        [Route("/password-reset-confirmation")]
+        [Route("/password-change-confirmation")]
         public IActionResult PasswordEmailConfirmation(List<string> errors, string UserId, string Token)
         {
             if (errors == null)
@@ -274,7 +274,7 @@ namespace BlogMaster.Controllers
 
 
         [HttpPost]
-        [Route("/password-reset-confirmation")]
+        [Route("/password-change-confirmation")]
         public async Task<IActionResult> PasswordEmailConfirmation(PasswordResetDto passwordResetDto)
         {
             if (passwordResetDto.NewPassword != passwordResetDto.ConfirmNewPassword)
@@ -327,6 +327,114 @@ namespace BlogMaster.Controllers
 
             return View();
         }
+
+
+        [HttpGet]
+        [Route("/forgot-password")]
+        public IActionResult ForgotPassword() 
+        {
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+            //have user enter password
+            return View();
+        }
+
+        [HttpPost]
+        [Route("/forgot-password")]
+        public async Task<IActionResult> ForgotPassword(string userEmail)
+        {
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+            await _identityService.ResetPasswordEmailRequest(userEmail);
+
+            return RedirectToAction("ForgotPasswordEmailSent");
+        }
+
+        [Route("/forgot-password-email-sent")]
+        public IActionResult ForgotPasswordEmailSent()
+        {
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+
+
+            return View();
+        }
+
+        [HttpGet]
+        [Route("/password-reset-confirmation")]
+        public IActionResult ResetPasswordEmailConfirmation(List<string> errors, string UserId, string Token)
+        {
+            if (errors == null)
+            {
+                errors = new List<string>();
+            }
+
+            if (UserId == null)
+            {
+                errors.Add("No user ID detected.");
+            }
+
+            if (Token == null)
+            {
+                errors.Add("No reset token provided.");
+            }
+
+            return View(new
+            {
+                errors,
+                UserId,
+                Token
+            });
+        }
+
+
+        [HttpPost]
+        [Route("/password-reset-confirmation")]
+        public async Task<IActionResult> ResetPasswordEmailConfirmation(PasswordResetDto passwordResetDto)
+        {
+            if (passwordResetDto.NewPassword != passwordResetDto.ConfirmNewPassword)
+            {
+                return View(new
+                {
+                    errors = new List<string> { "New Password and New Password Confirmation do not match" },
+                    UserId = passwordResetDto.UserId,
+                    Token = passwordResetDto.Token
+                });
+            }
+
+            var result = await _identityService.ResetPassword(passwordResetDto);
+
+            if (result == null)
+            {
+                return View(new
+                {
+                    errors = new List<string> { "Missing fields in form" },
+                    UserId = passwordResetDto.UserId,
+                    Token = passwordResetDto.Token
+                });
+            }
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction("PasswordResetSuccessful");
+            }
+            else
+            {
+                var invalidData = result.Errors.Select(e => e.Description).ToList();
+
+                return View(new
+                {
+                    errors = invalidData,
+                    UserId = passwordResetDto.UserId,
+                    Token = passwordResetDto.Token
+                });
+            }
+
+            throw new Exception("Something went wrong!");
+        }
+
+
+
 
     }
 }

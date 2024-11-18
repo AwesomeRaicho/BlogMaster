@@ -51,10 +51,9 @@ namespace BlogMaster.Core.Contracts
 
         public Task<IdentityResult?> ChangePassword(PasswordResetDto passwordResetDto);
 
-        //Change password and reser password will be implemented after the EmailService gets implemented.
+        public Task ResetPasswordEmailRequest(string userEmail);
+        public Task<IdentityResult?> ResetPassword(PasswordResetDto passwordResetDto);
 
-        //public Task<IdentityResult> ChangePasswordAsync(IdentityRequestDto identityRequestDto);
 
-        //public Task<IdentityResult> ResetPasswordAsync(IdentityRequestDto identityRequestDto);
     }
 }
