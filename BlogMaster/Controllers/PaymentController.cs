@@ -17,6 +17,7 @@ namespace BlogMaster.Controllers
         private readonly IIdentityService _identityService;
         private readonly IConfiguration _configuration;
 
+
         public PaymentController(IStripeService stripeService, IIdentityService identityService, IConfiguration configuration)
         {
             _stripeService = stripeService;

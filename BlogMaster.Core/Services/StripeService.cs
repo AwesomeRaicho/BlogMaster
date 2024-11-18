@@ -10,21 +10,23 @@ using BlogMaster.Core.Contracts;
 using Microsoft.Extensions.Options;
 using BlogMaster.Core.Models.Identity;
 using BlogMaster.Core.DTO;
+using Microsoft.Extensions.Configuration;
 
 namespace BlogMaster.Core.Services
 {
     public class StripeService : IStripeService
     {
 
-        private readonly string DomainName = "https://localhost:7218";
+        private readonly string DomainName;
         private readonly string PriceId = "price_1Prtw409TbzP0h4ikMqH8DnJ";
         private readonly StripeSettings _stripeSettings;
         private readonly IIdentityService _identityService;
 
-        public StripeService(IOptions<StripeSettings> stripeSettings, IIdentityService identityService)
+        public StripeService(IOptions<StripeSettings> stripeSettings, IIdentityService identityService, IConfiguration configuration)
         {
             _stripeSettings = stripeSettings.Value;
             _identityService = identityService;
+            DomainName = configuration["Domain:DomainName"] ?? "";
         }
 
         //Customer Methods

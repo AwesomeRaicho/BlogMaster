@@ -37,9 +37,6 @@ namespace BlogMaster.Core.Services
         private readonly IRepository<Blog_Category> _blogCategoryRepository;
         private readonly IRepository<Blog_Keyword> _blogKeywordRepository;
         private readonly IRepository<Blog_Tag> _blogTagRepository;
-
-
-        // add a way to calculate the avergae rating of a blog
         
 
         public BlogService(IRepository<Blog> blogRepository, IRepository<Category> categoryRepository, IRepository<Comment> commentRepository, IRepository<Keyword> keywordRepository, IRepository<Modification> modificationRepository, IRepository<Rating> ratingRepository, IRepository<Tag> tagRepository, IRepository<Blog_Category> blogCategoryRepository, IRepository<Blog_Keyword> blogKeywordRepository, IRepository<Blog_Tag> blogTagRepository, IBlogRepository blogUniqueRepository, IRepository<BlogImage> blogImageRepository, IRepository<ApplicationUser> applicationUser)
