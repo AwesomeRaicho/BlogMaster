@@ -52,6 +52,14 @@ namespace BlogMaster.Controllers
         public async Task<IActionResult> Blogs([FromQuery] int pageIndex, string category, List<string> tags)
         {
             ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+            if (User.IsInRole("Administrator"))
+            {
+                ViewBag.IsAdmin = true;
+            }
+            else
+            {
+                ViewBag.IsAdmin = false;
+            }
 
             if (pageIndex == 0)
             {
@@ -77,7 +85,46 @@ namespace BlogMaster.Controllers
 
         [Route("/blogs/blogpage/{slug?}")]
         public async Task<IActionResult> BlogPage(string? slug = null, [FromQuery] string? category = "All")
-        { 
+        {
+            //Logic for admin
+            if (User.IsInRole("Administrator"))
+            {
+                ViewBag.IsAdmin = true;
+                
+                ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+
+                ViewBag.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+
+                ViewBag.Slug = slug;
+
+                ViewBag.Category = category;
+                BlogResponseDto? blogadmin = await _blogService.GetBlogBySlug(slug ?? "");
+
+                BlogPreviewsDto? previewssubadmin = await _blogService.GetBlogRecomendations(blogadmin.Categories != null ? blogadmin.Categories : new List<CategoryResponseDto>(), blogadmin.BlogId.ToString());
+
+                if (blogadmin == null)
+                {
+                    return NotFound();
+                }
+
+                BlogAndRecomendations blogAndRecomendationssub = new BlogAndRecomendations()
+                {
+                    Blog = blogadmin,
+                    BlogPreviews = previewssubadmin
+                };
+
+                return View(blogAndRecomendationssub);
+            }
+            else
+            {
+                ViewBag.IsAdmin = false;
+            }
+
+
+            //Rest of logic is for non admins
+
             if (string.IsNullOrEmpty(slug))
             {
                 return RedirectToAction("Blogs");
@@ -364,6 +411,8 @@ namespace BlogMaster.Controllers
             ViewBag.Title = "Profile";
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
 
+            ViewBag.UserName = User.Identity?.Name;
+            ViewBag.Email = User.FindFirstValue(ClaimTypes.Email);
 
 
             return View();

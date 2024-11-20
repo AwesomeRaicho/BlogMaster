@@ -32,7 +32,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6 pt-5 ">
+        <div class="col-md-6 pt-5 mt-3">
             <div class="mb-3">
                 <a href="/payment-methods?customerId=@(Model.CustomerId)&method=@(Model.DefaultPaymentMethodId)&subscriptionId=@(Model.Id)">View your payment methods</a>
                 @if (string.IsNullOrEmpty(Model.DefaultPaymentMethodId) && Model.CancelAt == null)

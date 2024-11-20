@@ -17,13 +17,9 @@ namespace BlogMaster.Core.Models
 
         // Language-specific fields
         public string? ArticleEn { get; set; }  // English article
-        public string? ArticleEs { get; set; }  // Spanish article
         public string? TitleEn { get; set; }  // English title
-        public string? TitleEs { get; set; }  // Spanish title
         public string? DescriptionEn { get; set; }  // English description
-        public string? DescriptionEs { get; set; }  // Spanish description
         public string? SlugEn { get; set; }  // English slug for links
-        public string? SlugEs { get; set; }  // Spanish slug for links
 
         public string? Author { get; set; }
 

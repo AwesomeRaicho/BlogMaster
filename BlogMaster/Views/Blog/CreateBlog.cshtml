@@ -65,52 +65,6 @@
                 </textarea>
             </div>
 
-            <h1>Español</h1>
-
-            <div class="mb-3" style="max-width: 500px">
-                <label for="TitleEs" class="form-label">Title (Spanish)</label>
-                <input type="text"
-                       class="form-control"
-                       id="TitleEs"
-                       name="TitleEs"
-                       value="@(string.IsNullOrEmpty(Model.BlogResponseDto?.TitleEs) ? "" : Model.BlogResponseDto?.TitleEs)" />
-            </div>
-
-            <!-- Description -->
-            <h4>Description</h4>
-
-            <div class="mb-3" style="max-width: 500px">
-                <label for="DescriptionEs" class="form-label">Description (Spanish)</label>
-                <textarea type="text"
-                          class="form-control"
-                          id="DescriptionEs"
-                          name="DescriptionEs">
-                    @(string.IsNullOrEmpty(Model.BlogResponseDto?.DescriptionEs) ? "" : Model.BlogResponseDto?.DescriptionEs)
-                </textarea>
-            </div>
-            <!-- Article -->
-            <img style="object-fit: cover"></img>
-            <h4>Article</h4>
-            <p class="ps-2 border rounded-2 text-danger bg-danger-subtle">
-                Images will be embedded through fetch with JavaScript. Wherever you
-                would like to embed the image, simply add: <br />
-                <span class="text-secondary fw-bold">
-                    &lt;img class="img-fluid d-block m-auto blog-image mt-4 mb-4"
-                    style="height: 400px; object-fit: cover;" /&gt;
-                </span><br />
-                JavaScript will take care of getting the image and adding them in
-                order.
-            </p>
-
-            <div class="mb-3">
-                <label for="ArticleEs" class="form-label">Article (Spanish) in HTML</label>
-                <textarea type="text"
-                          class="form-control"
-                          id="ArticleEs"
-                          name="ArticleEs">
-                    @(string.IsNullOrEmpty(Model.BlogResponseDto?.ArticleEs) ? "" : Model.BlogResponseDto?.ArticleEs)
-                </textarea>
-            </div>
             <hr />
             <!-- Categories -->
             <h4>Categories</h4>

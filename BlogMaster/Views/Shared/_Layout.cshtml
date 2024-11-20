@@ -13,7 +13,11 @@
 <body >
     <div class="d-flex flex-column vh-100">
         <div>
-            @if (ViewBag.SignedIn)
+            @if (ViewBag.IsAdmin != null && ViewBag.IsAdmin)
+            {
+                @await Html.PartialAsync("_AdministratorNavigation_PartialView")
+            }
+            else if (ViewBag.SignedIn)
             {
                 @await Html.PartialAsync("_SignedInNavigation_PartialView")
             }

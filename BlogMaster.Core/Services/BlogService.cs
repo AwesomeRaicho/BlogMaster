@@ -73,13 +73,9 @@ namespace BlogMaster.Core.Services
             {
                 BlogId = blog.BlogId,
                 ArticleEn = blog.ArticleEn,
-                ArticleEs = blog.ArticleEs,
                 TitleEn = blog.TitleEn,
-                TitleEs = blog.TitleEs,
                 DescriptionEn = blog.DescriptionEn,
-                DescriptionEs = blog.DescriptionEs,
                 SlugEn = blog.SlugEn,
-                SlugEs = blog.SlugEs,
                 Author = blog.Author,
                 DatePublished = blog.DatePublished,
                 ViewCount = blog.ViewCount,
@@ -415,13 +411,9 @@ namespace BlogMaster.Core.Services
                 BlogId = Guid.NewGuid(),
                 UserId = blog.UserId,
                 ArticleEn = RemoveSpacesBetweenTags(blog.ArticleEn?.Trim()),
-                ArticleEs = RemoveSpacesBetweenTags(blog.ArticleEs?.Trim()),
                 TitleEn = blog.TitleEn?.Trim(),
-                TitleEs = blog.TitleEs?.Trim(),
-                DescriptionEs = blog.DescriptionEs?.Trim(),
                 DescriptionEn = blog.DescriptionEn?.Trim(),
                 SlugEn = !string.IsNullOrEmpty(blog.TitleEn) ? SlugGenerator.GenerateSlug(blog.TitleEn) : null,
-                SlugEs = !string.IsNullOrEmpty(blog.TitleEs) ? SlugGenerator.GenerateSlug(blog.TitleEs) : null,
                 Author = blog.Author?.Trim(),
                 IsSubscriptionRequired = blog.IsSubscriptionRequired == "true" ? true : false,
                 
@@ -687,11 +679,8 @@ namespace BlogMaster.Core.Services
                         Author = preview.Author,
                         DatePublished = preview.DatePublished,
                         DescriptionEn = preview.DescriptionEn,
-                        DescriptionEs = preview.DescriptionEs,
                         SlugEn = preview.SlugEn,
-                        SlugEs = preview.SlugEs,
                         TitleEn = preview.TitleEn,
-                        TitleEs = preview.TitleEs,
                         AverageRating = await GetBlogAverageRatingAsync(preview.BlogId),
                         Subscription = preview.IsSubscriptionRequired
 
@@ -764,11 +753,8 @@ namespace BlogMaster.Core.Services
                     Author = preview.Author,
                     DatePublished = preview.DatePublished,
                     DescriptionEn = preview.DescriptionEn,
-                    DescriptionEs = preview.DescriptionEs,
                     SlugEn = preview.SlugEn,
-                    SlugEs = preview.SlugEs,
                     TitleEn = preview.TitleEn,
-                    TitleEs = preview.TitleEs,
                     AverageRating = await GetBlogAverageRatingAsync(preview.BlogId),
                     Subscription = preview.IsSubscriptionRequired,
                 };
@@ -1188,13 +1174,10 @@ namespace BlogMaster.Core.Services
                     BlogId = blog.BlogId,
                     AverageRating = blog.AverageRating,
                     Author = blog.Author,
-                   DatePublished = blog.DatePublished,
-                   DescriptionEn = blog.DescriptionEn,
-                   DescriptionEs = blog.DescriptionEs,
-                   SlugEn = blog.SlugEn,
-                   SlugEs = blog.SlugEs,
-                   TitleEn = blog.TitleEn,
-                   TitleEs = blog.TitleEs,
+                    DatePublished = blog.DatePublished,
+                    DescriptionEn = blog.DescriptionEn,
+                    SlugEn = blog.SlugEn,
+                    TitleEn = blog.TitleEn,
                 };
 
                 result.Add(blogPreviewDto);
@@ -1234,15 +1217,11 @@ namespace BlogMaster.Core.Services
                 throw new Exception("Blog does not exist");
             }
 
-            entity.TitleEs = blog.TitleEs?.Trim();
             entity.TitleEn = blog.TitleEn?.Trim();
             entity.ArticleEn = RemoveSpacesBetweenTags(blog.ArticleEn?.Trim());
-            entity.ArticleEs = RemoveSpacesBetweenTags(blog.ArticleEs?.Trim());
             entity.SlugEn = SlugGenerator.GenerateSlug(entity.TitleEn ?? "");
-            entity.SlugEs = SlugGenerator.GenerateSlug(entity.TitleEs ?? "");
             entity.Author = blog.Author?.Trim();
             entity.DescriptionEn = blog.DescriptionEn?.Trim();
-            entity.DescriptionEs = blog.DescriptionEs?.Trim();
             entity.IsSubscriptionRequired = blog.IsSubscriptionRequired == "true" ? true : false;
             entity.IsFeatured = blog.IsFeatured == "true" ? true : false;
             entity.IsPublished = blog.IsPublished == "true" ? true : false;
@@ -1456,7 +1435,7 @@ namespace BlogMaster.Core.Services
                 {
                     BlogId = blog.BlogId,
                     UserId = blog.UserId,                    
-                    BlogName = blog.TitleEn + "..." + blog.TitleEs,
+                    BlogName = blog.TitleEn,
                     TagsCount = await _blogUniqueRepository.GetBlogTagsCountAsync(blog.BlogId), 
                     Author = blog.Author,
                     CategoryCount = await _blogUniqueRepository.GetBlogCategoryCountAsync(blog.BlogId), 

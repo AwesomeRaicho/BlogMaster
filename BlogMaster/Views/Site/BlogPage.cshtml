@@ -30,7 +30,11 @@
 
 </head>
 <body>
-    @if (ViewBag.SignedIn)
+    @if (ViewBag.IsAdmin)
+    {
+        @await Html.PartialAsync("_AdministratorNavigation_PartialView")
+    }
+    else if (ViewBag.SignedIn)
     {
         @await Html.PartialAsync("_SignedInNavigation_PartialView")
     }
@@ -167,7 +171,7 @@
 
                                 </div>
                             </div>
-                            @if (!string.IsNullOrEmpty(ViewBag.UserId) && ViewBag.UserId == comment.UserId.ToString())
+                            @if ((!string.IsNullOrEmpty(ViewBag.UserId) && ViewBag.UserId == comment.UserId.ToString()) || ViewBag.IsAdmin)
                             {
                                 <a class="text-white btn btn-danger p-1 fs-4 flex-gr" href="/edit-comment?commentId=@(comment.CommentId)&blogId=@(Model.Blog?.BlogId)&slug=@(ViewBag.Slug)&userId=@(ViewBag.UserId)" style="width: 50px"><i class="fa-regular fa-pen-to-square"></i></a>
                                 

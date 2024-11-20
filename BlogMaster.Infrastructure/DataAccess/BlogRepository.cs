@@ -76,7 +76,7 @@ namespace BlogMaster.Infrastructure.DataAccess
                 throw new InvalidOperationException("The DbSet Blogs is not available in the database context.");
             }
 
-            var blog = await _context.Blogs.FirstOrDefaultAsync(blog => blog.SlugEn == slug || blog.SlugEs== slug);
+            var blog = await _context.Blogs.FirstOrDefaultAsync(blog => blog.SlugEn == slug);
 
             return blog;
 
@@ -201,11 +201,8 @@ namespace BlogMaster.Infrastructure.DataAccess
                 {
                     BlogId = e.Blog != null ? e.Blog.BlogId : Guid.Empty,
                     TitleEn = e.Blog != null ? e.Blog.TitleEn : "",
-                    TitleEs = e.Blog != null ? e.Blog.TitleEs : "",
                     DescriptionEn = e.Blog != null ? e.Blog.DescriptionEn : "",
-                    DescriptionEs = e.Blog != null ? e.Blog.DescriptionEs : "",
                     SlugEn = e.Blog != null ? e.Blog.SlugEn : "",
-                    SlugEs = e.Blog != null ? e.Blog.SlugEs : "",
                     Author = e.Blog != null ? e.Blog.Author : "", 
                     DatePublished = e.Blog != null ? e.Blog.DatePublished : DateTime.UtcNow,
                     AverageRating = e.Blog != null ? e.Blog.AverageRating : 0,

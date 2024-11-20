@@ -3,12 +3,13 @@
 }
 
 <div class="container">
-    <div class="mt-5 row bg-secondary-subtle ">
+    <div class="mt-5 row bg-light p-4 rounded-5 pb-5">
         <h1>Profile</h1>
-        <div class="col-6 pt-5">
-
+        <div class="col-12 col-md-6 pt-5 ">
+            <p><strong>User Name:</strong> @ViewBag.UserName</p>
+            <p><strong>Email:</strong> @ViewBag.Email</p>
         </div>
-        <div class="col-6 pt-5">
+        <div class="col-12 col-md-6 pt-5">
             <a href="/password-change">Change Password</a>
         </div>
 

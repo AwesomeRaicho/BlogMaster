@@ -34,11 +34,6 @@ namespace BlogMaster.Infrastructure.DataAccess
 
             modelBuilder.Seed();
             
-
-
-
-
-
             // RELATIONSHIPS MANY-TO-MANY
             // Blog & Categorie = Blog_Category
             modelBuilder.Entity<Blog_Category>()
@@ -174,17 +169,13 @@ namespace BlogMaster.Infrastructure.DataAccess
                 .HasIndex(e => e.SlugEn)
                 .HasDatabaseName("IX_Blog_SlugEn");
 
-            modelBuilder.Entity<Blog>()
-                .HasIndex(e => e.SlugEs)
-                .HasDatabaseName("IX_Blog_SlugEs");
+ 
 
             modelBuilder.Entity<Blog>()
                 .Property(b => b.SlugEn)
                 .HasMaxLength(255);
 
-            modelBuilder.Entity<Blog>()
-                .Property(b => b.SlugEs)
-                .HasMaxLength(255);
+
 
             modelBuilder.Entity<Blog>()
                 .Property(e => e.AverageRating)
@@ -194,17 +185,13 @@ namespace BlogMaster.Infrastructure.DataAccess
                 .Property(e => e.TitleEn)
                 .HasMaxLength(255);  
 
-            modelBuilder.Entity<Blog>()
-                .Property(e => e.TitleEs)
-                .HasMaxLength(255);  
+ 
 
             modelBuilder.Entity<Blog>()
                 .Property(e => e.DescriptionEn)
                 .HasMaxLength(2000);  
 
-            modelBuilder.Entity<Blog>()
-                .Property(e => e.DescriptionEs)
-                .HasMaxLength(2000);
+
 
             modelBuilder.Entity<Blog>()
                 .Property(e => e.Author)
@@ -390,9 +377,6 @@ namespace BlogMaster.Infrastructure.DataAccess
                 .Property(e => e.TagNameEn)
                 .HasMaxLength(15);
 
-            modelBuilder.Entity<Tag>()
-                .Property(e => e.TagNameEs)
-                .HasMaxLength(15);
 
 
 
@@ -417,26 +401,6 @@ namespace BlogMaster.Infrastructure.DataAccess
                 .WithMany(e => e.Modifications)
                 .HasForeignKey(e => e.BlogId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-
-
-
-            //<SUBSCRIPTION>
-            //<SUBSCRIPTION> relation
-            //<SUBSCRIPTION> end
-
-            //<SUBSCRIPTIONHISTORY>
-            //<SUBSCRIPTIONHISTORY> relation
-            //<SUBSCRIPTIONHISTORY> end
-
-
-            //<PAYMENT>
-            //<PAYMENT> relation
-            //<PAYMENT> end
-
-            //<PAYMENTHISTORY>
-            //<PAYMENTHISTORY> relation
-            //<PAYMENTHISTORY> end
 
             base.OnModelCreating(modelBuilder);
 
