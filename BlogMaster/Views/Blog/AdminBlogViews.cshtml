@@ -81,8 +81,61 @@
         </div>
     </form>
 </div>
-<!-- TABLE -->
-<div class=" overflow-x-scroll">
+
+<div class="row mx-auto mt-4">
+    @if (Model.AdminBlogList != null)
+    @foreach(var blog in Model.AdminBlogList)
+    {
+        if(blog != null)
+        {
+                <div class="col-12 col-md-4 col-lg-3 col-xl-2 m-1 d-flex align-items-stretch">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@blog.BlogName</h5>
+                        <h6 class="card-subtitle mb-2 text-body-secondary">
+                                @if (blog != null && blog.AverageRating > 0)
+                                {
+                                    @for (int i = 0; i < 6; i++)
+                                    {
+                                        if (blog.AverageRating > i && blog.AverageRating < i + 1)
+                                        {
+                                            <i class="fa-regular fa-star-half-stroke" style="color: gold"></i>
+                                        }
+                                        else if (blog.AverageRating > i)
+                                        {
+                                            <i class="fa-solid fa-star" style="color: gold"></i>
+                                        }
+                                        else if (i < 5)
+                                        {
+                                            <i class="fa-regular fa-star" style="color: gold"></i>
+                                        }
+                                    }
+                                }
+                            </h6>
+                        <p class="card-text">
+                            <strong>Published: </strong> @(blog?.Published == true ? "Yes" : "no") <br />
+                            <strong>Featured: </strong>@(blog?.Featured == true ? "Yes" : "no")<br />
+                            <strong>Subscription: </strong>@(blog?.SubscriptionRerquired == true ? "Yes" : "no")<br />
+                            <strong>Views: </strong>@(blog?.ViewCount) <br />       
+                        </p>
+                        <div class="mt-auto">
+                                <a href="/blogs/blogpageId?blogId=@(blog?.BlogId)" class="card-link m-1">View Blog (@(blog?.CommentCount) comments)</a>
+
+                            <a href="/create-blog?blogId=@(blog?.BlogId)" class="card-link m-1">Edit</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+
+
+
+
+@* <div class=" overflow-x-scroll">
     <table class="table">
         <thead class="sticky-top table-success" >
             <tr>
@@ -91,7 +144,7 @@
                 <th scope="col">BlogName</th>
                 <th scope="col">CategoryCount</th>
                 <th scope="col">TagsCount</th>
-                <th scope="col">KeywordCount</th>
+                <th scope="col">KeywordCount</th> 
                 <th scope="col">Published</th>
                 <th scope="col">Featured</th>
                 <th scope="col">Subscription</th>
@@ -112,7 +165,7 @@
                         <td>@(blog.BlogName)</td>
                         <td>@(blog.CategoryCount) Categories</td>
                         <td>@(blog.TagsCount) Tags</td>
-                        <td>@(blog.KeywordCount) Keyword</td>
+                        <td>@(blog.KeywordCount) Keyword</td> 
                         <td>@(blog.Published == true ? "Yes" : "no")</td>
                         <td>@(blog.Featured == true ? "Yes" : "no")</td>
                         <td>@(blog.SubscriptionRerquired == true ? "Yes" : "no")</td>
@@ -130,7 +183,7 @@
 
         </tbody>
     </table>
-</div>
+</div> *@
 
 
 <!-- PAGINATION -->

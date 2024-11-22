@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using BlogMaster.Core.Services;
+using BlogMaster.Core.Models;
 
 
 namespace BlogMaster.Controllers
@@ -418,6 +419,38 @@ namespace BlogMaster.Controllers
             return View();
         }
 
+        [Route("/blogs/blogpageId")]
+        public async Task<IActionResult> BlogById(string blogId)
+        {
+            
+            ViewBag.IsAdmin = true;
+
+            ViewBag.SignedIn = User.Identity?.IsAuthenticated;
+
+            ViewBag.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
+            ViewBag.Slug = "";
+
+            ViewBag.Category = "";
+
+            var blog = await _blogService.GetBlogByIdAsync(Guid.Parse(blogId));
+
+            BlogPreviewsDto? previewssubadmin = await _blogService.GetBlogRecomendations(blog.Categories != null ? blog.Categories : new List<CategoryResponseDto>(), blog.BlogId.ToString());
+
+            if (blog == null)
+            {
+                return NotFound();
+            }
+
+            BlogAndRecomendations blogAndRecomendationssub = new BlogAndRecomendations()
+            {
+                Blog = blog,
+                BlogPreviews = previewssubadmin
+            };
+
+            return View(blogAndRecomendationssub);
+        }
 
     }
 }

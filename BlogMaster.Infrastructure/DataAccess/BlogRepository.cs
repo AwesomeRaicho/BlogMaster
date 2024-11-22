@@ -241,16 +241,18 @@ namespace BlogMaster.Infrastructure.DataAccess
             {
                 throw new Exception("BlogCategories table does not exist");
             }
-            return await _context.BlogCategories.CountAsync(i => i.BlogId == blogId);
+            int count = await _context.BlogCategories.CountAsync(i => i.BlogId == blogId);
+            return count;
         }
 
-        public Task<int> GetBlogKeywordsCountAsync(Guid blogId)
+        public async Task<int> GetBlogKeywordsCountAsync(Guid blogId)
         {
             if (_context.BlogKeywords == null)
             {
                 throw new Exception("BlogKeywords table does not exist");
             }
-            return _context.BlogKeywords.CountAsync(i => i.BlogId == blogId);
+            int count = await _context.BlogKeywords.CountAsync(i => i.BlogId == blogId);
+            return count;
         }
 
         public async Task<int> GetBlogTagsCountAsync(Guid blogId)
@@ -259,7 +261,18 @@ namespace BlogMaster.Infrastructure.DataAccess
             {
                 throw new Exception("BlogTags table does not exist");
             }
-            return await _context.BlogTags.CountAsync(i => i.BlogId == blogId);
+            int Count = await _context.BlogTags.CountAsync(i => i.BlogId == blogId);
+            return Count;
+        }
+
+        public async Task<int> GetBlogCommentCountAsync(Guid blogId)
+        {
+            if (_context.Comments == null)
+            {
+                throw new Exception("Comments table does not exist");
+            }
+            int count = await _context.Comments.CountAsync(i => i.BlogId == blogId);
+            return count;
         }
     }
 }

@@ -1441,11 +1441,11 @@ namespace BlogMaster.Core.Services
                     CategoryCount = await _blogUniqueRepository.GetBlogCategoryCountAsync(blog.BlogId), 
                     KeywordCount = await _blogUniqueRepository.GetBlogKeywordsCountAsync(blog.BlogId), 
                     ViewCount = blog.ViewCount,
-                    AverageRating = blog.AverageRating,
+                    AverageRating = await GetBlogAverageRatingAsync(blog.BlogId),
                     Published = blog.IsPublished,
                     Featured = blog.IsFeatured,
                     SubscriptionRerquired = blog.IsSubscriptionRequired,
-                    CommentCount = blog.Comments != null ? blog.Comments.Count : 0,
+                    CommentCount = await _blogUniqueRepository.GetBlogCommentCountAsync(blog.BlogId),
                 };
 
 

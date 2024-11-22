@@ -21,12 +21,14 @@ namespace BlogMaster.Core.Services
         private readonly string PriceId = "price_1Prtw409TbzP0h4ikMqH8DnJ";
         private readonly StripeSettings _stripeSettings;
         private readonly IIdentityService _identityService;
+        private readonly string _currencyCode;
 
         public StripeService(IOptions<StripeSettings> stripeSettings, IIdentityService identityService, IConfiguration configuration)
         {
             _stripeSettings = stripeSettings.Value;
             _identityService = identityService;
             DomainName = configuration["Domain:DomainName"] ?? "";
+            _currencyCode = configuration["CurrencyCode:Peso"] ?? "";
         }
 
         //Customer Methods
@@ -98,7 +100,7 @@ namespace BlogMaster.Core.Services
                         PriceData = new SessionLineItemPriceDataOptions
                         {
                           UnitAmount = getFormRequestDto.Amount * 100,
-                          Currency = "mxn",
+                          Currency = _currencyCode,
                           ProductData = new SessionLineItemPriceDataProductDataOptions
                           {
                             Name = "Donation",
@@ -354,7 +356,7 @@ namespace BlogMaster.Core.Services
 
             var options = new SessionCreateOptions
             {
-                Currency = "mxn",
+                Currency = _currencyCode,
                 Mode = "setup",
                 UiMode = "embedded",
                 Customer = customerId,

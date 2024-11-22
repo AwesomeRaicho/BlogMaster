@@ -44,7 +44,8 @@ namespace BlogMaster.Core.Contracts
         public Task<IEnumerable<Tag?>> GetAllBlogTags(Guid blogId);
         public Task<int> GetBlogTagsCountAsync(Guid blogId);
 
+        public Task<int> GetBlogCommentCountAsync(Guid blogId);
 
-
+        
     }
 }

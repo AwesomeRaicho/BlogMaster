@@ -13,11 +13,13 @@ namespace BlogMaster.Controllers
     public class BlogController : Controller
     {
         private readonly IBlogService _blogService;
+        private readonly IConfiguration _configuration;
 
-
-        public BlogController(IBlogService blogService)
+        public BlogController(IBlogService blogService, IConfiguration configuration)
         {
             _blogService = blogService;
+            _configuration = configuration;
+
         }
 
         [HttpGet]
@@ -125,8 +127,9 @@ namespace BlogMaster.Controllers
         public async Task<IActionResult> AdminBlogViews([FromQuery] int pageIndex, string category, List<string> tags)
         {
 
+            ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
 
-            if(pageIndex == 0)
+            if (pageIndex == 0)
             {
                 pageIndex = 1;
             }

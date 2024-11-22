@@ -17,21 +17,24 @@ namespace BlogMaster.Controllers
         private readonly IStripeService _stripeService;
         private readonly IIdentityService _identityService;
         private readonly IConfiguration _configuration;
+        private readonly string _currencyCode;
 
         public SubscriptionController(IStripeService stripeService, IIdentityService identityService, IConfiguration configuration) 
         {
             _stripeService = stripeService;
             _identityService = identityService;
             _configuration = configuration;
+            _currencyCode = configuration["CurrencyCode:Peso"] ?? "";
+
         }
 
-        
+
         [Route("/subscription-details")]
         public async Task<IActionResult> SubscriptionDetails()
         {
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
             ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
-
+            ViewBag.CurrencyCode = _currencyCode;
             string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if(User.Identity == null || !User.Identity.IsAuthenticated || userId == null)

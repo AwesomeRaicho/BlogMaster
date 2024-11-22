@@ -1,0 +1,204 @@
+﻿@model BlogAndRecomendations;
+
+
+@{
+    string keywords = "";
+    if (Model.Blog?.Keywords != null)
+    {
+        foreach (KeywordResponseDto keyword in Model.Blog.Keywords)
+        {
+            keywords += $"{keyword.KeywordNameEn}, ";
+        }
+    }
+
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benefits of Learning to Code</title>
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Meta Description -->
+    <meta name="description" content="@(Model.Blog?.DescriptionEn?.Trim())">
+
+    <!-- Meta Keywords -->
+    <meta name="keywords" content="@(keywords)">
+
+</head>
+<body>
+    @if (ViewBag.IsAdmin)
+    {
+        @await Html.PartialAsync("_AdministratorNavigation_PartialView")
+    }
+    else if (ViewBag.SignedIn)
+    {
+        @await Html.PartialAsync("_SignedInNavigation_PartialView")
+    }
+    else
+    {
+        @await Html.PartialAsync("_UnsignedInNavigation_PartialView")
+    }
+
+    <div class="container mb-5" style="max-width: 750px ">
+
+        <main>
+            <article class="mt-5 mb-5">
+                <h1>@Model.Blog?.TitleEn</h1>
+                <small>@Model.Blog?.DescriptionEn</small>
+                @(Html.Raw(Model.Blog?.ArticleEn))
+            </article>
+            <div class="border border-5 p-4 d-flex mb-5">
+                <div class="me-3 p-3 bg-light d-flex justify-content-center align-items-center rounded-2">
+                    <h1 class="fs-2">BM</h1>
+                </div>
+                <div class="pt-3">
+                    <a class="fs-5" style="text-decoration: none" href="/">BlogMaster</a>
+                    @if (Model.Blog != null && !string.IsNullOrEmpty(Model.Blog.Author))
+                    {
+                        <p class="fs-6">Author: <i>@(Model.Blog.Author)</i></p>
+                    }
+                </div>
+            </div>
+
+            @* Recomended *@
+            @if (Model.BlogPreviews?.publicBlogList != null)
+            {
+                <section>
+                    <div class="bg-info-subtle mb-3 rounded-4 shadow p-3">
+                        <h2 class="fs-2 p-1 ps-3">Recomended</h2>
+                        <div class="row justify-content-center overflow-hidden">
+
+
+
+                            @foreach (var recom in Model.BlogPreviews.publicBlogList)
+                            {
+
+                                <div class="col-12 col-md-3 rounded-0 overflow-hidden" style="min-height: 250px; max-height: 250px; position: relative">
+                                    <a href="/blogs/blogpage/@(recom.SlugEn)" style="text-decoration: none; margin: 0px; padding: 0px">
+                                        @if (recom.Subscription)
+                                        {
+                                            <div class="bg-danger d-flex justify-content-center align-content-center p-2 rounded-bottom-2 text-white fw-bold fs-6" style="position: absolute; right: 15px; top: 0px; z-index: 2">
+                                                Subscription
+                                            </div>
+                                        }
+                                        <div class="card text-bg-dark rounded-0">
+                                            <img src="@(recom.ImageView?.src)" class="card-img bg-black opacity-50 rounded-0" alt="@(recom.ImageView?.Filename)" style="object-fit: cover; min-height: 200px; max-height: 200px;">
+                                            <div class="card-img-overlay d-flex align-items-end p-3">
+                                                <h5 class="card-title text-decoration-underline">@(recom.TitleEn)</h5>
+                                                @* <p class="card-text">@(recom.DescriptionEn)</p> *@
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+
+
+                        </div>
+
+                    </div>
+
+                </section>
+            }
+
+            @* add Rating/Comment *@
+            <div class="p-4 mt-2 mb-2 rounded-3 d-flex justify-content-around">
+
+                <a href="/create-rating?blogId=@(Model.Blog?.BlogId)&userId=@(ViewBag.UserId != null ? ViewBag.UserId : "")&slug=@(ViewBag.Slug)" class="btn btn-info m-3 shadow fw-bolder text-white"><i class="fa-solid fa-star fs-3" style="color: white"></i> Rate this article</a>
+
+                <a href="/create-comment?blogId=@(Model.Blog?.BlogId)&userId=@(ViewBag.UserId != null ? ViewBag.UserId : "")&slug=@(ViewBag.Slug)" class="btn btn-info m-3 shadow fw-bolder text-white"><i class="fa-solid fa-comment text-white fs-3"></i> Add Comment</a>
+            </div>
+
+
+            @* comment Section *@
+            <section class="mb-4">
+                @if (Model.Blog != null && Model.Blog.CommentsRatings != null && Model.Blog.CommentsRatings.Count > 0)
+                {
+                    <h2>Comments</h2>
+                }
+
+                @if (Model.Blog?.CommentsRatings != null && Model.Blog?.CommentsRatings.Count > 0)
+                {
+                    foreach (var comment in Model.Blog.CommentsRatings)
+                    {
+                        <div class="d-flex mb-3 justify-content-start align-items-center">
+                            <div class="card me-3 flex-grow-1" style="max-width: 600px">
+
+                                <div>
+
+                                    <h6 class="card-header"><i class="fa-solid fa-user me-3 fs-5 bg-white" style="color: #007BFF; border: solid 2px #007BFF; border-radius: 20px; padding: 5px"></i> @(!string.IsNullOrEmpty(comment.UserName) ? comment.UserName : "Iroquois Pliskin")</h6>
+                                </div>
+
+                                <div class="card-body">
+                                    @* stars *@
+                                    <h6 class="card-title fs-6">
+                                        <span class="fw-bold">Rating:</span>
+                                        @if (comment.RatingScore > 0)
+                                        {
+                                            @for (int i = 0; i < 6; i++)
+                                            {
+                                                if (comment.RatingScore > i && comment.RatingScore < i + 1)
+                                                {
+                                                    <i class="fa-regular fa-star-half-stroke" style="color: gold"></i>
+                                                }
+                                                else if (comment.RatingScore > i)
+                                                {
+                                                    <i class="fa-solid fa-star" style="color: gold"></i>
+                                                }
+                                                else if (i < 5)
+                                                {
+                                                    <i class="fa-regular fa-star" style="color: gold"></i>
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="">Not rating</span>
+                                        }
+                                    </h6>
+                                    @* Comment *@
+                                    <p class="card-text">@(comment.Message)</p>
+
+                                </div>
+                            </div>
+                            @if ((!string.IsNullOrEmpty(ViewBag.UserId) && ViewBag.UserId == comment.UserId.ToString()) || ViewBag.IsAdmin)
+                            {
+                                <a class="text-white btn btn-danger p-1 fs-4 flex-gr" href="/edit-comment?commentId=@(comment.CommentId)&blogId=@(Model.Blog?.BlogId)&slug=@(ViewBag.Slug)&userId=@(ViewBag.UserId)" style="width: 50px"><i class="fa-regular fa-pen-to-square"></i></a>
+
+                            }
+                        </div>
+                    }
+                }
+            </section>
+        </main>
+
+    </div>
+    @await Html.PartialAsync("_Footer_PartialView")
+
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"></script>
+    <script src="~/js/bootstrap.min.js" asp-append-version="true"></script>
+    <script>
+        const blogImages = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Blog?.BlogImages));
+
+        blogImages.sort((a, b) => new Date(a.CreatedDate) - new Date(b.CreatedDate));
+
+        const imageElements = document.getElementsByClassName("blog-image");
+
+        const imageArray = Array.from(imageElements);
+
+        if (blogImages.length > 0 && imageArray.length > 0) {
+            for (let i = 0; i < Math.min(blogImages.length, imageArray.length); i++) {
+                const imageToAdd = blogImages[i];
+                const element = imageArray[i];
+                element.src = `data:${imageToAdd.MimeType};base64,${imageToAdd.ImageData}`;
+            }
+        }
+    </script>
+    <script src="https://kit.fontawesome.com/@(ViewBag.FontAwesomeKey).js" crossorigin="anonymous"></script>
+</body>
+</html>
