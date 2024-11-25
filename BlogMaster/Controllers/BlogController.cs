@@ -124,9 +124,8 @@ namespace BlogMaster.Controllers
 
         [HttpGet]
         [Route("/admin-blog-views")]
-        public async Task<IActionResult> AdminBlogViews([FromQuery] int pageIndex, string category, List<string> tags)
+        public async Task<IActionResult> AdminBlogViews([FromQuery] int pageIndex, string category, List<string> tags, Dictionary<string, string> filters, string sortBy)
         {
-
             ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
 
             if (pageIndex == 0)
@@ -141,8 +140,7 @@ namespace BlogMaster.Controllers
             ViewBag.Category = category;
             ViewBag.Tags = tags.Count != 0 && tags[0] != null ? tags : null;
 
-
-            var previews = await _blogService.GetAllAdminBlogPreviews(pageIndex, category, tags.Count != 0 && tags[0] != null ? tags : new List<string>());
+            var previews = await _blogService.GetAllAdminBlogPreviews(pageIndex, category, tags.Count != 0 && tags[0] != null ? tags : new List<string>(), filters, sortBy);
 
             return View(previews);
         }

@@ -24,6 +24,8 @@ namespace BlogMaster.Core.DTO
         public decimal? AverageRating { get; set; }
         public bool SubscriptionRerquired { get; set; }
         public int CommentCount { get; set; }
+        public string? Created { get; set; }
+        public string? PublishedDate { get; set;}
 
     }
 }

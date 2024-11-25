@@ -104,13 +104,13 @@
                 </section>
             }
 
-            @* add Rating/Comment *@
+@*              add Rating/Comment 
             <div class="p-4 mt-2 mb-2 rounded-3 d-flex justify-content-around">
 
                 <a href="/create-rating?blogId=@(Model.Blog?.BlogId)&userId=@(ViewBag.UserId != null ? ViewBag.UserId : "")&slug=@(ViewBag.Slug)" class="btn btn-info m-3 shadow fw-bolder text-white"><i class="fa-solid fa-star fs-3" style="color: white"></i> Rate this article</a>
 
                 <a href="/create-comment?blogId=@(Model.Blog?.BlogId)&userId=@(ViewBag.UserId != null ? ViewBag.UserId : "")&slug=@(ViewBag.Slug)" class="btn btn-info m-3 shadow fw-bolder text-white"><i class="fa-solid fa-comment text-white fs-3"></i> Add Comment</a>
-            </div>
+            </div> *@
 
 
             @* comment Section *@

@@ -4,6 +4,7 @@ using BlogMaster.Core.Models;
 using BlogMaster.Core.Models.Identity;
 using BlogMaster.Core.Utilities;
 using Microsoft.Win32.SafeHandles;
+using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Stripe;
 using System;
@@ -11,6 +12,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.WebSockets;
 using System.Reflection.Metadata;
 using System.Text;
@@ -59,6 +61,27 @@ namespace BlogMaster.Core.Services
 
 
         //PRIVATE METHODS
+
+
+        public async Task UpdateBlogAveragaRating(string? blogId, decimal? rating)
+        {
+            if(!string.IsNullOrWhiteSpace(blogId))
+            {
+                var blog = await _blogRepository.Get(Guid.Parse(blogId));
+
+                if(blog != null)
+                {
+                    blog.AverageRating = rating;
+
+                    await _blogRepository.Update(blog);
+
+                }
+
+
+            }
+
+        }
+
 
         /// <summary>
         /// Provides a way for methods to create a blog response dto with all other related tables included
@@ -353,6 +376,8 @@ namespace BlogMaster.Core.Services
                 return;
             }
 
+
+
             Rating entity = new Rating()
             {
                 RatingId = Guid.NewGuid(),
@@ -362,6 +387,15 @@ namespace BlogMaster.Core.Services
             };
 
             await _ratingRepository.Create(entity);
+
+
+            //update average rating for when sorting
+            decimal? avgRating =  await GetBlogAverageRatingAsync(rating.BlogId);
+
+            if (avgRating != null)
+            {
+                await UpdateBlogAveragaRating(rating.BlogId.ToString(), avgRating);
+            }
         }
 
         public async Task AddTagToBlogAsync(Guid blogId, Guid tagId)
@@ -623,6 +657,14 @@ namespace BlogMaster.Core.Services
             }
 
             await _ratingRepository.Delete(entity);
+
+            //update average rating for when sorting
+            decimal? avgRating = await GetBlogAverageRatingAsync(entity.BlogId);
+
+            if (avgRating != null)
+            {
+                await UpdateBlogAveragaRating(entity.BlogId.ToString(), avgRating);
+            }
         }
 
         public async Task DeleteTagAsync(Guid id)
@@ -656,13 +698,15 @@ namespace BlogMaster.Core.Services
             }
 
             List<PublicBlogListDto> publicList = new List<PublicBlogListDto>();
-            List<Blog> blogs = (List<Blog>)await _blogUniqueRepository.GetAllBlogPreviews(1, 5, categories[0].CategoryNameEn ?? "", new List<string>(), false);
+
+            //need to send nulls
+            List<Blog> blogs = (List<Blog>)await _blogUniqueRepository.GetAllBlogPreviews(1, 5, categories[0].CategoryNameEn ?? "", new List<string>(), null, null, false);
 
             int catCount = 1;
             while (blogs.Count < 5 && catCount < categories.Count)
             {
                 var categoryName = categories[catCount].CategoryNameEn ?? "";
-                var set = await _blogUniqueRepository.GetAllBlogPreviews(1, 5 - blogs.Count, categoryName, new List<string>(), false);
+                var set = await _blogUniqueRepository.GetAllBlogPreviews(1, 5 - blogs.Count, categoryName, new List<string>(), null, null, false);
 
                 blogs = blogs.Concat(set).ToList();
                 catCount++;
@@ -737,11 +781,11 @@ namespace BlogMaster.Core.Services
         }
 
 
-        public async Task<BlogPreviewsDto> GetAllBlogPreviews(int pageIndex, string category, List<string> tags)
+        public async Task<BlogPreviewsDto> GetAllBlogPreviews(int pageIndex, string category, List<string> tags, Dictionary<string, string> filters, string sortBy)
         {
             int pageSize = 50;
 
-            IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviews(pageIndex, pageSize, category, tags, false);
+            IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviews(pageIndex, pageSize, category, tags, filters, sortBy, false);
 
             List<PublicBlogListDto> publicList = new List<PublicBlogListDto>();
 
@@ -1101,6 +1145,7 @@ namespace BlogMaster.Core.Services
             }
 
             blog.IsPublished = true;
+            blog.DatePublished = DateTime.UtcNow;
 
             await _blogRepository.Update(blog);
         }
@@ -1205,6 +1250,7 @@ namespace BlogMaster.Core.Services
                 throw new Exception("Blog Id does not exist");
             }
             blog.IsPublished = false;
+            blog.DatePublished = null;
             await _blogRepository.Update(blog);
         }
 
@@ -1400,6 +1446,14 @@ namespace BlogMaster.Core.Services
 
             rating.RatingScore = ratingPostPutDto.RatingScore;
             await _ratingRepository.Update(rating);
+
+            //update average rating for when sorting
+            decimal? avgRating = await GetBlogAverageRatingAsync(rating.BlogId);
+
+            if (avgRating != null)
+            {
+                await UpdateBlogAveragaRating(rating.BlogId.ToString(), avgRating);
+            }
         }
 
         public async Task UpdateTagAsync(TagPostPutDto tagPostPutDto)
@@ -1419,14 +1473,15 @@ namespace BlogMaster.Core.Services
         }
 
 
-        public async Task<BlogPreviewsDto> GetAllAdminBlogPreviews(int pageIndex, string category, List<string> tags)
-        {   
+        public async Task<BlogPreviewsDto> GetAllAdminBlogPreviews(int pageIndex, string category, List<string> tags, Dictionary<string, string> filters, string sortBy)
+        {
             int perPage = 50;
 
 
-            IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviews(pageIndex, perPage, category, tags, true);
+            IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviews(pageIndex, perPage, category, tags, filters, sortBy, true);
 
             List<AdminBlogListDto> responseList = new List<AdminBlogListDto>();
+
 
 
             foreach (Blog blog in blogs)
@@ -1434,18 +1489,21 @@ namespace BlogMaster.Core.Services
                 AdminBlogListDto dto = new AdminBlogListDto()
                 {
                     BlogId = blog.BlogId,
-                    UserId = blog.UserId,                    
+                    UserId = blog.UserId,
                     BlogName = blog.TitleEn,
-                    TagsCount = await _blogUniqueRepository.GetBlogTagsCountAsync(blog.BlogId), 
+                    TagsCount = await _blogUniqueRepository.GetBlogTagsCountAsync(blog.BlogId),
                     Author = blog.Author,
-                    CategoryCount = await _blogUniqueRepository.GetBlogCategoryCountAsync(blog.BlogId), 
-                    KeywordCount = await _blogUniqueRepository.GetBlogKeywordsCountAsync(blog.BlogId), 
+                    CategoryCount = await _blogUniqueRepository.GetBlogCategoryCountAsync(blog.BlogId),
+                    KeywordCount = await _blogUniqueRepository.GetBlogKeywordsCountAsync(blog.BlogId),
                     ViewCount = blog.ViewCount,
                     AverageRating = await GetBlogAverageRatingAsync(blog.BlogId),
                     Published = blog.IsPublished,
                     Featured = blog.IsFeatured,
                     SubscriptionRerquired = blog.IsSubscriptionRequired,
                     CommentCount = await _blogUniqueRepository.GetBlogCommentCountAsync(blog.BlogId),
+                    Created = blog.CreatedDate.ToString().Remove(11),
+                    PublishedDate = blog.DatePublished != null ? blog.DatePublished?.ToString().Remove(11) : ""
+
                 };
 
 
@@ -1466,6 +1524,57 @@ namespace BlogMaster.Core.Services
             BlogPreviewsDto responseDto = new BlogPreviewsDto();
             responseDto.AdminBlogList = responseList;
 
+            
+            if(filters.TryGetValue("published", out string? puvalue))
+            {
+                if (puvalue == "true")
+                {
+                    responseDto.IsPublished = true;
+                }
+                else if (puvalue == "false")
+                {
+                    responseDto.IsPublished = false;
+                }
+                else
+                {
+                    responseDto.IsPublished = null;
+                }
+            }
+
+
+            if(filters.TryGetValue("featured", out string? fevalue))
+            {
+                if (fevalue == "true")
+                {
+                    responseDto.IsFeatured = true;
+                }
+                else if (fevalue == "false")
+                {
+                    responseDto.IsFeatured = false;
+                }
+                else
+                {
+                    responseDto.IsFeatured = null;
+                }
+            }
+
+            if(filters.TryGetValue("subscription", out string? subvalue))
+            {
+                if (subvalue == "true")
+                {
+                    responseDto.Subscription = true;
+                }else if(subvalue == "false")
+                {
+                    responseDto.Subscription = false;
+                }else
+                {
+                    responseDto.Subscription = null;
+                }
+            }
+
+
+            responseDto.SearchField = filters.TryGetValue("searchfield", out string? searchvalue) ? searchvalue : "";
+
             int blogCount = await _blogUniqueRepository.GetBlogCountAsync();
 
             responseDto.PageCount =  (int)Math.Ceiling((double)blogCount / perPage);
@@ -1474,6 +1583,7 @@ namespace BlogMaster.Core.Services
 
             responseDto.Tags = (List<Tag>)await _tagRepository.GetAll(1, 1000);
 
+            responseDto.SortBy = sortBy;
 
             return responseDto;
         }

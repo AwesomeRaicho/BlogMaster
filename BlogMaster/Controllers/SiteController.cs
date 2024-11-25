@@ -78,7 +78,7 @@ namespace BlogMaster.Controllers
             ViewBag.Category = category;
             ViewBag.Tags = tags.Count != 0 && tags[0] != null ? tags : null;
 
-            var previews = await _blogService.GetAllBlogPreviews(pageIndex, category, tags.Count != 0 && tags[0] != null ? tags : new List<string>());
+            var previews = await _blogService.GetAllBlogPreviews(pageIndex, category, tags.Count != 0 && tags[0] != null ? tags : new List<string>(), null, null);
 
             return View(previews);
         }

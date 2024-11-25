@@ -11,7 +11,8 @@ namespace BlogMaster.Core.Contracts
     {
         public Task<Blog?> GetBlogBySlug(string slug);
 
-        public Task<IEnumerable<Blog>> GetAllBlogPreviews(int pageIndex, int pageSize, string category, List<string> tags, bool isAdmin);
+
+        public Task<IEnumerable<Blog>> GetAllBlogPreviews(int pageIndex, int pageSize, string category, List<string> tags, Dictionary<string, string>? filters, string? sortBy, bool isAdmin);
 
         public Task<IEnumerable<Modification>> GetAllBlogModifications(Guid id);
 

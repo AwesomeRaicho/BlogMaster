@@ -14,6 +14,15 @@ namespace BlogMaster.Core.DTO
 
         public List<PublicBlogListDto>? publicBlogList { get; set; }
 
+        
+
+        public string? SearchField { get; set; }
+        public string? SortBy { get; set; }
+        public string? Order {  get; set; }
+        public bool? Subscription {  get; set; }
+        public bool? IsFeatured { get; set; }
+        public bool? IsPublished { get; set; }
+
         public List<Category>? Categories { get; set; } = new List<Category>();
         public List<Tag>? Tags { get; set; } = new List<Tag>();
     }

@@ -7,6 +7,9 @@
 <div class="container mt-3 ">
     <form method="get" class="bg-success-subtle border rounded-top-4 p-3">
         <div class="row">
+            <div class="col-4">
+                <button type="submit" class="btn btn-danger rounded-0 fw-bold mb-3">Apply</button>
+            </div>
             <div class="col-9">
                 <select name="category" class="form-select" aria-label="Default select example">
                     <option selected disabled>Choose a category</option>
@@ -27,10 +30,122 @@
                     }
                 </select>
             </div>
-            <div class="col-3">
-                    <button type="submit" class="btn btn-primary">Apply</button>
+
+        </div>
+            <h6 class="ps-3 mt-3">Sort:</h6>
+        <div class="m-2 bg-light-subtle p-2">
+            <div class="row">
+                <div class="col-12">
+                    <input class="form-check-input" type="radio" id="noSort" name="sortBy" value=""
+                    @(Model.SortBy == "" ? "checked" : "") />
+                    <label class="form-check-label" for="noSort">No Sort</label>
+                </div>
+                <div class="col-3">
+                    <label class="fw-bold">Views:</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="viewsAsc" name="sortBy" value="views_asc"
+                        @(Model.SortBy == "views_asc" ? "checked" : "") />
+                        <label class="form-check-label" for="viewsAsc">Ascending</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="viewsDesc" name="sortBy" value="views_desc"
+                        @(Model.SortBy == "views_desc" ? "checked" : "") />
+                        <label class="form-check-label" for="viewsDesc">Descending</label>
+                    </div>
+                </div>
+
+                <div class="col-3">
+                    <label class="fw-bold">Rating:</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="ratingAsc" name="sortBy" value="rating_asc"
+                        @(Model.SortBy == "rating_asc" ? "checked" : "") />
+                        <label class="form-check-label" for="ratingAsc">Ascending</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="ratingDesc" name="sortBy" value="rating_desc"
+                        @(Model.SortBy == "rating_desc" ? "checked" : "") />
+                        <label class="form-check-label" for="ratingDesc">Descending</label>
+                    </div>
+                </div>
+
+                <div class="col-3">
+                    <label class="fw-bold">Title:</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="titleAsc" name="sortBy" value="title_asc"
+                        @(Model.SortBy == "title_asc" ? "checked" : "") />
+                        <label class="form-check-label" for="titleAsc">Ascending</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="titleDesc" name="sortBy" value="title_desc"
+                        @(Model.SortBy == "title_desc" ? "checked" : "") />
+                        <label class="form-check-label" for="titleDesc">Descending</label>
+                    </div>
+                </div>
+
+                <div class="col-3">
+                    <label class="fw-bold">Creation Date:</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="creationDateAsc" name="sortBy" value="creationdate_asc"
+                        @(Model.SortBy == "creationdate_asc" ? "checked" : "") />
+                        <label class="form-check-label" for="creationDateAsc">Ascending</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="creationDateDesc" name="sortBy" value="creationdate_desc"
+                        @(Model.SortBy == "creationdate_desc" ? "checked" : "") />
+                        <label class="form-check-label" for="creationDateDesc">Descending</label>
+                    </div>
+
+                </div>
             </div>
         </div>
+        <h6 class="ps-3 mt-3">Filter:</h6>
+        <div class="m-2 bg-light-subtle rounded-5 p-2 d-inline-block">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="allsubscriptioncheck" name="filters[subscription]" value="" @(Model.Subscription == null ? "checked" : "")>
+                <label class="form-check-label" for="allsubscriptioncheck">All</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="subscriptioncheck" name="filters[subscription]" value="true" @(Model.Subscription == true ? "checked" : "")>
+                <label class="form-check-label" for="subscriptioncheck">Requires subscription</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="nosubscriptioncheck" name="filters[subscription]" value="false" @(Model.Subscription == false ? "checked" : "")>
+                <label class="form-check-label" for="nosubscriptioncheck">No Subscription</label>
+            </div>
+        </div>
+        
+        <div class="m-2 bg-light-subtle rounded-5 p-2 d-inline-block">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="allfeaturedcheck" name="filters[featured]" value="" @(Model.IsFeatured == null ? "checked" : "")>
+                <label class="form-check-label" for="allfeaturedcheck">All</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="featuredcheck" name="filters[featured]" value="true" @(Model.IsFeatured == true ? "checked" : "")>
+                <label class="form-check-label" for="featuredcheck">Is Featured</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="nofeaturedcheck" name="filters[featured]" value="false" @(Model.IsFeatured == false ? "checked" : "")>
+                <label class="form-check-label" for="nofeaturedcheck">Not Featured</label>
+            </div>
+        </div>
+        
+
+        <div class="m-2 bg-light-subtle rounded-5 p-2 d-inline-block">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="allpublishedcheck" name="filters[published]" value="" @(Model.IsPublished == null ? "checked" : "")>
+                <label class="form-check-label" for="allpublishedcheck">All</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="publishedcheck" name="filters[published]" value="true" @(Model.IsPublished == true ? "checked" : "")>
+                <label class="form-check-label" for="publishedcheck">Is Published</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="nopublishedcheck" name="filters[published]" value="false" @(Model.IsPublished == false ? "checked" : "")>
+                <label class="form-check-label" for="nopublishedcheck">Not Published</label>
+            </div>
+        </div> 
+        <br />
+
         <div class="mt-2">
             <p class="d-inline-flex gap-1">
                 <button class="btn btn-primary"
@@ -39,7 +154,7 @@
                         data-bs-target="#collapseExample"
                         aria-expanded="false"
                         aria-controls="collapseExample">
-                    Filter
+                    Tags ▼:
                 </button>
             </p>
             <div class="collapse" id="collapseExample">
@@ -79,6 +194,7 @@
 
             </div>
         </div>
+
     </form>
 </div>
 
@@ -113,77 +229,25 @@
                                 }
                             </h6>
                         <p class="card-text">
-                            <strong>Published: </strong> @(blog?.Published == true ? "Yes" : "no") <br />
+                                <strong>Published: </strong> @(blog?.Published == true ? "Yes" : "no") <small class="text-danger">@blog?.PublishedDate</small><br />
                             <strong>Featured: </strong>@(blog?.Featured == true ? "Yes" : "no")<br />
                             <strong>Subscription: </strong>@(blog?.SubscriptionRerquired == true ? "Yes" : "no")<br />
                             <strong>Views: </strong>@(blog?.ViewCount) <br />       
                         </p>
                         <div class="mt-auto">
-                                <a href="/blogs/blogpageId?blogId=@(blog?.BlogId)" class="card-link m-1">View Blog (@(blog?.CommentCount) comments)</a>
+                                <a href="/blogs/blogpageId?blogId=@(blog?.BlogId)" class="card-link m-1">View Blog (@(blog?.CommentCount) comments)</a> <br />
 
                             <a href="/create-blog?blogId=@(blog?.BlogId)" class="card-link m-1">Edit</a>
 
                         </div>
                     </div>
+                    <small class="ms-auto me-1 text-danger">Created: @blog?.Created</small>
                 </div>
             </div>
         }
     }
 </div>
 
-
-
-
-
-@* <div class=" overflow-x-scroll">
-    <table class="table">
-        <thead class="sticky-top table-success" >
-            <tr>
-                <th scope="col">UserName</th>
-                <th scope="col">Author</th>
-                <th scope="col">BlogName</th>
-                <th scope="col">CategoryCount</th>
-                <th scope="col">TagsCount</th>
-                <th scope="col">KeywordCount</th> 
-                <th scope="col">Published</th>
-                <th scope="col">Featured</th>
-                <th scope="col">Subscription</th>
-                <th scope="col">ViewCount</th>
-                <th scope="col">AverageRating</th>
-                <th scope="col">CommentCount</th>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody class="table-group-divider">
-            @if(Model.AdminBlogList != null)
-            {
-                foreach(AdminBlogListDto blog in Model.AdminBlogList)
-                {
-                    <tr>
-                        <td>@(blog.UserName)</td>
-                        <td>@(blog.Author)</td>
-                        <td>@(blog.BlogName)</td>
-                        <td>@(blog.CategoryCount) Categories</td>
-                        <td>@(blog.TagsCount) Tags</td>
-                        <td>@(blog.KeywordCount) Keyword</td> 
-                        <td>@(blog.Published == true ? "Yes" : "no")</td>
-                        <td>@(blog.Featured == true ? "Yes" : "no")</td>
-                        <td>@(blog.SubscriptionRerquired == true ? "Yes" : "no")</td>
-                        <td>@(blog.ViewCount) Views</td>
-                        <td>@(blog.AverageRating)</td>
-                        <td>@(blog.CommentCount) Comments</td>
-                        <td>
-                            <a href="/create-blog?blogId=@(blog.BlogId)" class="btn btn-primary">
-                                Edit
-                            </a>
-                        </td>
-                    </tr>
-                }
-            }
-
-        </tbody>
-    </table>
-</div> *@
 
 
 <!-- PAGINATION -->

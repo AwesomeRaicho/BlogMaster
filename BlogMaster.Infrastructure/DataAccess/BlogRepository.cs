@@ -1,11 +1,13 @@
 ﻿using BlogMaster.Core.Contracts;
 using BlogMaster.Core.Models;
+using BlogMaster.Infrastructure.Migrations;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace BlogMaster.Infrastructure.DataAccess
@@ -15,7 +17,7 @@ namespace BlogMaster.Infrastructure.DataAccess
 
         public BlogRepository(EntityDbContext context) : base(context) { }
 
-        public async Task<IEnumerable<Blog>> GetAllBlogPreviews(int pageIndex, int pageSize, string category, List<string> tags, bool isAdmin)
+        public async Task<IEnumerable<Blog>> GetAllBlogPreviews(int pageIndex, int pageSize, string category, List<string> tags, Dictionary<string, string>? filters, string? sortBy, bool isAdmin)
         {
             IQueryable<Blog>? query = _context.Blogs;
 
@@ -24,7 +26,55 @@ namespace BlogMaster.Infrastructure.DataAccess
                 throw new Exception("No blogs found.");
             }
 
+            if(!isAdmin)
+            {
+                query = query.Where(blog => blog.IsPublished == true);
+            }else
+            {
+                if(filters != null)
+                {
+                    //filter: [published], [featured], [subscription]
+                    if (filters.TryGetValue("subscription", out string? isSubscription))
+                    {
+                        if (!string.IsNullOrEmpty(isSubscription))
+                        {
+                            bool subscription = isSubscription == "true" ? true : false;
+                            query = query.Where(blog => blog.IsSubscriptionRequired == subscription);
+                        }
+                    }
 
+                    if (filters.TryGetValue("published", out string? isPublished))
+                    {
+                        if (!string.IsNullOrEmpty(isPublished))
+                        {
+                            bool published = isPublished == "true" ? true : false;
+                            query = query.Where(blog => blog.IsPublished == published);
+
+                        }
+                    }
+                
+                    if(filters.TryGetValue("featured", out string? isFeaturedd))
+                    {
+                        if (!string.IsNullOrEmpty(isFeaturedd))
+                        {
+                            bool featured = isFeaturedd == "true" ? true : false;
+                            query = query.Where (blog => blog.IsFeatured == featured);
+
+                        }
+                    }
+
+                }
+            }
+
+            //text search field
+            
+            if(filters != null && filters.TryGetValue("search", out string? searchField))
+            {
+                if (!string.IsNullOrEmpty(searchField))
+                {
+                    query = query.Where(blog => blog.TitleEn != null && blog.TitleEn.Contains(searchField));
+                }
+            }
 
             // category
             if (!string.IsNullOrEmpty(category))
@@ -40,30 +90,46 @@ namespace BlogMaster.Infrastructure.DataAccess
                     .Where(blog => blog.BlogTags != null && blog.BlogTags.Any(bt => bt.Tag != null && (tags.Contains(bt.Tag.TagNameEn ?? "") || tags.Contains(bt.Tag.TagNameEs ?? ""))));
             }
 
-            if(!isAdmin)
+            // Sorting
+            if (!string.IsNullOrEmpty(sortBy))
             {
-                query = query.Where(blog => blog.IsPublished == true);
+                var parts = sortBy.Split('_');
+                string sortField = parts[0];
+                string sortOrder = parts.Length > 1 ? parts[1] : "asc";
+
+                query = sortField.ToLower() switch
+                {
+                    "views" => sortOrder.ToLower() == "asc"
+                        ? query.OrderBy(blog => blog.ViewCount)
+                        : query.OrderByDescending(blog => blog.ViewCount),
+
+                    "rating" => sortOrder.ToLower() == "asc"
+                        ? query.OrderBy(blog => blog.AverageRating)
+                        : query.OrderByDescending(blog => blog.AverageRating),
+
+                    "title" => sortOrder.ToLower() == "asc"
+                        ? query.OrderBy(blog => blog.TitleEn ?? "")
+                        : query.OrderByDescending(blog => blog.TitleEn ?? ""),
+
+                    "creationdate" => sortOrder.ToLower() == "asc"
+                        ? query.OrderBy(blog => blog.CreatedDate)
+                        : query.OrderByDescending(blog => blog.CreatedDate),
+
+                    _ => sortOrder.ToLower() == "asc"
+                        ? query.OrderBy(blog => blog.CreatedDate)
+                        : query.OrderByDescending(blog => blog.CreatedDate) 
+                };
+            }
+            else
+            {
+                query = query.OrderByDescending(blog => blog.DatePublished);
             }
 
-            // pagination
-            List<Blog> result;
-
-            if(isAdmin)
-            {
-                result = await query
+            // Pagination
+            List<Blog> result = await query
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
-                .OrderByDescending(i => i.CreatedDate)
                 .ToListAsync();
-
-            }else
-            {
-                result = await query
-                .Skip((pageIndex - 1) * pageSize)
-                .Take(pageSize)
-                .OrderByDescending(i => i.DatePublished)
-                .ToListAsync();
-            }
 
             return result;
         }
