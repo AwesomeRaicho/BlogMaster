@@ -60,7 +60,7 @@
                                                     </div>
                                                     <div class="col-auto">
                                                         <span id="DonoAmount" class="form-text">
-                                                            MXN
+                                                            @(ViewBag.CurrencyCode)
                                                         </span>
                                                     </div>
                                                 </div>
@@ -73,8 +73,8 @@
                                                 <input type="hidden" name="UserEmail" value="@(ViewBag.UserEmail)" />
 
                                                 <div>
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No Coffee Today!</button>
-                                                    <button type="submit" class="btn border-success bg-success text-white">Continue to Checkout</button>
+                                                    <button type="button" class="btn btn-secondary mb-2" data-bs-dismiss="modal">No Coffee Today!</button>
+                                                    <button type="submit" class="btn border-success bg-success text-white mb-2">Continue to Checkout</button>
                                                 </div>
                                             </form>
                                         </div>

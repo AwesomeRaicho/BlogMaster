@@ -833,6 +833,7 @@ namespace BlogMaster.Core.Services
 
             response.Tags = (List<Tag>)await _tagRepository.GetAll(1, 1000);
 
+            response.SearchField = filters.TryGetValue("search", out string? value) ? value : "";
 
             response.publicBlogList = publicList;
             return response;
@@ -1573,7 +1574,7 @@ namespace BlogMaster.Core.Services
             }
 
 
-            responseDto.SearchField = filters.TryGetValue("searchfield", out string? searchvalue) ? searchvalue : "";
+            responseDto.SearchField = filters.TryGetValue("search", out string? searchvalue) ? searchvalue : "";
 
             int blogCount = await _blogUniqueRepository.GetBlogCountAsync();
 

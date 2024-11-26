@@ -42,10 +42,26 @@
         <form method="get" class="p-3">
       
           <div class="row">
-                <div class="col-12 mb-3">
+                <div class="col-12 mb-2">
                     <button type="submit" class="btn btn-danger text-white border-0 rounded-0 fw-bold">Apply</button>
                 </div>
+                <div class="col-12 mb-4">
+                    <div class="row">
+                        <label for="search" class="form-label text-white fs-5">Seach </label>
+                        <div class="col-12">
+                            @if (!string.IsNullOrEmpty(Model.SearchField))
+                            {
+                                <input class="w-100 " id="search" type="text" name="search" placeholder="Blog title" value="@(Model.SearchField)" autocomplete="off" />
 
+                            }
+                            else
+                            {
+                                <input class="w-100" id="search" type="text" name="search" placeholder="Blog title" autocomplete="off" />
+
+                            }
+                        </div>
+                    </div>
+                </div>
                 <div class="col-12 mb-3">
                     <select name="category" class="form-select" aria-label="Default select">
                         <option selected disabled>Choose a category</option>

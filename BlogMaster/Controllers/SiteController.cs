@@ -17,6 +17,7 @@ namespace BlogMaster.Controllers
         private readonly CookieService _cookieService;
         private readonly IStripeService _stripeService;
         private readonly IIdentityService _identityService;
+        private readonly string _currencyCode;
         public SiteController(IBlogService blogService, IConfiguration configuration, CookieService cookieService, IStripeService stripeService, IIdentityService identityService)
         {
             _configuration = configuration;
@@ -24,13 +25,15 @@ namespace BlogMaster.Controllers
             _cookieService = cookieService;
             _stripeService = stripeService;
             _identityService = identityService;
+            _currencyCode = configuration["CurrencyCode:Peso"] ?? "";
+
         }
 
         [Route("/")]
         public IActionResult Index()
         {
             ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
-
+            ViewBag.CurrencyCode = _currencyCode.ToUpper();
             ViewBag.Title = "Blog Master";
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
             string? user = User.Identity?.Name;
@@ -50,8 +53,10 @@ namespace BlogMaster.Controllers
         }
 
         [Route("/blogs")]
-        public async Task<IActionResult> Blogs([FromQuery] int pageIndex, string category, List<string> tags)
+        public async Task<IActionResult> Blogs([FromQuery] int pageIndex, string category, List<string> tags, string? search )
         {
+            ViewBag.CurrencyCode = _currencyCode.ToUpper();
+
             ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
             if (User.IsInRole("Administrator"))
             {
@@ -78,7 +83,16 @@ namespace BlogMaster.Controllers
             ViewBag.Category = category;
             ViewBag.Tags = tags.Count != 0 && tags[0] != null ? tags : null;
 
-            var previews = await _blogService.GetAllBlogPreviews(pageIndex, category, tags.Count != 0 && tags[0] != null ? tags : new List<string>(), null, null);
+
+            //creating a new dictionary to accommodate preview parameters
+            Dictionary<string, string> filters = new Dictionary<string, string>();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                filters.Add("search", search);
+            }
+
+            var previews = await _blogService.GetAllBlogPreviews(pageIndex, category, tags.Count != 0 && tags[0] != null ? tags : new List<string>(), filters, null);
 
             return View(previews);
         }
@@ -87,6 +101,8 @@ namespace BlogMaster.Controllers
         [Route("/blogs/blogpage/{slug?}")]
         public async Task<IActionResult> BlogPage(string? slug = null, [FromQuery] string? category = "All")
         {
+            ViewBag.CurrencyCode = _currencyCode.ToUpper();
+
             //Logic for admin
             if (User.IsInRole("Administrator"))
             {
@@ -239,6 +255,8 @@ namespace BlogMaster.Controllers
         [Route("/create-comment")]
         public async Task<IActionResult> CreateComment([FromQuery] string blogId, string userId, string slug)
         {
+            ViewBag.CurrencyCode = _currencyCode.ToUpper();
+
             ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
 
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
@@ -263,9 +281,10 @@ namespace BlogMaster.Controllers
         [Route("/create-comment")]
         public async Task<IActionResult> CreateComment(RatingPostPutDto rating, CommentPostPutDto comment, [FromQuery] string slug)
         {
+            ViewBag.CurrencyCode = _currencyCode.ToUpper();
 
             //Handle rating
-            if(rating.RatingScore != null && rating.RatingId == Guid.Empty)
+            if (rating.RatingScore != null && rating.RatingId == Guid.Empty)
             {
                 await _blogService.AddRatingToBlogAsync(rating);
             }
@@ -296,6 +315,8 @@ namespace BlogMaster.Controllers
         [Route("/edit-comment")]
         public async Task<IActionResult> EditComment([FromQuery] string blogId, string userId, string slug, string commentId)
         {
+            ViewBag.CurrencyCode = _currencyCode.ToUpper();
+
             ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
 
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
@@ -322,6 +343,8 @@ namespace BlogMaster.Controllers
         [Route("/edit-comment")]
         public async Task<IActionResult> EditComment(RatingPostPutDto rating, CommentPostPutDto comment, [FromQuery] string slug)
         {
+            ViewBag.CurrencyCode = _currencyCode.ToUpper();
+
             //Handle rating
             if (rating.RatingScore != null && rating.RatingId == Guid.Empty)
             {
@@ -349,7 +372,9 @@ namespace BlogMaster.Controllers
         [Route("/delete-comment")]
         public async Task<IActionResult> DeleteComment(string commentId, string slug)
         {
-            if(!string.IsNullOrEmpty(commentId))
+            ViewBag.CurrencyCode = _currencyCode.ToUpper();
+
+            if (!string.IsNullOrEmpty(commentId))
             {
                 await _blogService.DeleteCommentAsync(Guid.Parse(commentId));
             }
@@ -363,6 +388,8 @@ namespace BlogMaster.Controllers
         [Route("/create-rating")]
         public async Task<IActionResult> CreateRating([FromQuery] string blogId, string userId, string slug)
         {
+            ViewBag.CurrencyCode = _currencyCode.ToUpper();
+
             ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
 
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
@@ -386,6 +413,8 @@ namespace BlogMaster.Controllers
         [Route("/create-rating")]
         public async Task<IActionResult> CreateRating(RatingPostPutDto rating, [FromQuery] string slug)
         {
+            ViewBag.CurrencyCode = _currencyCode.ToUpper();
+
             //Handle rating
             if (rating.RatingScore != null && rating.RatingId == Guid.Empty)
             {
@@ -408,6 +437,8 @@ namespace BlogMaster.Controllers
         [Route("/profile")]
         public IActionResult Profile()
         {
+            ViewBag.CurrencyCode = _currencyCode.ToUpper();
+
             ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
             ViewBag.Title = "Profile";
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
@@ -422,7 +453,8 @@ namespace BlogMaster.Controllers
         [Route("/blogs/blogpageId")]
         public async Task<IActionResult> BlogById(string blogId)
         {
-            
+            ViewBag.CurrencyCode = _currencyCode.ToUpper();
+
             ViewBag.IsAdmin = true;
 
             ViewBag.SignedIn = User.Identity?.IsAuthenticated;
