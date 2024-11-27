@@ -10,7 +10,6 @@ namespace BlogMaster.Core.Models
     {
         public Guid CategoryId { get; set; }
         public string? CatergoryNameEn { get; set; }
-        public string? CatergoryNameEs { get; set; }
 
 
 

@@ -39,7 +39,7 @@
           </div>
 
     <div class="offcanvas-body bg-dark p-3">
-        <form method="get" class="p-3">
+        <form method="get" class="p-3 mb-5">
       
           <div class="row">
                 <div class="col-12 mb-2">
@@ -51,18 +51,19 @@
                         <div class="col-12">
                             @if (!string.IsNullOrEmpty(Model.SearchField))
                             {
-                                <input class="w-100 " id="search" type="text" name="search" placeholder="Blog title" value="@(Model.SearchField)" autocomplete="off" />
+                                <input class="w-100 form-control form-control-lg" id="search" type="text" name="search" placeholder="Blog title" value="@(Model.SearchField)" autocomplete="off" />
 
                             }
                             else
                             {
-                                <input class="w-100" id="search" type="text" name="search" placeholder="Blog title" autocomplete="off" />
+                                <input class="w-100 form-control form-control-lg" id="search" type="text" name="search" placeholder="Blog title" autocomplete="off" />
 
                             }
                         </div>
                     </div>
                 </div>
                 <div class="col-12 mb-3">
+                    <label for="category" class="form-label text-white fs-5">Category </label>
                     <select name="category" class="form-select" aria-label="Default select">
                         <option selected disabled>Choose a category</option>
                         <option value="">All</option>

@@ -9,13 +9,8 @@
           method="post">
 
         <div class="mb-3">
-            <label for="KeywordNameEn" class="form-label">Keyword Name (English)</label>
+            <label for="KeywordNameEn" class="form-label">Keyword Name </label>
             <input type="text" class="form-control" id="KeywordNameEn" name="KeywordNameEn" value="@(ViewBag.KeywordNameEn == null ? "" : ViewBag.KeywordNameEn)" />
-        </div>
-
-        <div class="mb-3">
-            <label for="KeywordNameEs" class="form-label">Keyword Name (Spanish)</label>
-            <input type="text" class="form-control" id="KeywordNameEs" name="KeywordNameEs" value="@(ViewBag.KeywordNameEs == null ? "" : ViewBag.KeywordNameEs)" />
         </div>
 
         @if (ViewBag.KeywordId != null)

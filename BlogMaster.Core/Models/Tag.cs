@@ -10,7 +10,6 @@ namespace BlogMaster.Core.Models
     {
         public Guid TagId { get; set; }
         public string? TagNameEn {  get; set; }
-        public string? TagNameEs { get; set; }
 
 
         // Navigation prop

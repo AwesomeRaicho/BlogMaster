@@ -172,7 +172,6 @@ namespace BlogMaster.Core.Services
                 {
                     CategoryId = category.CategoryId,
                     CategoryNameEn = category.CatergoryNameEn,
-                    CategoryNameEs = category.CatergoryNameEs,
                 };
 
                 categories.Add(categoryResponse);
@@ -197,7 +196,6 @@ namespace BlogMaster.Core.Services
                 {
                     KeywordId = keyword.KeywordId,
                     KeywordNameEn = keyword.KeywordNameEn,
-                    KeywordNameEs = keyword.KeywordNameEs,
                 };
 
                 keywordResponseDtos.Add(keywordResponse);
@@ -220,7 +218,6 @@ namespace BlogMaster.Core.Services
                 {
                     TagId = tag.TagId,
                     TagNameEn = tag.TagNameEn,
-                    TagNameEs = tag.TagNameEs,
                 };
 
                 tagResponseDtos.Add(tagResponse);
@@ -511,7 +508,7 @@ namespace BlogMaster.Core.Services
         {
             if(category == null) { throw new ArgumentNullException("Categoty submitted cannot be mull"); }
 
-            if(string.IsNullOrEmpty(category.CategoryNameEn) && string.IsNullOrEmpty(category.CategoryNameEs))
+            if(string.IsNullOrEmpty(category.CategoryNameEn))
             {
                 throw new ArgumentNullException("Category name must be provided at least in one lenguage.");
             }
@@ -520,7 +517,6 @@ namespace BlogMaster.Core.Services
             {
                 CategoryId = Guid.NewGuid(),
                 CatergoryNameEn = category.CategoryNameEn,
-                CatergoryNameEs = category.CategoryNameEs,
             };
 
             await _categoryRepository.Create(entity);
@@ -561,7 +557,6 @@ namespace BlogMaster.Core.Services
             {
                 KeywordId = Guid.NewGuid(),
                 KeywordNameEn = keyword.KeywordNameEn,
-                KeywordNameEs = keyword.KeywordNameEs,
             };
 
             await _keywordRepository.Create(entity);
@@ -584,7 +579,6 @@ namespace BlogMaster.Core.Services
             {
                 TagId = Guid.NewGuid(),
                 TagNameEn = tag.TagNameEn,
-                TagNameEs = tag.TagNameEs,
             };
 
             await _tagRepository.Create(entity);
@@ -853,7 +847,6 @@ namespace BlogMaster.Core.Services
                 {
                     CategoryId = category.CategoryId,
                     CategoryNameEn = category.CatergoryNameEn,
-                    CategoryNameEs = category.CatergoryNameEs,
                 };
                 categoryResponseDtos.Add(categoryResponseDto);
             }
@@ -898,7 +891,6 @@ namespace BlogMaster.Core.Services
                 {
                     KeywordId = keyword.KeywordId,
                     KeywordNameEn = keyword.KeywordNameEn,
-                    KeywordNameEs = keyword.KeywordNameEs,
                 };
 
                 keywords.Add(keywordResponseDto);
@@ -919,7 +911,6 @@ namespace BlogMaster.Core.Services
                 {
                     TagId = tag.TagId,
                     TagNameEn = tag.TagNameEn,
-                    TagNameEs = tag.TagNameEs,
                     
                 };
 
@@ -1028,7 +1019,6 @@ namespace BlogMaster.Core.Services
             {
                 CategoryId = categoryId,
                 CategoryNameEn = category.CatergoryNameEn,
-                CategoryNameEs = category.CatergoryNameEs,
             };
 
             return response;
@@ -1067,7 +1057,6 @@ namespace BlogMaster.Core.Services
             {
                 KeywordId = keywordId,
                 KeywordNameEn = keyword.KeywordNameEn,
-                KeywordNameEs = keyword.KeywordNameEs,
             };
 
             return response;
@@ -1126,7 +1115,6 @@ namespace BlogMaster.Core.Services
             {
                 TagId = tag.TagId,
                 TagNameEn = tag.TagNameEn,
-                TagNameEs = tag.TagNameEs,
             };
 
             return response;
@@ -1399,7 +1387,6 @@ namespace BlogMaster.Core.Services
             }
 
             category.CatergoryNameEn = categoryPostPutDto.CategoryNameEn;
-            category.CatergoryNameEs = categoryPostPutDto.CategoryNameEs;
             
 
             await _categoryRepository.Update(category);
@@ -1429,7 +1416,6 @@ namespace BlogMaster.Core.Services
             }
 
             keyword.KeywordNameEn = keywordPostPut.KeywordNameEn;
-            keyword.KeywordNameEs = keywordPostPut.KeywordNameEs;
 
             await _keywordRepository.Update(keyword);
 
@@ -1467,7 +1453,6 @@ namespace BlogMaster.Core.Services
             }
 
             tag.TagNameEn = tagPostPutDto.TagNameEn;
-            tag.TagNameEs = tagPostPutDto.TagNameEs;
 
             await _tagRepository.Update(tag);
 

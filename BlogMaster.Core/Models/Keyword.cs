@@ -10,7 +10,6 @@ namespace BlogMaster.Core.Models
     {
         public Guid KeywordId { get; set; }
         public string? KeywordNameEn { get; set; }
-        public string? KeywordNameEs { get; set; }
 
         // Navigation
         public List<Blog_Keyword>? BlogKeywords { get; set; }

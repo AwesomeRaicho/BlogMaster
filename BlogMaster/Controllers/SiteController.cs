@@ -47,7 +47,7 @@ namespace BlogMaster.Controllers
 
             if (User.IsInRole("Administrator"))
             {
-                return RedirectToAction("AdministratorIndex", "Administrator");
+                return RedirectToAction("AdminBlogViews", "Blog");
             }
             return View();
         }
@@ -446,6 +446,15 @@ namespace BlogMaster.Controllers
             ViewBag.UserName = User.Identity?.Name;
             ViewBag.Email = User.FindFirstValue(ClaimTypes.Email);
 
+            //ViewBag.IsAdmin
+            if (User.IsInRole("visitor"))
+            {
+                ViewBag.IsAdmin = false;
+            }
+            else
+            {
+                ViewBag.IsAdmin = true;
+            }
 
             return View();
         }

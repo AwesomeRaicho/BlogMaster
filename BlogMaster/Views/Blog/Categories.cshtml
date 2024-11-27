@@ -8,7 +8,6 @@
         <thead class="table-light sticky-top">
             <tr>
                 <th scope="col">CategoryEn</th>
-                <th scope="col">CategoryEs</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -17,8 +16,7 @@
             {
                 <tr>
                     <td>@(cat.CategoryNameEn)</td>
-                    <td>@(cat.CategoryNameEs)</td>
-                    <td><a href="/create-category?CategoryId=@(Uri.EscapeDataString(cat.CategoryId.ToString()))&CategoryNameEn=@(Uri.EscapeDataString(cat.CategoryNameEn))&CategoryNameEs=@(Uri.EscapeDataString(cat.CategoryNameEs))" class="btn btn-primary">Edit</a></td>
+                    <td><a href="/create-category?CategoryId=@(Uri.EscapeDataString(cat.CategoryId.ToString()))&CategoryNameEn=@(Uri.EscapeDataString(cat.CategoryNameEn ?? ""))" class="btn btn-primary">Edit</a></td>
                 </tr>
             }
         </tbody>

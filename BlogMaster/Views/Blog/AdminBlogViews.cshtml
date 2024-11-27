@@ -12,14 +12,14 @@
             </div>
             <div class="col-12 mb-3">
                 <div class="row">
-                    <label for="search" class="form-label">Seach </label>
+                    <label for="search" class="form-label fs-5">Seach </label>
                     <div class="col-8">
                         @if (!string.IsNullOrEmpty(Model.SearchField))
                         {
-                            <input class="w-100 " id="search" type="text" name="filters[search]" placeholder="Blog title" value="@(Model.SearchField)" autocomplete="off" />
+                            <input class="w-100 form-control form-control-lg" id="search" type="text" name="filters[search]" placeholder="Blog title" value="@(Model.SearchField)" autocomplete="off" />
                     
                         }else{
-                            <input class="w-100" id="search" type="text" name="filters[search]" placeholder="Blog title" autocomplete="off" />
+                            <input class="w-100 form-control form-control-lg" id="search" type="text" name="filters[search]" placeholder="Blog title" autocomplete="off" />
 
                         }
                     </div>

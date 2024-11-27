@@ -272,9 +272,6 @@ namespace BlogMaster.Infrastructure.DataAccess
                 .Property(e => e.CatergoryNameEn)
                 .HasMaxLength(50);
 
-            modelBuilder.Entity<Category>()
-                .Property(e => e.CatergoryNameEs)
-                .HasMaxLength(50);
 
             //<CATEGORY> end
 
@@ -311,9 +308,7 @@ namespace BlogMaster.Infrastructure.DataAccess
                 .Property(e => e.KeywordNameEn)
                 .HasMaxLength(15);
 
-            modelBuilder.Entity<Keyword>()
-                .Property(e => e.KeywordNameEs)
-                .HasMaxLength(15);
+
 
 
             //<KEYWORD> end

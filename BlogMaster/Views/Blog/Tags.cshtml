@@ -9,7 +9,6 @@
         <thead class="table-light sticky-top">
             <tr>
                 <th scope="col">TagEn</th>
-                <th scope="col">TagEs</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -18,9 +17,8 @@
             {
                 <tr>
                     <td>@(tag.TagNameEn)</td>
-                    <td>@(tag.TagNameEs)</td>
                     <td>
-                        <a href="/create-tag?TagId=@(tag.TagId)&TagNameEn=@(Uri.EscapeDataString(tag.TagNameEn))&TagNameEs=@(Uri.EscapeDataString(tag.TagNameEs))" class="btn btn-primary">Edit</a>
+                        <a href="/create-tag?TagId=@(tag.TagId)&TagNameEn=@(Uri.EscapeDataString(tag.TagNameEn ?? ""))" class="btn btn-primary">Edit</a>
                     </td>
 
 

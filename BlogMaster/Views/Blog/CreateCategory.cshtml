@@ -12,19 +12,13 @@
       >
         <div class="mb-3">
           <label for="CategoryNameEn" class="form-label"
-            >Category Name (English)</label
+            >Category Name </label
           >
             <input type="text" class="form-control" id="CategoryNameEn" name="CategoryNameEn" value="@(ViewBag.CategoryNameEn == null ? "" : ViewBag.CategoryNameEn)" />
         </div>
-        <div class="mb-3">
-          <label for="CategoryNameEs" class="form-label"
-            >Category Name (Spanish)</label
-          >
-            <input type="text" class="form-control" id="CategoryNameEs" name="CategoryNameEs" value="@(ViewBag.CategoryNameEs == null ? "" : ViewBag.CategoryNameEs)" />
-        </div>
         @if (ViewBag.CategoryId != null)
         {
-            <input type="type" name="CategoryId" value="@(ViewBag.CategoryId)" hidden />
+            <input type="hidden" name="CategoryId" value="@(ViewBag.CategoryId)" hidden />
         }
         <button type="submit" class="btn btn-primary">@(ViewBag.CategoryId == null ? "Create" : "Update")</button>
         @if (ViewBag.CategoryId != null)

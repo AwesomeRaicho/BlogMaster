@@ -80,14 +80,14 @@ namespace BlogMaster.Infrastructure.DataAccess
             if (!string.IsNullOrEmpty(category))
             {
                 query = query
-                    .Where(blog => blog.BlogCategories != null && blog.BlogCategories.Any(bc => bc.Category != null && (bc.Category.CatergoryNameEn == category || bc.Category.CatergoryNameEs == category)));
+                    .Where(blog => blog.BlogCategories != null && blog.BlogCategories.Any(bc => bc.Category != null && (bc.Category.CatergoryNameEn == category)));
             }
 
             // tags
             if (tags != null && tags.Any())
             {
                 query = query
-                    .Where(blog => blog.BlogTags != null && blog.BlogTags.Any(bt => bt.Tag != null && (tags.Contains(bt.Tag.TagNameEn ?? "") || tags.Contains(bt.Tag.TagNameEs ?? ""))));
+                    .Where(blog => blog.BlogTags != null && blog.BlogTags.Any(bt => bt.Tag != null && (tags.Contains(bt.Tag.TagNameEn ?? ""))));
             }
 
             // Sorting
