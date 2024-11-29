@@ -9,16 +9,6 @@ using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddControllers(options =>
-//{
-//    options.MaxIAsyncEnumerableBufferLimit = int.MaxValue;
-//});
-
-//builder.Services.Configure<KestrelServerOptions>(options =>
-//{
-//    options.Limits.KeepAliveTimeout = TimeSpan.FromSeconds(120);
-//    options.Limits.RequestHeadersTimeout = TimeSpan.FromSeconds(30);
-//});
 
 builder.Configuration.AddJsonFile("Secret.json", optional: true, reloadOnChange: true);
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
