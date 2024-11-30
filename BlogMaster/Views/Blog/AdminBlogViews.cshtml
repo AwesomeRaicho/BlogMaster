@@ -64,7 +64,7 @@
                                 @(Model.SortBy == "" ? "checked" : "") />
                                 <label class="form-check-label" for="noSort">No Sort</label>
                             </div>
-                            <div class="col-3">
+                            <div class="col-12 col-sm-3">
                                 <label class="fw-bold">Views:</label>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" id="viewsAsc" name="sortBy" value="views_asc"
@@ -78,7 +78,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-3">
+                            <div class="col-12 col-sm-3">
                                 <label class="fw-bold">Rating:</label>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" id="ratingAsc" name="sortBy" value="rating_asc"
@@ -92,7 +92,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-3">
+                            <div class="col-12 col-sm-3">
                                 <label class="fw-bold">Title:</label>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" id="titleAsc" name="sortBy" value="title_asc"
@@ -106,7 +106,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-3">
+                            <div class="col-12 col-sm-3">
                                 <label class="fw-bold">Creation Date:</label>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" id="creationDateAsc" name="sortBy" value="creationdate_asc"
@@ -125,7 +125,7 @@
                 </div>
                 <div>
                     <h6 class="mt-3">Filter:</h6>
-                    <div class="m-2 bg-light-subtle rounded-5 d-inline-block">
+                    <div class="m-2 bg-light-subtle rounded-5 d-inline-block p-2">
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" id="allsubscriptioncheck" name="filters[subscription]" value="" @(Model.Subscription == null ? "checked" : "")>
                             <label class="form-check-label" for="allsubscriptioncheck">All</label>

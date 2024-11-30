@@ -32,6 +32,7 @@ namespace BlogMaster.Core.Models
                 Email = "example@example.com",
                 NormalizedEmail = "EXAMPLE@EXAMPLE.COM",
                 EmailConfirmed = true,
+                SecurityStamp = Guid.NewGuid().ToString(),
             };
 
             modelBuilder.Entity<ApplicationUser>().HasData(admin);

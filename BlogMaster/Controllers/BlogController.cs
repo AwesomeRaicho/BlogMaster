@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace BlogMaster.Controllers
 {
-    [Authorize(Roles = "Administrator,Writter")]
+    [Authorize(Roles = "Administrator,Writter,Editor")]
     public class BlogController : Controller
     {
         private readonly IBlogService _blogService;

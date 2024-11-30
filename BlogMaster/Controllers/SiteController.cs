@@ -447,13 +447,13 @@ namespace BlogMaster.Controllers
             ViewBag.Email = User.FindFirstValue(ClaimTypes.Email);
 
             //ViewBag.IsAdmin
-            if (User.IsInRole("visitor"))
+            if (User.IsInRole("Administrator"))
             {
-                ViewBag.IsAdmin = false;
+                ViewBag.IsAdmin = true;
             }
             else
             {
-                ViewBag.IsAdmin = true;
+                ViewBag.IsAdmin = false;
             }
 
             return View();
