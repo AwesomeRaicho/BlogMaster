@@ -27,7 +27,7 @@
                        class="form-control"
                        id="TitleEn"
                        name="TitleEn"
-                       value="@(string.IsNullOrEmpty(Model.BlogResponseDto?.TitleEn) ? "" : Model.BlogResponseDto?.TitleEn)" />
+                       value="@(string.IsNullOrEmpty(Model.BlogResponseDto?.TitleEn) ? "" : Model.BlogResponseDto?.TitleEn)" required />
             </div>
 
             <!-- Description -->
@@ -38,7 +38,7 @@
                 <textarea type="text"
                           class="form-control"
                           id="DescriptionEn"
-                          name="DescriptionEn">
+                          name="DescriptionEn" required>
                     @(string.IsNullOrEmpty(Model.BlogResponseDto?.DescriptionEn) ? "" : Model.BlogResponseDto?.DescriptionEn)
                 </textarea>
             </div>
@@ -60,7 +60,7 @@
                 <textarea type="text"
                           class="form-control"
                           id="ArticleEn"
-                          name="ArticleEn">
+                          name="ArticleEn" required>
                     @(string.IsNullOrEmpty(Model.BlogResponseDto?.ArticleEn) ? "" : Model.BlogResponseDto?.ArticleEn)
                 </textarea>
             </div>
@@ -192,7 +192,7 @@
                        id="IsSubscriptionRequired"
                        name="IsSubscriptionRequired"
                        value="true"
-                @(Model.BlogResponseDto != null && Model.BlogResponseDto.IsSubscriptionRequired == true ? "checked" : "") />
+                @(Model.BlogResponseDto != null && Model.BlogResponseDto.IsSubscriptionRequired == true ? "checked" : "") required/>
                 <label class="form-check-label" for="IsSubscriptionRequired">
                     Requires Premium Subscription
                 </label>
