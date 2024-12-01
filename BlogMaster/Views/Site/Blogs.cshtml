@@ -52,12 +52,10 @@
                             @if (!string.IsNullOrEmpty(Model.SearchField))
                             {
                                 <input class="w-100 form-control form-control-lg" id="search" type="text" name="search" placeholder="Blog title" value="@(Model.SearchField)" autocomplete="off" />
-
                             }
                             else
                             {
                                 <input class="w-100 form-control form-control-lg" id="search" type="text" name="search" placeholder="Blog title" autocomplete="off" />
-
                             }
                         </div>
                     </div>
@@ -139,24 +137,22 @@
         {
             @foreach(var preview in Model.publicBlogList)
             {
-                <div class="col-md-6 col-xl-4 overflow-hidden d-flex align-items-stretch" style="position: relative;">
-                    <a href="/blogs/blogpage/@(preview.SlugEn)?category=@(ViewBag.Category)" style="text-decoration: none; height: 100%">
+                <div class="col-md-6 col-xl-4 overflow-hidden d-flex align-items-stretch mb-3" style="position: relative;">
+                    <a href="/blogs/blogpage/@(preview.SlugEn)?category=@(ViewBag.Category)" style="text-decoration: none; height: 100%; width: 100%">
                         @if (preview.Subscription)
                         {
                             <div class="bg-danger d-flex justify-content-center align-content-center p-2 rounded-bottom-2 text-white fw-bold" style="position: absolute; right: 15px; top: 0px; z-index: 2">
                                 Subscription
                             </div>
                         }
-                        <div class="card mb-3">
+                        <div class="card mb-3" style="height: 100%; width: 100%;">
                             <img src="@(preview?.ImageView?.src)"
                                  style="height: 250px; object-fit: cover"
                                  class="img-fluid"
                                  alt="@(preview?.ImageView?.Filename)" />
                             <div class="card-body">
-                                <h5 class="card-title">@(preview?.TitleEn)</h5>
-                                <p class="card-text">@(preview?.DescriptionEn)</p>
                                 <p class="card-text">
-                                    <small class="text-body-secondary">
+                                    <small class="text-body-secondary mt-auto">
                                         @if (preview != null && preview.AverageRating > 0)
                                         {
                                             @for (int i = 0; i < 6; i++)
@@ -177,6 +173,8 @@
                                         }
                                     </small>
                                 </p>
+                                <h5 class="card-title">@(preview?.TitleEn)</h5>
+                                <p class="card-text">@(preview?.DescriptionEn)</p>
                             </div>
                            
                         </div>
