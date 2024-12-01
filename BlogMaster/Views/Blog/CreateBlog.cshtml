@@ -93,7 +93,7 @@
                                            id="@(category.CategoryId)"
                                     @(Model.BlogResponseDto?.Categories != null && Model.BlogResponseDto.Categories.Any(c => c.CategoryId == category.CategoryId) ? "checked" : "") />
                                     <label class="form-check-label" for="@(category.CategoryId)">
-                                        @(category.CategoryNameEn) / @(category.CategoryNameEs)
+                                        @(category.CategoryNameEn)
                                     </label>
                                 </div>
                             }
@@ -129,7 +129,7 @@
                                            id="@(tag.TagId)"
                                     @(Model.BlogResponseDto?.Tags != null && Model.BlogResponseDto.Tags.Any(c => c.TagId == tag.TagId) ? "checked" : "") />
                                     <label class="form-check-label" for="@(tag.TagId)">
-                                        @(tag.TagNameEn) / @(tag.TagNameEs)
+                                        @(tag.TagNameEn)
                                     </label>
                                 </div>
                             }
@@ -165,7 +165,7 @@
                                            id="@(keyword.KeywordId)"
                                     @(Model.BlogResponseDto?.Keywords != null && Model.BlogResponseDto.Keywords.Any(c => c.KeywordId == keyword.KeywordId) ? "checked" : "") />
                                     <label class="form-check-label" for="@(keyword.KeywordId)">
-                                        @(keyword.KeywordNameEn) / @(keyword.KeywordNameEs)
+                                        @(keyword.KeywordNameEn) 
                                     </label>
                                 </div>
                             }
@@ -181,7 +181,7 @@
             <!-- Author Name -->
             <div class="mb-5" style="max-width: 500px">
                 <label for="Author" class="form-label">Author Name</label>
-                /<input type="text" class="form-control" id="Author" name="Author" value="@(Model.BlogResponseDto != null ? Model.BlogResponseDto.Author : "")" />
+                <input type="text" class="form-control" id="Author" name="Author" value="@(Model.BlogResponseDto != null ? Model.BlogResponseDto.Author : "")" required/>
             </div>
 
 
@@ -192,7 +192,7 @@
                        id="IsSubscriptionRequired"
                        name="IsSubscriptionRequired"
                        value="true"
-                @(Model.BlogResponseDto != null && Model.BlogResponseDto.IsSubscriptionRequired == true ? "checked" : "") required/>
+                @(Model.BlogResponseDto != null && Model.BlogResponseDto.IsSubscriptionRequired == true ? "checked" : "") />
                 <label class="form-check-label" for="IsSubscriptionRequired">
                     Requires Premium Subscription
                 </label>
