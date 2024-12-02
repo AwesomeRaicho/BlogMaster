@@ -271,6 +271,8 @@ namespace BlogMaster.Infrastructure.DataAccess
             modelBuilder.Entity<Category>()
                 .Property(e => e.CatergoryNameEn)
                 .HasMaxLength(50);
+            modelBuilder.Entity<Category>()
+                .HasIndex(e => e.CatergoryNameEn).IsUnique();
 
 
             //<CATEGORY> end
@@ -307,7 +309,8 @@ namespace BlogMaster.Infrastructure.DataAccess
             modelBuilder.Entity<Keyword>()
                 .Property(e => e.KeywordNameEn)
                 .HasMaxLength(15);
-
+            modelBuilder.Entity<Keyword>()
+                .HasIndex(e => e.KeywordNameEn).IsUnique();
 
 
 
@@ -372,8 +375,8 @@ namespace BlogMaster.Infrastructure.DataAccess
                 .Property(e => e.TagNameEn)
                 .HasMaxLength(15);
 
-
-
+            modelBuilder.Entity<Tag>()
+                .HasIndex(e => e.TagNameEn).IsUnique();
 
 
 

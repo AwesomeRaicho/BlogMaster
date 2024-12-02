@@ -9,7 +9,7 @@
           method="post">
         <div class="mb-3">
             <label for="TagNameEn" class="form-label">Tag Name </label>
-            <input type="text" class="form-control" id="TagNameEn" name="TagNameEn" value="@(ViewBag.TagNameEn == null ? "" : ViewBag.TagNameEn)" />
+            <input type="text" class="form-control" id="TagNameEn" name="TagNameEn" value="@(ViewBag.TagNameEn == null ? "" : ViewBag.TagNameEn)" required/>
         </div>
 
         @if (ViewBag.CategoryId != null)

@@ -14,7 +14,7 @@
           <label for="CategoryNameEn" class="form-label"
             >Category Name </label
           >
-            <input type="text" class="form-control" id="CategoryNameEn" name="CategoryNameEn" value="@(ViewBag.CategoryNameEn == null ? "" : ViewBag.CategoryNameEn)" />
+            <input type="text" class="form-control" id="CategoryNameEn" name="CategoryNameEn" value="@(ViewBag.CategoryNameEn == null ? "" : ViewBag.CategoryNameEn)" required/>
         </div>
         @if (ViewBag.CategoryId != null)
         {
@@ -26,7 +26,7 @@
             <div class="d-flex justify-content-end">
 
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deletemodal">
-                    Delete Tag
+                    Delete Category
                 </button>
             </div>
 

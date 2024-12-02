@@ -10,7 +10,7 @@
 
         <div class="mb-3">
             <label for="KeywordNameEn" class="form-label">Keyword Name </label>
-            <input type="text" class="form-control" id="KeywordNameEn" name="KeywordNameEn" value="@(ViewBag.KeywordNameEn == null ? "" : ViewBag.KeywordNameEn)" />
+            <input type="text" class="form-control" id="KeywordNameEn" name="KeywordNameEn" value="@(ViewBag.KeywordNameEn == null ? "" : ViewBag.KeywordNameEn)" required/>
         </div>
 
         @if (ViewBag.KeywordId != null)

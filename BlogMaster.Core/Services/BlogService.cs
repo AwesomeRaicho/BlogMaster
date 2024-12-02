@@ -506,17 +506,24 @@ namespace BlogMaster.Core.Services
 
         public async Task CreateCategoryAsync(CategoryPostPutDto category)
         {
-            if(category == null) { throw new ArgumentNullException("Categoty submitted cannot be mull"); }
+            if(category == null || category.CategoryNameEn == null) 
+            { 
+                throw new ArgumentNullException("Categoty submitted cannot be mull"); 
+            }
 
-            if(string.IsNullOrEmpty(category.CategoryNameEn))
+
+            var result = await _categoryRepository.Find(c => c.CatergoryNameEn == category.CategoryNameEn.Trim());
+
+            if(result != null)
             {
-                throw new ArgumentNullException("Category name must be provided at least in one lenguage.");
+                Console.WriteLine("Category name already exists");
+                return;
             }
 
             Category entity = new Category()
             {
                 CategoryId = Guid.NewGuid(),
-                CatergoryNameEn = category.CategoryNameEn,
+                CatergoryNameEn = category.CategoryNameEn?.Trim(),
             };
 
             await _categoryRepository.Create(entity);
@@ -535,7 +542,7 @@ namespace BlogMaster.Core.Services
                 CommentId = Guid.NewGuid(),
                 BlogId = comment.BlogId,
                 UserId = comment.UserId,
-                Message = comment.Message,
+                Message = comment.Message.Trim(),
             };
 
             await _commentRepository.Create(entity);
@@ -553,11 +560,21 @@ namespace BlogMaster.Core.Services
                 throw new ArgumentNullException("Keyword must be provided in at least one lenguage.");
             }
 
+            var keywordEntity = await _keywordRepository.Find(k =>  k.KeywordNameEn == keyword.KeywordNameEn);
+
+            if(keywordEntity != null)
+            {
+                Console.WriteLine("This keyword already exists.");
+                return;
+            }
+
             Keyword entity = new Keyword()
             {
                 KeywordId = Guid.NewGuid(),
-                KeywordNameEn = keyword.KeywordNameEn,
+                KeywordNameEn = keyword.KeywordNameEn?.Trim(),
             };
+
+
 
             await _keywordRepository.Create(entity);
 
@@ -570,15 +587,24 @@ namespace BlogMaster.Core.Services
                 throw new ArgumentNullException("tag cannot be null");
             }
 
-            if(string.IsNullOrEmpty(tag.TagNameEn) && string.IsNullOrEmpty(tag.TagNameEs))
+            if(string.IsNullOrEmpty(tag.TagNameEn))
             {
                 throw new ArgumentNullException("tag cannot be null");
             }
 
+            var Tag = await _tagRepository.Find(t => t.TagNameEn ==  tag.TagNameEn.Trim());
+
+            if(Tag != null)
+            {
+                Console.WriteLine("Tag name already exists.");
+                return;
+            }
+
+
             Tag entity = new Tag()
             {
                 TagId = Guid.NewGuid(),
-                TagNameEn = tag.TagNameEn,
+                TagNameEn = tag.TagNameEn?.Trim(),
             };
 
             await _tagRepository.Create(entity);
@@ -1185,11 +1211,6 @@ namespace BlogMaster.Core.Services
         }
 
 
-        ////////////////////////////////////////////////////////////
-        ///
-        //NEED TO FIGURE OUT THE BEST WAY TO GET ALL THE PREVIEWS THAT HAVE A SPECIFIC  KEYWORD
-
-
         public async Task<IEnumerable<PublicBlogListDto>> SearchBlogsWithKeywordAsync(Guid keywordId, int pageIndex, int pageSize)
         {
             IEnumerable<Blog> blogs = await _blogUniqueRepository.GetAllBlogPreviewsByKeyword(keywordId, pageIndex, pageSize);
@@ -1381,12 +1402,21 @@ namespace BlogMaster.Core.Services
         {
             Category? category = await _categoryRepository.Get(categoryPostPutDto.CategoryId);
 
-            if(category == null)
+            if(category == null || categoryPostPutDto.CategoryNameEn == null)
             {
                 throw new Exception("category does not exist");
             }
 
-            category.CatergoryNameEn = categoryPostPutDto.CategoryNameEn;
+            var tempCat = await _categoryRepository.Find(c => c.CatergoryNameEn == categoryPostPutDto.CategoryNameEn.Trim());
+
+            if(tempCat != null)
+            {
+                Console.WriteLine("Category name already exists.");
+                return;
+            }
+
+
+            category.CatergoryNameEn = categoryPostPutDto.CategoryNameEn?.Trim();
             
 
             await _categoryRepository.Update(category);
@@ -1401,7 +1431,7 @@ namespace BlogMaster.Core.Services
                 throw new Exception("Comment does not exist");
             }
 
-            comment.Message = commentPostPutDto.Message;
+            comment.Message = commentPostPutDto.Message?.Trim();
 
             await _commentRepository.Update(comment);
         }
@@ -1410,12 +1440,21 @@ namespace BlogMaster.Core.Services
         {
             Keyword? keyword = await _keywordRepository.Get(keywordPostPut.KeywordId);
 
-            if(keyword == null)
+            if(keyword == null || keywordPostPut.KeywordNameEn ==  null)
             {
                 throw new Exception("Keyword does not exist");
             }
 
-            keyword.KeywordNameEn = keywordPostPut.KeywordNameEn;
+            var tempKeyword = await _keywordRepository.Find(k => k.KeywordNameEn == keywordPostPut.KeywordNameEn.Trim());
+
+            if(tempKeyword != null)
+            {
+                Console.WriteLine("Keyword already exists.");
+                return;
+            }
+
+
+            keyword.KeywordNameEn = keywordPostPut.KeywordNameEn?.Trim();
 
             await _keywordRepository.Update(keyword);
 
@@ -1447,12 +1486,20 @@ namespace BlogMaster.Core.Services
         {
             Tag? tag = await _tagRepository.Get(tagPostPutDto.TagId);
 
-            if(tag == null)
+            if(tag == null || tagPostPutDto.TagNameEn == null)
             {
                 throw new Exception("Tag does not exist.");
             }
 
-            tag.TagNameEn = tagPostPutDto.TagNameEn;
+            var tempTag = await _tagRepository.Find(t => t.TagNameEn == tagPostPutDto.TagNameEn.Trim());
+
+            if (tempTag != null)
+            {
+                Console.WriteLine("Tag name already exists.");
+                return;
+            }
+            
+            tag.TagNameEn = tagPostPutDto.TagNameEn?.Trim();
 
             await _tagRepository.Update(tag);
 
