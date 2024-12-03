@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using BlogMaster.Core.Services;
 using BlogMaster.Core.Models;
+using Stripe;
 
 
 namespace BlogMaster.Controllers
@@ -103,11 +104,17 @@ namespace BlogMaster.Controllers
         {
             ViewBag.CurrencyCode = _currencyCode.ToUpper();
 
+
+
             //Logic for admin
+
+            //demo-version
+            ViewBag.IsSudo = User.IsInRole("Admin") ? true : false;
+
             if (User.IsInRole("Administrator"))
             {
                 ViewBag.IsAdmin = true;
-                
+
                 ViewBag.SignedIn = User.Identity?.IsAuthenticated;
 
                 ViewBag.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -151,10 +158,10 @@ namespace BlogMaster.Controllers
             if (blog.IsSubscriptionRequired != null && blog.IsSubscriptionRequired == true)
             {
                 //check if user is signed in
-                if(User.Identity != null && User.Identity.IsAuthenticated)
+                if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
                     string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    
+
                     //check if already contains activbe cookie
                     string? subed = _cookieService.Unprotect(Request.Cookies["subed"]);
 
@@ -164,6 +171,7 @@ namespace BlogMaster.Controllers
                         string? stripeCustomerId = await _identityService.GetStripeCustomerId(userId);
 
 
+
                         if (string.IsNullOrEmpty(stripeCustomerId))
                         {
                             //if theres no StripId it means no subscription created 
@@ -171,9 +179,14 @@ namespace BlogMaster.Controllers
                             return RedirectToAction("SubscriptionDetails", "Subscription");
                         }
 
-                        string? status = await _stripeService.SubscriptionStatus(stripeCustomerId);
 
-                        if(status != null && status == "active")
+                        string email = User.FindFirstValue(ClaimTypes.Email) ?? "";
+                        Customer stripeCustomer = _stripeService.CreateStripeCustomer(User.Identity.Name ?? "", email);
+
+
+                        string? status = await _stripeService.SubscriptionStatus(stripeCustomer.Id);
+
+                        if (status != null && status == "active")
                         {
                             //create cookie
                             string? cookieValue = _cookieService.Protect("active");
@@ -230,7 +243,7 @@ namespace BlogMaster.Controllers
             ViewBag.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             ViewBag.FontAwesomeKey = _configuration["FontAwesome:Key"];
-            
+
             ViewBag.Slug = slug;
 
             ViewBag.Category = category;
@@ -239,11 +252,11 @@ namespace BlogMaster.Controllers
 
             if (blog == null)
             {
-                return NotFound(); 
+                return NotFound();
             }
 
-            BlogAndRecomendations blogAndRecomendations = new BlogAndRecomendations() 
-            { 
+            BlogAndRecomendations blogAndRecomendations = new BlogAndRecomendations()
+            {
                 Blog = blog,
                 BlogPreviews = previews
             };
@@ -251,7 +264,7 @@ namespace BlogMaster.Controllers
             return View(blogAndRecomendations);
         }
 
-        
+
         [HttpGet]
         [Route("/create-comment")]
         public async Task<IActionResult> CreateComment([FromQuery] string blogId, string userId, string slug)

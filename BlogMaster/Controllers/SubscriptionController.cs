@@ -37,34 +37,39 @@ namespace BlogMaster.Controllers
             ViewBag.CurrencyCode = _currencyCode;
             string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if(User.Identity == null || !User.Identity.IsAuthenticated || userId == null)
+            if (User.Identity == null || !User.Identity.IsAuthenticated || userId == null)
             {
                 return RedirectToAction("SignIn", "Identity");
             }
 
+            string userName = User.Identity.Name ?? "";
+            string userEmail = User.FindFirstValue(ClaimTypes.Email) ?? "";
+
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(userEmail))
+            {
+                RedirectToAction("SignIn", "Identity");
+            }
+
             string? stripeCustomerId = await _identityService.GetStripeCustomerId(userId);
 
-            if(string.IsNullOrEmpty(stripeCustomerId))
+            Customer stripeCustomer = _stripeService.CreateStripeCustomer(userName, userEmail);
+
+            if (stripeCustomerId != stripeCustomer.Id)
             {
-                string userName = User.Identity.Name ?? "";
-                string userEmail = User.FindFirstValue(ClaimTypes.Email) ?? "";
-
-                if(string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(userEmail)) 
-                {
-                    RedirectToAction("SignIn", "Identity");
-                }
-
-                Customer stripeCustomer = _stripeService.CreateStripeCustomer(userName, userEmail);
-
-                 await _identityService.UpdateStripeCustomerId(userId, stripeCustomer.Id);
+                await _identityService.UpdateStripeCustomerId(userId, stripeCustomer.Id);
                 stripeCustomerId = stripeCustomer.Id;
+            }
+
+            if (string.IsNullOrEmpty(stripeCustomerId))
+            {
+
                 Stripe.Subscription subscription = await _stripeService.GetCustomerSubscription(stripeCustomerId);
                 return View(subscription);
 
-            }else
+            }
+            else
             {
-                Stripe.Subscription subscription = await _stripeService.GetCustomerSubscription(stripeCustomerId);
-                return View(subscription);
+                return View();
             }
 
         }
