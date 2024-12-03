@@ -111,7 +111,7 @@ namespace BlogMaster.Core.Services
                     },
                     Mode = "payment",
                     UiMode = "embedded",
-                    CustomerEmail = getFormRequestDto.UserEmail ?? "",
+                    CustomerEmail = getFormRequestDto.UserEmail ?? null,
                     ReturnUrl = $"{DomainName}/payment-return?session_id={{CHECKOUT_SESSION_ID}}",
                 };
 
