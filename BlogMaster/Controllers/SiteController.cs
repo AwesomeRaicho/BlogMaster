@@ -494,5 +494,12 @@ namespace BlogMaster.Controllers
             return View(blogAndRecomendationssub);
         }
 
+        [Route("/donation-thanks")]
+        public IActionResult DonationThanks()
+        {
+
+            return View();
+        }
+
     }
 }

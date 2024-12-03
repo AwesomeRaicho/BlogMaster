@@ -105,6 +105,12 @@ namespace BlogMaster.Controllers
         [HttpPost("/create-checkout-session-donation")]
         public async Task<IActionResult> CheckoutSessionDonation(GetFormRequestDto getFormRequestDto)
         {
+            string? email = User.FindFirstValue(ClaimTypes.Email);
+
+            if(!string.IsNullOrEmpty(email))
+            {
+                getFormRequestDto.UserEmail = email;
+            }
             Session session =  await _stripeService.StartSessionForEmbededFormDonation(getFormRequestDto);
 
             return Json(new { clientSecret = session.ClientSecret });
@@ -113,6 +119,7 @@ namespace BlogMaster.Controllers
         [HttpGet("/payment-return")]
         public async Task<IActionResult> PaymentReturn([FromQuery] string session_id)
         {
+
             if(session_id == null)
             {
                 return RedirectToAction("SubscriptionDetails", "Subscription");
@@ -125,7 +132,20 @@ namespace BlogMaster.Controllers
             var sessionService = new SessionService();
             Session session = sessionService.Get(session_id);
 
-            if(session.SetupIntentId != null)
+            if (session.Mode == "subscription")
+            {
+                return RedirectToAction("SubscriptionDetails", "Subscription");
+
+            }
+
+            if(session.Mode == "payment")
+            {
+                return RedirectToAction("DonationThanks", "Site");
+            }
+
+
+
+            if (session.SetupIntentId != null)
             {
                 var service = new SetupIntentService();
                 var SetupIntent = service.Get(session.SetupIntentId);
@@ -142,7 +162,7 @@ namespace BlogMaster.Controllers
 
 
 
-            return RedirectToAction("SubscriptionDetails", "Subscription");
+            return RedirectToAction("Index", "Site");
 
         }
 

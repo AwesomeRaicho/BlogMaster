@@ -95,22 +95,23 @@ namespace BlogMaster.Core.Services
                 {
                     LineItems = new List<SessionLineItemOptions>
                     {
-                      new SessionLineItemOptions
-                      {
-                        PriceData = new SessionLineItemPriceDataOptions
+                        new SessionLineItemOptions
                         {
-                          UnitAmount = getFormRequestDto.Amount * 100,
-                          Currency = _currencyCode,
-                          ProductData = new SessionLineItemPriceDataProductDataOptions
-                          {
-                            Name = "Donation",
-                          },
+                            PriceData = new SessionLineItemPriceDataOptions
+                            {
+                                UnitAmount = getFormRequestDto.Amount * 100,
+                                Currency = _currencyCode,
+                                ProductData = new SessionLineItemPriceDataProductDataOptions
+                                {
+                                    Name = "Donation",
+                                },
+                            },
+                            Quantity = 1,
                         },
-                        Quantity = 1,
-                      },
                     },
                     Mode = "payment",
                     UiMode = "embedded",
+                    CustomerEmail = getFormRequestDto.UserEmail ?? "",
                     ReturnUrl = $"{DomainName}/payment-return?session_id={{CHECKOUT_SESSION_ID}}",
                 };
 
