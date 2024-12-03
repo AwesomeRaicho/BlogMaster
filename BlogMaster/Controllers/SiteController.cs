@@ -167,7 +167,8 @@ namespace BlogMaster.Controllers
                         if (string.IsNullOrEmpty(stripeCustomerId))
                         {
                             //if theres no StripId it means no subscription created 
-                            return RedirectToAction("PayFormSubscription", "Payment");
+
+                            return RedirectToAction("SubscriptionDetails", "Subscription");
                         }
 
                         string? status = await _stripeService.SubscriptionStatus(stripeCustomerId);
