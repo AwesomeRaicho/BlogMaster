@@ -2,3 +2,13 @@
 BlogMaster/Secret.json
 BlogMaster/bin
 BlogMaster/obj
+/bin/
+/obj/
+*.dll
+*.pdb
+*.cache
+*.sourcelink.json
+*.AssemblyInfo.cs
+*.AssemblyInfoInputs.cache
+*.csproj.CoreCompileInputs.cache
+*.csproj.AssemblyReference.cache
