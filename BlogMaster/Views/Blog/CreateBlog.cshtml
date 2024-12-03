@@ -38,7 +38,9 @@
                 <textarea type="text"
                           class="form-control"
                           id="DescriptionEn"
-                          name="DescriptionEn" required>
+                          name="DescriptionEn" 
+                          maxlength="230"
+                          required>
                     @(string.IsNullOrEmpty(Model.BlogResponseDto?.DescriptionEn) ? "" : Model.BlogResponseDto?.DescriptionEn)
                 </textarea>
             </div>

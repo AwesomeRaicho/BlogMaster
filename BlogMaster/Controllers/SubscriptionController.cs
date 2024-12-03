@@ -44,7 +44,7 @@ namespace BlogMaster.Controllers
 
             string? stripeCustomerId = await _identityService.GetStripeCustomerId(userId);
 
-            if(!string.IsNullOrEmpty(stripeCustomerId))
+            if(string.IsNullOrEmpty(stripeCustomerId))
             {
                 string userName = User.Identity.Name ?? "";
                 string userEmail = User.FindFirstValue(ClaimTypes.Email) ?? "";
@@ -61,6 +61,10 @@ namespace BlogMaster.Controllers
                 Stripe.Subscription subscription = await _stripeService.GetCustomerSubscription(stripeCustomerId);
                 return View(subscription);
 
+            }else
+            {
+                Stripe.Subscription subscription = await _stripeService.GetCustomerSubscription(stripeCustomerId);
+                return View(subscription);
             }
 
             return View();
